@@ -1,4 +1,4 @@
-# super_bingo
+# superbingo
 
 A new Flutter application.
 

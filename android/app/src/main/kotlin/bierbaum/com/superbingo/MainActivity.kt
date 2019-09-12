@@ -1,4 +1,4 @@
-package bierbaum.com.super_bingo
+package bierbaum.com.superbingo
 
 import android.os.Bundle
 
