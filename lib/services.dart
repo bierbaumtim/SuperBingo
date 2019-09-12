@@ -1,4 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:superbingo/models/app_models/game.dart';
 
 class NetworkService {
   static final NetworkService instance = NetworkService._internal();
@@ -7,7 +8,7 @@ class NetworkService {
 
   NetworkService._internal();
 
-  Future<String> startGame(NetworkGame nGame) async {
-    final gameDoc = Firestore.instance.collection('games').add(nGame.asJson());
+  Future<String> startGame(Game nGame) async {
+    // final gameDoc = Firestore.instance.collection('games').add(nGame.toNetworkJson());
   }
 }
