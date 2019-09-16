@@ -18,4 +18,8 @@ class Stack<E> {
   }
 
   E get first => _queue.first;
+
+  List<E> toList() => _queue.toList();
+
+  void fromList(Iterable<E> list) => _queue = Queue.from(list);
 }
