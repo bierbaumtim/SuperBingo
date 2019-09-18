@@ -29,10 +29,13 @@ dependencies:
 
   equatable: ^0.5.1
 
+  # helper
+  matrix4_transform: ^1.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  
+
   flutter_native_splash: ^0.1.8+1
 
 
