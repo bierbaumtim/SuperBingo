@@ -14,7 +14,7 @@ description: A new Flutter application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -27,16 +27,22 @@ dependencies:
   connectivity: ^0.4.4
   rxdart: ^0.22.2
 
+  provider: ^3.1.0
   equatable: ^0.5.1
+
+  # icons
+  flat_icons_flutter: ^1.0.2
+  community_material_icon: 3.5.95
 
   # helper
   matrix4_transform: ^1.1.0
+  vector_math: ^2.0.8
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_native_splash: ^0.1.8+1
+  flutter_native_splash: ^0.1.8+2
 
 
 flutter_native_splash:

@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:superbingo/pages/start.dart';
+import 'package:superbingo/utils/list_utils.dart';
+import 'package:vector_math/vector_math.dart' show radians;
 
 class GamePage extends StatefulWidget {
   @override
@@ -10,7 +12,15 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  List<int> cards = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  List<int> cards = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+  ];
+  // 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +35,8 @@ class _GamePageState extends State<GamePage> {
                 child: Stack(
                   children: cards.map<Widget>((c) {
                     final index = cards.indexOf(c);
-                    var angle = (pi / 4) / cards.length;
-                    final rn = Random();
-                    angle += rn.nextDouble() / (4 * pi);
+                    double angle = 1.0 + Random().nextInt(10);
+                    angle = radians(angle);
 
                     return Transform.rotate(
                       child: PlayCard(
@@ -40,31 +49,59 @@ class _GamePageState extends State<GamePage> {
                 ),
               ),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Stack(
-                children: cards.map<Widget>((c) {
-                  final index = cards.indexOf(c);
-                  final middleToRightAngle = (pi / 2) / cards.length;
-                  final leftToMiddleAngle = -((pi / 2) / cards.length);
-                  double angle = 0;
-                  if (index < cards.length / 2) {
-                    angle = leftToMiddleAngle * index;
-                  } else if (index == (cards.length / 2).floor()) {
-                    angle = pi / 4;
-                  } else if (index > cards.length / 2) {
-                    angle = middleToRightAngle * index;
-                  }
-
-                  return Transform(
-                    child: PlayCard(),
-                    transform: Matrix4.rotationZ(middleToRightAngle * index),
-                  );
-                }).toList(),
-              ),
-            )
+            CardHand(),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class CardHand extends StatelessWidget {
+  CardHand({Key key}) : super(key: key);
+
+  List<int> cards = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+  ];
+  // 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Stack(
+        alignment: Alignment.center,
+        children: cards.map<Widget>((c) {
+          final index = cards.indexOf(c);
+
+          double angle = 160 / cards.length;
+          double rotationAngle;
+          print(angle);
+          if (angle >= 50) angle = 20;
+          final middle = getMiddleIndex(cards);
+
+          if (index >= middle) {
+            angle = -90 - (angle * (middle - index));
+            rotationAngle = 270 + angle;
+          } else if (index <= middle) {
+            angle = -90 - (angle * (middle - index));
+            rotationAngle = 270 + angle;
+          } else {
+            angle = -90;
+            rotationAngle = 0;
+          }
+
+          return PlayCard(
+            angle: angle,
+            index: index,
+            rotationAngle: rotationAngle,
+          );
+        }).toList(),
       ),
     );
   }
