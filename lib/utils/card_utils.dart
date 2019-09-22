@@ -57,3 +57,10 @@ String getTextByCardNumber(CardNumber number) {
       return '';
   }
 }
+
+bool isNumberCard(CardNumber number) =>
+    number == CardNumber.five ||
+    number == CardNumber.six ||
+    number == CardNumber.seven ||
+    number == CardNumber.eight ||
+    number == CardNumber.nine;

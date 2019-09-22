@@ -3,8 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:superbingo/models/app_models/card.dart' as cardModel;
+import 'package:superbingo/utils/card_utils.dart';
 import 'package:superbingo/widgets/card_number_color.dart';
 import 'package:superbingo/widgets/inner_card_icons.dart';
+import 'package:superbingo/widgets/inner_card_image.dart';
 
 import 'package:vector_math/vector_math.dart' show radians;
 
@@ -30,20 +32,34 @@ class PlayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cardWidget = GestureDetector(
       child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        elevation: (index + 1).toDouble(),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
         child: SizedBox(
           height: height,
           width: width,
           child: Stack(
             children: <Widget>[
-              Positioned(
-                top: 24,
-                bottom: 24,
-                left: 32,
-                right: 32,
-                child: Container(
-                  // color: Colors.green,
+              if (!isNumberCard(card.number))
+                Positioned(
+                  top: 10,
+                  right: 14,
+                  left: 14,
+                  bottom: 10,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.black),
+                    ),
+                  ),
+                ),
+              if (isNumberCard(card.number))
+                Positioned(
+                  top: 20,
+                  bottom: 20,
+                  left: 28,
+                  right: 28,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -59,26 +75,33 @@ class PlayCard extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
+              if (!isNumberCard(card.number))
+                Positioned(
+                  top: 20,
+                  bottom: 20,
+                  left: 28,
+                  right: 28,
+                  child: InnerCardImage(),
+                ),
               Positioned(
-                top: 8,
-                left: 8,
+                top: 16,
+                left: 4,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,
                 ),
               ),
               Positioned(
-                top: 8,
-                right: 8,
+                top: 16,
+                right: 4,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,
                 ),
               ),
               Positioned(
-                bottom: 8,
-                left: 8,
+                bottom: 16,
+                left: 4,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,
@@ -86,8 +109,8 @@ class PlayCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: 8,
-                right: 8,
+                bottom: 16,
+                right: 4,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,

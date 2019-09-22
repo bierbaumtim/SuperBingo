@@ -3,8 +3,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:superbingo/models/app_models/card.dart' as cardModel;
+import 'package:superbingo/utils/card_utils.dart';
 import 'package:superbingo/widgets/card_number_color.dart';
 import 'package:superbingo/widgets/inner_card_icons.dart';
+import 'package:superbingo/widgets/inner_card_image.dart';
 
 import 'package:vector_math/vector_math.dart' show radians;
 
@@ -26,7 +28,7 @@ class SmallPlayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cardWidget = GestureDetector(
       child: Card(
-        elevation: 4,
+        elevation: (index + 1).toDouble(),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -35,31 +37,53 @@ class SmallPlayCard extends StatelessWidget {
           width: 100,
           child: Stack(
             children: <Widget>[
-              Positioned(
-                top: 24,
-                bottom: 24,
-                left: 32,
-                right: 32,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    InnerCardIcons(
-                      color: card.color,
-                      isSmall: true,
+              if (!isNumberCard(card.number))
+                Positioned(
+                  top: 10,
+                  right: 14,
+                  left: 14,
+                  bottom: 10,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.black),
                     ),
-                    Transform.rotate(
-                      angle: radians(180),
-                      child: InnerCardIcons(
+                  ),
+                ),
+              if (isNumberCard(card.number))
+                Positioned(
+                  top: 20,
+                  bottom: 20,
+                  left: 24,
+                  right: 24,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      InnerCardIcons(
                         color: card.color,
                         isSmall: true,
                       ),
-                    ),
-                  ],
+                      Transform.rotate(
+                        angle: radians(180),
+                        child: InnerCardIcons(
+                          color: card.color,
+                          isSmall: true,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              if (!isNumberCard(card.number))
+                Positioned(
+                  top: 20,
+                  bottom: 20,
+                  left: 24,
+                  right: 24,
+                  child: InnerCardImage(),
+                ),
               Positioned(
-                top: 8,
-                left: 8,
+                top: 16,
+                left: 10,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,
@@ -67,8 +91,8 @@ class SmallPlayCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                top: 8,
-                right: 8,
+                top: 16,
+                right: 10,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,
@@ -76,8 +100,8 @@ class SmallPlayCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: 8,
-                left: 8,
+                bottom: 16,
+                left: 10,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,
@@ -86,8 +110,8 @@ class SmallPlayCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: 8,
-                right: 8,
+                bottom: 16,
+                right: 10,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,

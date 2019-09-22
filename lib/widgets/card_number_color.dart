@@ -21,41 +21,40 @@ class CardNumberColor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double iconSize = isSmall ? 16 : 24;
-    final double fontSize = isSmall ? 14 : 18;
+    final double iconSize = isSmall ? 14 : 24;
+    final double fontSize = isSmall ? 16 : 20;
 
-    return Transform.rotate(
-      angle: radians(flip ? 180 : 0),
-      child: Column(
-        children: <Widget>[
-          if (!flip) ...[
-            Text(
-              getTextByCardNumber(number),
-              style: TextStyle(
-                fontSize: fontSize,
-                fontFamily: 'Georgia',
-                color: getColorByCardColor(color),
+    return Container(
+      color: Colors.white,
+      child: Transform.rotate(
+        angle: radians(flip ? 180 : 0),
+        child: Column(
+          children: <Widget>[
+            if (!flip)
+              Text(
+                getTextByCardNumber(number),
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontFamily: 'Georgia',
+                  color: getColorByCardColor(color),
+                ),
               ),
+            Icon(
+              getIconByCardColor(color),
+              color: getColorByCardColor(color),
+              size: iconSize,
             ),
-            SizedBox(height: 4),
+            if (flip)
+              Text(
+                getTextByCardNumber(number),
+                style: TextStyle(
+                  fontSize: fontSize,
+                  fontFamily: 'Georgia',
+                  color: getColorByCardColor(color),
+                ),
+              ),
           ],
-          Icon(
-            getIconByCardColor(color),
-            color: getColorByCardColor(color),
-            size: iconSize,
-          ),
-          if (flip) ...[
-            SizedBox(height: 4),
-            Text(
-              getTextByCardNumber(number),
-              style: TextStyle(
-                fontSize: fontSize,
-                fontFamily: 'Georgia',
-                color: getColorByCardColor(color),
-              ),
-            ),
-          ]
-        ],
+        ),
       ),
     );
   }

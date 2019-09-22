@@ -65,22 +65,40 @@ class _GamePageState extends State<GamePage> {
                 padding: const EdgeInsets.only(top: 80),
                 child: Stack(
                   children: cards.map<Widget>((c) {
+                    final rn = Random();
                     final index = cards.indexOf(c);
-                    double angle = 1.0 + Random().nextInt(10);
+                    double angle = 1.0 + rn.nextInt(10);
+                    double translationY, translationX;
                     if (c == cards.last) {
                       angle = radians(0);
                     } else {
                       angle = radians(angle);
                       angle = index % 2 == 0 ? angle : -angle;
                     }
+                    translationY = 1.0 + rn.nextInt(5);
+                    translationX = 1.0 + rn.nextInt(5);
+                    if (rn.nextDouble() <= 0.5) {
+                      translationX = -translationX;
+                    }
+                    if (rn.nextDouble() <= 0.5) {
+                      translationY = -translationY;
+                    }
 
-                    return Transform.rotate(
-                      child: PlayCard(
-                        height: 275,
-                        width: 175,
-                        card: c,
+                    return Transform(
+                      child: Transform.rotate(
+                        child: PlayCard(
+                          height: 275,
+                          width: 175,
+                          card: c,
+                          index: index,
+                        ),
+                        angle: angle,
                       ),
-                      angle: angle,
+                      transform: Matrix4.identity()
+                        ..translate(
+                          translationX,
+                          translationY,
+                        ),
                     );
                   }).toList(),
                 ),
