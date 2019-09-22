@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:superbingo/pages/join_game_page.dart';
+import 'package:superbingo/pages/new_game_page.dart';
 import 'package:superbingo/pages/start.dart';
 
 class SuperBingo extends StatefulWidget {
@@ -15,18 +17,26 @@ class _SuperBingoState extends State<SuperBingo> {
         themeMode: ThemeMode.light,
         theme: lightTheme,
         home: StartPage(),
+        routes: {
+          '/new_game': (context) => NewGamePage(),
+          '/join_game': (context) => JoinGamePage(),
+        },
       ),
     );
   }
 }
 
-ThemeData get lightTheme => ThemeData.light().copyWith(
+ThemeData get lightTheme => ThemeData.dark().copyWith(
       scaffoldBackgroundColor: Colors.deepOrangeAccent,
       primaryColor: Colors.deepOrangeAccent,
+      accentColor: Colors.white,
       primaryTextTheme: basicTextTheme,
       textTheme: basicTextTheme,
-      appBarTheme: AppBarTheme(
-        textTheme: basicTextTheme,
+      cardTheme: CardTheme(
+        color: Colors.white70,
+      ),
+      buttonTheme: ButtonThemeData(
+        buttonColor: Colors.deepOrange,
       ),
     );
 
@@ -36,12 +46,14 @@ TextTheme get basicTextTheme => TextTheme(
         fontSize: 14,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
+        color: Colors.black,
       ),
       body2: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 14,
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
+        color: Colors.black,
       ),
       caption: TextStyle(
         fontFamily: 'Georgia',
@@ -78,6 +90,7 @@ TextTheme get basicTextTheme => TextTheme(
         fontSize: 16,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
+        color: Colors.black,
       ),
       headline: TextStyle(
         fontFamily: 'Georgia',

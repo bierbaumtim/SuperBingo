@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 
-import 'package:superbingo/pages/game_page.dart';
-import 'package:superbingo/pages/join_game_page.dart';
+import 'package:superbingo/blocs/open_games_bloc.dart';
+
+import 'package:provider/provider.dart';
 
 class StartPage extends StatefulWidget {
   @override
@@ -38,13 +39,7 @@ class _StartPageState extends State<StartPage> {
                   children: <Widget>[
                     RaisedButton(
                       onPressed: () {
-                        showSimpleNotification(
-                          Text('Test Notification'),
-                          background: Colors.deepOrange,
-                        );
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => GamePage()),
-                        );
+                        Navigator.of(context).pushNamed('/new_game');
                       },
                       child: const Text(
                         'New game',
@@ -65,9 +60,8 @@ class _StartPageState extends State<StartPage> {
                     ),
                     RaisedButton(
                       onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => JoinGamePage()),
-                        );
+                        Provider.of<PublicGamesBloc>(context).getPublicGames();
+                        Navigator.of(context).pushNamed('/join_game');
                       },
                       child: const Text(
                         'Join game',
