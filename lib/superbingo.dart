@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:superbingo/pages/start.dart';
 
 class SuperBingo extends StatefulWidget {
@@ -9,12 +10,103 @@ class SuperBingo extends StatefulWidget {
 class _SuperBingoState extends State<SuperBingo> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      themeMode: ThemeMode.light,
-      theme: ThemeData.light().copyWith(
-        scaffoldBackgroundColor: Colors.deepOrangeAccent,
+    return OverlaySupport(
+      child: MaterialApp(
+        themeMode: ThemeMode.light,
+        theme: lightTheme,
+        home: StartPage(),
       ),
-      home: StartPage(),
     );
   }
 }
+
+ThemeData get lightTheme => ThemeData.light().copyWith(
+      scaffoldBackgroundColor: Colors.deepOrangeAccent,
+      primaryColor: Colors.deepOrangeAccent,
+      primaryTextTheme: basicTextTheme,
+      textTheme: basicTextTheme,
+      appBarTheme: AppBarTheme(
+        textTheme: basicTextTheme,
+      ),
+    );
+
+TextTheme get basicTextTheme => TextTheme(
+      body1: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0,
+      ),
+      body2: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0,
+      ),
+      caption: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0,
+      ),
+      button: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0,
+      ),
+      subtitle: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0,
+      ),
+      overline: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 10,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0,
+      ),
+      title: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 20,
+        fontWeight: FontWeight.w500,
+        letterSpacing: 0,
+      ),
+      subhead: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0,
+      ),
+      headline: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 24,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0,
+      ),
+      display1: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 34,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0,
+      ),
+      display2: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 45,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0,
+      ),
+      display3: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 56,
+        fontWeight: FontWeight.w400,
+        letterSpacing: 0,
+      ),
+      display4: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 112,
+        fontWeight: FontWeight.w100,
+        letterSpacing: 0,
+      ),
+    );

@@ -2,9 +2,50 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/pages/start.dart';
-import 'package:superbingo/utils/list_utils.dart';
+import 'package:superbingo/models/app_models/card.dart' as cardModel;
+import 'package:superbingo/widgets/card_hand.dart';
+import 'package:superbingo/widgets/play_card.dart';
+
 import 'package:vector_math/vector_math.dart' show radians;
+
+final List<cardModel.Card> cards = [
+  cardModel.Card(
+    color: cardModel.CardColor.clover,
+    number: cardModel.CardNumber.ace,
+  ),
+  cardModel.Card(
+    color: cardModel.CardColor.diamond,
+    number: cardModel.CardNumber.king,
+  ),
+  cardModel.Card(
+    color: cardModel.CardColor.diamond,
+    number: cardModel.CardNumber.nine,
+  ),
+  cardModel.Card(
+    color: cardModel.CardColor.clover,
+    number: cardModel.CardNumber.eight,
+  ),
+  cardModel.Card(
+    color: cardModel.CardColor.heart,
+    number: cardModel.CardNumber.six,
+  ),
+  cardModel.Card(
+    color: cardModel.CardColor.clover,
+    number: cardModel.CardNumber.queen,
+  ),
+  cardModel.Card(
+    color: cardModel.CardColor.heart,
+    number: cardModel.CardNumber.seven,
+  ),
+  cardModel.Card(
+    color: cardModel.CardColor.spade,
+    number: cardModel.CardNumber.six,
+  ),
+  cardModel.Card(
+    color: cardModel.CardColor.clover,
+    number: cardModel.CardNumber.five,
+  ),
+];
 
 class GamePage extends StatefulWidget {
   @override
@@ -12,16 +53,6 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  List<int> cards = [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5,
-  ];
-  // 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,72 +67,30 @@ class _GamePageState extends State<GamePage> {
                   children: cards.map<Widget>((c) {
                     final index = cards.indexOf(c);
                     double angle = 1.0 + Random().nextInt(10);
-                    angle = radians(angle);
+                    if (c == cards.last) {
+                      angle = radians(0);
+                    } else {
+                      angle = radians(angle);
+                      angle = index % 2 == 0 ? angle : -angle;
+                    }
 
                     return Transform.rotate(
                       child: PlayCard(
                         height: 275,
                         width: 175,
+                        card: c,
                       ),
-                      angle: index % 2 == 0 ? angle : -angle,
+                      angle: angle,
                     );
                   }).toList(),
                 ),
               ),
             ),
-            CardHand(),
+            CardHand(
+              cards: cards,
+            ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class CardHand extends StatelessWidget {
-  CardHand({Key key}) : super(key: key);
-
-  List<int> cards = [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5,
-  ];
-  // 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Stack(
-        alignment: Alignment.center,
-        children: cards.map<Widget>((c) {
-          final index = cards.indexOf(c);
-
-          double angle = 160 / cards.length;
-          double rotationAngle;
-          print(angle);
-          if (angle >= 50) angle = 20;
-          final middle = getMiddleIndex(cards);
-
-          if (index >= middle) {
-            angle = -90 - (angle * (middle - index));
-            rotationAngle = 270 + angle;
-          } else if (index <= middle) {
-            angle = -90 - (angle * (middle - index));
-            rotationAngle = 270 + angle;
-          } else {
-            angle = -90;
-            rotationAngle = 0;
-          }
-
-          return PlayCard(
-            angle: angle,
-            index: index,
-            rotationAngle: rotationAngle,
-          );
-        }).toList(),
       ),
     );
   }
