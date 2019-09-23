@@ -42,8 +42,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
                     return Card(
                       child: ListTile(
                         title: Text(game.data['name'] ?? ''),
-                        subtitle: Text(
-                            '${game.data['player'].length}/${game.data['maxPlayer']} Player'),
+                        subtitle: Text('${game.data['player']?.length ?? 0}/${game.data['maxPlayer']} Player'),
                         trailing: RaisedButton(
                           color: Colors.deepOrangeAccent,
                           child: Text(
@@ -52,7 +51,9 @@ class _JoinGamePageState extends State<JoinGamePage> {
                                   color: Colors.white,
                                 ),
                           ),
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context).pushNamed('/game');
+                          },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
@@ -67,9 +68,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
           } else if (snapshot.hasError) {
             return Center(
               child: Text(
-                snapshot.error is PermissionError
-                    ? (snapshot.error as PermissionError).message
-                    : 'An error occured',
+                snapshot.error is PermissionError ? (snapshot.error as PermissionError).message : 'An error occured',
               ),
             );
           } else {

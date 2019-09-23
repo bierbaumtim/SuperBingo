@@ -42,12 +42,7 @@ class _StartPageState extends State<StartPage> {
                       onPressed: () {
                         Navigator.of(context).pushNamed('/new_game');
                       },
-                      child: const Text(
-                        'New game',
-                        style: TextStyle(
-                          fontFamily: 'Georgia',
-                        ),
-                      ),
+                      child: const Text('New game'),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
@@ -64,12 +59,7 @@ class _StartPageState extends State<StartPage> {
                         Provider.of<PublicGamesBloc>(context).getPublicGames();
                         Navigator.of(context).pushNamed('/join_game');
                       },
-                      child: const Text(
-                        'Join game',
-                        style: TextStyle(
-                          fontFamily: 'Georgia',
-                        ),
-                      ),
+                      child: const Text('Join game'),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),

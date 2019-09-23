@@ -41,6 +41,7 @@ class PlayCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
+        color: Colors.white,
         child: SizedBox(
           height: height,
           width: width,

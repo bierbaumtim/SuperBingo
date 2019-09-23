@@ -9,8 +9,17 @@ class Game {
   List<Player> players;
   Player self;
   bool isGameRunning, public;
-  int maxPlayer;
+  int maxPlayer, cardAmount;
   String name;
+
+  Game({
+    this.name,
+    this.maxPlayer,
+    this.public,
+    this.cardAmount,
+    this.isGameRunning = false,
+
+  });
 
   GameCard get topCard => cardStack.first;
 
@@ -21,6 +30,8 @@ class Game {
   Map<String, dynamic> toNetworkJson() => {
         'isGameRunning': isGameRunning,
         'public': public,
+        'maxPlayer': maxPlayer,
+        'name': name,
       };
 
   void shuffleCards({int times}) {

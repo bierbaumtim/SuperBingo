@@ -36,7 +36,7 @@ class SmallPlayCard extends StatelessWidget {
         elevation: (index + 1).toDouble(),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
-        ),
+        ),color: Colors.white,
         child: SizedBox(
           height: 175,
           width: 100,
