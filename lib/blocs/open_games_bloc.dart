@@ -15,14 +15,15 @@ class PublicGamesBloc {
 
   Future<void> getPublicGames() async {
     final games = Firestore.instance.collection('games');
+    _publicGamesSink.add(null);
     try {
       final docs = (await games.getDocuments()).documents;
       List<DocumentSnapshot> publicGames = [];
       for (var game in docs) {
-        // if (game.data['public'] == true) {
-        //   publicGames.add(game);
-        // }
-        publicGames.add(game);
+        if (game.data['public'] == true) {
+          publicGames.add(game);
+        }
+        // publicGames.add(game);
       }
       _publicGamesSink.add(publicGames);
     } on PlatformException catch (e) {

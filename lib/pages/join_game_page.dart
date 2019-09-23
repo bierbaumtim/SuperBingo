@@ -17,6 +17,12 @@ class _JoinGamePageState extends State<JoinGamePage> {
       appBar: AppBar(
         elevation: 0,
         title: Text('Public Games'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.refresh),
+            onPressed: () => publicGamesBloc.getPublicGames(),
+          ),
+        ],
       ),
       body: StreamBuilder<List<DocumentSnapshot>>(
         stream: publicGamesBloc.publicGamesStream,
@@ -27,37 +33,43 @@ class _JoinGamePageState extends State<JoinGamePage> {
                 child: Text('Es sind keine offenen Spiele verfügbar.'),
               );
             } else {
-              return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, index) {
-                  final game = snapshot.data.elementAt(index);
+              return RefreshIndicator(
+                child: ListView.builder(
+                  itemCount: snapshot.data.length,
+                  itemBuilder: (context, index) {
+                    final game = snapshot.data.elementAt(index);
 
-                  return Card(
-                    child: ListTile(
-                      title: Text(game.data['name'] ?? ''),
-                      subtitle: Text('${game.data['player'].length}/${game.data['maxPlayer']} Player'),
-                      trailing: RaisedButton(
-                        color: Colors.deepOrangeAccent,
-                        child: Text(
-                          'join',
-                          style: Theme.of(context).textTheme.body1.copyWith(
-                                color: Colors.white,
-                              ),
-                        ),
-                        onPressed: () {},
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                    return Card(
+                      child: ListTile(
+                        title: Text(game.data['name'] ?? ''),
+                        subtitle: Text(
+                            '${game.data['player'].length}/${game.data['maxPlayer']} Player'),
+                        trailing: RaisedButton(
+                          color: Colors.deepOrangeAccent,
+                          child: Text(
+                            'join',
+                            style: Theme.of(context).textTheme.body1.copyWith(
+                                  color: Colors.white,
+                                ),
+                          ),
+                          onPressed: () {},
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
+                onRefresh: publicGamesBloc.getPublicGames,
               );
             }
           } else if (snapshot.hasError) {
             return Center(
               child: Text(
-                snapshot.error is PermissionError ? (snapshot.error as PermissionError).message : 'An error occured',
+                snapshot.error is PermissionError
+                    ? (snapshot.error as PermissionError).message
+                    : 'An error occured',
               ),
             );
           } else {

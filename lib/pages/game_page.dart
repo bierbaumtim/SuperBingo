@@ -2,48 +2,48 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/models/app_models/card.dart' as cardModel;
+import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/widgets/card_hand.dart';
 import 'package:superbingo/widgets/play_card.dart';
 
 import 'package:vector_math/vector_math.dart' show radians;
 
-final List<cardModel.Card> cards = [
-  cardModel.Card(
-    color: cardModel.CardColor.clover,
-    number: cardModel.CardNumber.ace,
+final List<GameCard> cards = [
+  GameCard(
+    color: CardColor.clover,
+    number: CardNumber.ace,
   ),
-  cardModel.Card(
-    color: cardModel.CardColor.diamond,
-    number: cardModel.CardNumber.king,
+  GameCard(
+    color: CardColor.diamond,
+    number: CardNumber.king,
   ),
-  cardModel.Card(
-    color: cardModel.CardColor.diamond,
-    number: cardModel.CardNumber.nine,
+  GameCard(
+    color: CardColor.diamond,
+    number: CardNumber.nine,
   ),
-  cardModel.Card(
-    color: cardModel.CardColor.clover,
-    number: cardModel.CardNumber.eight,
+  GameCard(
+    color: CardColor.clover,
+    number: CardNumber.eight,
   ),
-  cardModel.Card(
-    color: cardModel.CardColor.heart,
-    number: cardModel.CardNumber.six,
+  GameCard(
+    color: CardColor.heart,
+    number: CardNumber.six,
   ),
-  cardModel.Card(
-    color: cardModel.CardColor.clover,
-    number: cardModel.CardNumber.queen,
+  GameCard(
+    color: CardColor.clover,
+    number: CardNumber.queen,
   ),
-  cardModel.Card(
-    color: cardModel.CardColor.heart,
-    number: cardModel.CardNumber.seven,
+  GameCard(
+    color: CardColor.heart,
+    number: CardNumber.seven,
   ),
-  cardModel.Card(
-    color: cardModel.CardColor.spade,
-    number: cardModel.CardNumber.six,
+  GameCard(
+    color: CardColor.spade,
+    number: CardNumber.six,
   ),
-  cardModel.Card(
-    color: cardModel.CardColor.clover,
-    number: cardModel.CardNumber.five,
+  GameCard(
+    color: CardColor.clover,
+    number: CardNumber.five,
   ),
 ];
 

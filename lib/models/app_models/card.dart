@@ -1,9 +1,16 @@
-class Card {
+class GameCard {
   final CardColor color;
   final CardNumber number;
   final SpecialRule rule;
 
-  Card({this.color, this.number}) : rule = ruleFromNumber(number);
+  GameCard({this.color, this.number}) : rule = ruleFromNumber(number);
+
+  factory GameCard.fromDefinitonString(String definition) {
+    final parts = definition.split('|');
+    
+
+    return GameCard();
+  }
 
   static SpecialRule ruleFromNumber(CardNumber number) {
     switch (number) {

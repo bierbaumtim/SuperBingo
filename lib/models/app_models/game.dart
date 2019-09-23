@@ -5,12 +5,14 @@ import 'package:superbingo/models/app_models/player.dart';
 import 'package:superbingo/utils/stack.dart';
 
 class Game {
-  Stack<Card> cardStack;
+  Stack<GameCard> cardStack;
   List<Player> players;
   Player self;
-  bool isGameRunning;
+  bool isGameRunning, public;
+  int maxPlayer;
+  String name;
 
-  Card get topCard => cardStack.first;
+  GameCard get topCard => cardStack.first;
 
   Future<bool> startGame() async {
     isGameRunning = true;
@@ -18,6 +20,7 @@ class Game {
 
   Map<String, dynamic> toNetworkJson() => {
         'isGameRunning': isGameRunning,
+        'public': public,
       };
 
   void shuffleCards({int times}) {

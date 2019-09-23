@@ -1,19 +1,30 @@
 import 'package:superbingo/models/app_models/card.dart';
 
 class Player {
-  int id;
+  int id, cardAmount;
   String name;
-  List<Card> cards;
+  List<GameCard> cards;
 
-  Player({this.id, this.name, this.cards}) {}
+  Player({
+    this.id,
+    this.name,
+    this.cards,
+    this.cardAmount,
+  });
 
-  Future<bool> createGame() async {}
-
-  Future<String> playCard(Card card) async {}
-
-  Future<String> drawCard(Card card) async {
+  Future<String> drawCard(GameCard card) async {
     cards.add(card);
   }
 
-  Future<String> randomizeCards() async {}
+  Player fromJson(Map<String, dynamic> json) => Player(
+        id: json['id'] as int,
+        name: json['name'] as String,
+        cardAmount: json['cardAmount'] as int,
+      );
+
+  Map<String, dynamic> toNetworkJson() => {
+        'id': id,
+        'name': name,
+        'cardAmount': cards.length,
+      };
 }

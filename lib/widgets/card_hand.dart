@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/models/app_models/card.dart' as model;
+import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/list_utils.dart';
 import 'package:superbingo/widgets/small_play_card.dart';
 
 class CardHand extends StatelessWidget {
-  final List<model.Card> cards;
+  final List<GameCard> cards;
 
   const CardHand({
     Key key,

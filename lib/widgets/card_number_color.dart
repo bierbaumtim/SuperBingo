@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/models/app_models/card.dart' as cardModel;
+import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/card_utils.dart';
 
 import 'package:vector_math/vector_math.dart' show radians;
@@ -14,8 +14,8 @@ class CardNumberColor extends StatelessWidget {
     this.isSmall = false,
   }) : super(key: key);
 
-  final cardModel.CardColor color;
-  final cardModel.CardNumber number;
+  final CardColor color;
+  final CardNumber number;
   final bool flip;
   final bool isSmall;
 

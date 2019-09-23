@@ -7,6 +7,6 @@ class Rules {
 
   Rules._internal();
 
-  static isCardAllowed(Card card, Card topCard) =>
+  static isCardAllowed(GameCard card, GameCard topCard) =>
       card.color == topCard.color || card.number == topCard.number;
 }

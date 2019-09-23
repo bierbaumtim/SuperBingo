@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:superbingo/blocs/game_bloc.dart';
 
-import 'package:superbingo/models/app_models/card.dart' as cardModel;
+import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/card_utils.dart';
 import 'package:superbingo/widgets/card_number_color.dart';
 import 'package:superbingo/widgets/inner_card_icons.dart';
@@ -11,7 +13,7 @@ import 'package:superbingo/widgets/inner_card_image.dart';
 import 'package:vector_math/vector_math.dart' show radians;
 
 class SmallPlayCard extends StatelessWidget {
-  final cardModel.Card card;
+  final GameCard card;
   final double angle;
   final double rotationAngle;
   final int index;
@@ -26,7 +28,10 @@ class SmallPlayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final gameBloc = Provider.of<GameBloc>(context);
+
     final cardWidget = GestureDetector(
+      onTap: () {},
       child: Card(
         elevation: (index + 1).toDouble(),
         shape: RoundedRectangleBorder(

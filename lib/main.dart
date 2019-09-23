@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:superbingo/blocs/game_bloc.dart';
 
 import 'package:superbingo/blocs/open_games_bloc.dart';
 import 'package:superbingo/superbingo.dart';
@@ -12,6 +13,10 @@ void main() async {
       providers: [
         Provider<PublicGamesBloc>(
           builder: (_) => PublicGamesBloc(),
+          dispose: (_, bloc) => bloc.dispose(),
+        ),
+        Provider<GameBloc>(
+          builder: (_) => GameBloc(),
           dispose: (_, bloc) => bloc.dispose(),
         ),
       ],
