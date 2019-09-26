@@ -18,6 +18,7 @@ class PlayCard extends StatelessWidget {
   final double width;
   final double angle;
   final double rotationAngle;
+  final double elevation;
   final int index;
 
   const PlayCard({
@@ -28,6 +29,7 @@ class PlayCard extends StatelessWidget {
     this.rotationAngle,
     this.height = 175,
     this.width = 100,
+    this.elevation = 0,
   }) : super(key: key);
 
   @override
@@ -37,7 +39,7 @@ class PlayCard extends StatelessWidget {
     final cardWidget = GestureDetector(
       onTap: () {},
       child: Card(
-        elevation: (index + 1).toDouble(),
+        elevation: elevation,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),

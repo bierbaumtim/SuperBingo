@@ -106,6 +106,7 @@ class CardStack extends StatelessWidget {
                     final index = cards.indexOf(c);
                     double angle = 1.0 + rn.nextInt(10);
                     double translationY, translationX;
+                    double elevation = 0;
                     if (c == cards.last) {
                       angle = radians(0);
                     } else {
@@ -121,6 +122,8 @@ class CardStack extends StatelessWidget {
                       translationY = -translationY;
                     }
 
+                    if (index > cards.length - 10) elevation = index - (cards.length - 10.0);
+
                     return Transform(
                       child: Transform.rotate(
                         child: PlayCard(
@@ -128,6 +131,7 @@ class CardStack extends StatelessWidget {
                           width: 175,
                           card: c,
                           index: index,
+                          elevation: elevation,
                         ),
                         angle: angle,
                       ),

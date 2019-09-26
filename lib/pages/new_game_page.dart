@@ -11,7 +11,7 @@ class NewGamePage extends StatefulWidget {
 
 class _NewGamePageState extends State<NewGamePage> {
   final formKey = GlobalKey<FormState>();
-  bool _isValid, isPublic, showStartGame;
+  bool isValid, isPublic, showStartGame, isDisabled;
 
   String name;
   int maxPlayer, cardAmount;
@@ -21,9 +21,10 @@ class _NewGamePageState extends State<NewGamePage> {
   @override
   void initState() {
     super.initState();
-    _isValid = false;
+    isValid = false;
     isPublic = false;
     showStartGame = false;
+    isDisabled = false;
   }
 
   @override
@@ -40,16 +41,18 @@ class _NewGamePageState extends State<NewGamePage> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        title: Text('New Game'),
+        title: Text('Neues Spiel'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.check),
-            onPressed: () {
-              if (formKey.currentState.validate()) {
-                formKey.currentState.save();
-                setState(() => _isValid = true);
-              }
-            },
+            onPressed: !isDisabled
+                ? () {
+                    if (formKey.currentState.validate()) {
+                      formKey.currentState.save();
+                      setState(() => isValid = true);
+                    }
+                  }
+                : null,
           ),
         ],
       ),
@@ -73,6 +76,7 @@ class _NewGamePageState extends State<NewGamePage> {
                     validator: (text) => text.isNotEmpty ? null : 'Name is required',
                     onEditingComplete: () => _node.nextFocus(),
                     onSaved: (text) => name = text,
+                    enabled: !isDisabled,
                   ),
                   SizedBox(height: 8),
                   TextFormField(
@@ -85,7 +89,9 @@ class _NewGamePageState extends State<NewGamePage> {
                     ),
                     validator: (text) {
                       final parsedAmount = int.tryParse(text) ?? 0;
-                      if (text.isEmpty || parsedAmount > 2) {
+                      if (parsedAmount < 2 || parsedAmount > 6) {
+                        return 'Es nur Zahlen zwischen 2 und 6 erlaubt';
+                      } else if (text.isEmpty || parsedAmount > 2) {
                         return null;
                       } else {
                         return 'Es sind nur Zahlen erlaubt';
@@ -93,6 +99,7 @@ class _NewGamePageState extends State<NewGamePage> {
                     },
                     onSaved: (text) => maxPlayer = int.tryParse(text) ?? 6,
                     onEditingComplete: () => _node.nextFocus(),
+                    enabled: !isDisabled,
                   ),
                   SizedBox(height: 8),
                   TextFormField(
@@ -112,36 +119,20 @@ class _NewGamePageState extends State<NewGamePage> {
                     },
                     onEditingComplete: () => _node.unfocus(),
                     onSaved: (text) => cardAmount = calculateCardAmount(text),
+                    enabled: !isDisabled,
                   ),
                   SizedBox(height: 8),
-                  // TextFormField(
-                  //   decoration: InputDecoration(
-                  //     border: border,
-                  //     enabledBorder: border,
-                  //     focusedBorder: border,
-                  //   ),
-                  //   validator: (text) => text.isNotEmpty ? null : 'Name is required',
-                  // ),
-                  // SizedBox(height: 8),
-                  // TextFormField(
-                  //   decoration: InputDecoration(
-                  //     border: border,
-                  //     enabledBorder: border,
-                  //     focusedBorder: border,
-                  //   ),
-                  //   validator: (text) => text.isNotEmpty ? null : 'Name is required',
-                  // ),
                   CheckboxListTile(
                     title: Text('Öffentliches Spiel'),
                     value: isPublic,
-                    onChanged: (value) => setState(() => isPublic = value),
+                    onChanged: (value) => !isDisabled ? setState(() => isPublic = value) : null,
                     activeColor: Colors.deepOrange,
                   ),
-                  if (_isValid)
+                  if (isValid)
                     Padding(
                       padding: EdgeInsets.only(top: 25),
                       child: RaisedButton(
-                        child: Text('Create Game'),
+                        child: Text('Spiel erstellen'),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
                         ),
@@ -150,21 +141,23 @@ class _NewGamePageState extends State<NewGamePage> {
                           final success = await gameBloc.createGame(game);
                           setState(() {
                             showStartGame = success;
-                            _isValid = !success;
+                            isValid = !success;
+                            isDisabled = success;
                           });
                         },
                       ),
                     ),
-                  if (showStartGame) ...[
+                  if (showStartGame && !isValid) ...[
                     Padding(
                       padding: EdgeInsets.only(top: 25),
                       child: RaisedButton(
-                        child: Text('Start Game'),
+                        child: Text('Spiel starten'),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(40),
                         ),
                         onPressed: () async {
                           gameBloc.startGame();
+                          Navigator.of(context).pushNamed('/game');
                         },
                       ),
                     ),
@@ -201,7 +194,7 @@ class _NewGamePageState extends State<NewGamePage> {
 
   Game buildGame() => Game(
         name: name,
-        public: isPublic,
+        isPublic: isPublic,
         maxPlayer: maxPlayer,
         cardAmount: cardAmount,
       );

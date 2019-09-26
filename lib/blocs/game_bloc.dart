@@ -29,6 +29,7 @@ class GameBloc {
     _cardController.close();
     _handCardController.close();
     _gameLinkController.close();
+    gameSub.cancel();
   }
 
   BehaviorSubject<List<Player>> _playerController;
@@ -49,8 +50,11 @@ class GameBloc {
 
   Future<bool> createGame(Game game) async {
     try {
-      game.cardStack = _generateCardStack(game.cardAmount);
-      final gameDoc = await db.collection('games').add(game.toNetworkJson());
+      Game filledGame = game.copyWith(
+        playedCardStack: _generateCardStack(game.cardAmount),
+      );
+
+      final gameDoc = await db.collection('games').add(filledGame.toJson());
       gameId = gameDoc.documentID;
       gamePath = gameDoc.path;
       gameLink = 'superbingo://id:$gameId|name:${game.name}';
@@ -63,17 +67,24 @@ class GameBloc {
   }
 
   Future<void> startGame() async {
+    final snapshot = await db.collection('games').document(gameId).get();
+    handleNetworkDataChange(snapshot);
     gameSub = db.collection('games').document(gameId).snapshots().listen(handleNetworkDataChange);
   }
 
-  void handleNetworkDataChange(DocumentSnapshot snapshot) async {}
+  void handleNetworkDataChange(DocumentSnapshot snapshot) async {
+    final game = Game.fromJson(snapshot.data);
+    _playerSink.add(game.players);
+    _cardController.add(game.playedCardStack.toList());
+  }
 
   Stack<GameCard> _generateCardStack(int amount) {
-    int decks = amount % 32;
+    int decks = (amount / 32).truncate() - 1;
+    print(decks);
     List<GameCard> cardDecks = defaultCardDeck;
     for (var i = 0; i < decks; i++) {
-      cardDecks.addAll(defaultCardDeck);
+      cardDecks += defaultCardDeck;
     }
-    return Stack.from(cardDecks);
+    return Stack.from(cardDecks..shuffle());
   }
 }

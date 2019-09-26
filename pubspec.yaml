@@ -28,6 +28,7 @@ dependencies:
   rxdart: ^0.22.2
   overlay_support: ^1.0.1
   share: ^0.6.2+1
+  analyzer: 0.38.2
 
   cloud_firestore: ^0.12.9+4
   firebase_crashlytics: ^0.1.0+3

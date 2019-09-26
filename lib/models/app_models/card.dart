@@ -4,23 +4,26 @@ part 'card.g.dart';
 
 @JsonSerializable()
 class GameCard {
-  @JsonKey(name: 'color', fromJson: cardColorFromJson)
+  @JsonKey(
+    name: 'color',
+    fromJson: cardColorFromJson,
+    toJson: cardColorToJson,
+  )
   final CardColor color;
-  @JsonKey(name: 'number')
+  @JsonKey(
+    name: 'number',
+    fromJson: cardNumberFromJson,
+    toJson: cardNumberToJson,
+  )
   final CardNumber number;
+  @JsonKey(ignore: true)
   final SpecialRule rule;
 
   GameCard({this.color, this.number}) : rule = ruleFromNumber(number);
 
-  factory GameCard.fromDefinitonString(String definition) {
-    final parts = definition.split('|');
+  factory GameCard.fromJson(Map<String, dynamic> json) => _$GameCardFromJson(json);
 
-    return GameCard();
-  }
-
-  factory GameCard.fromJson(Map<String, dynamic> json) => null;
-
-  Map<String, dynamic> toJson() => null;
+  Map<String, dynamic> toJson() => _$GameCardToJson(this);
 
   static SpecialRule ruleFromNumber(CardNumber number) {
     switch (number) {
@@ -38,7 +41,13 @@ class GameCard {
     }
   }
 
-  static cardColorFromJson(String json) => CardColor.values.firstWhere((c) => c.toString() == json);
+  static CardColor cardColorFromJson(String json) => CardColor.values.firstWhere((c) => c.toString() == json);
+
+  static String cardColorToJson(CardColor color) => color.toString();
+
+  static CardNumber cardNumberFromJson(String json) => CardNumber.values.firstWhere((n) => n.toString() == json);
+
+  static String cardNumberToJson(CardNumber number) => number.toString();
 }
 
 enum CardColor { heart, diamond, spade, clover }

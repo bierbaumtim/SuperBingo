@@ -1,30 +1,40 @@
 import 'package:superbingo/models/app_models/card.dart';
 
-class Player {
-  int id, cardAmount;
-  String name;
-  List<GameCard> cards;
+import 'package:json_annotation/json_annotation.dart';
 
-  Player({
+part 'player.g.dart';
+
+@JsonSerializable()
+class Player {
+  @JsonKey(name: 'id', defaultValue: 0)
+  final int id;
+  @JsonKey(name: 'cardamount', defaultValue: 32)
+  final int cardAmount;
+  @JsonKey(name: 'name', defaultValue: '')
+  final String name;
+  @JsonKey(name: 'cards', defaultValue: <GameCard>[])
+  final List<GameCard> cards;
+  @JsonKey(name: 'isHost', defaultValue: false)
+  final bool isHost;
+
+  const Player({
     this.id,
     this.name,
     this.cards,
     this.cardAmount,
+    this.isHost = false,
   });
 
-  Future<String> drawCard(GameCard card) async {
-    cards.add(card);
-  }
-
-  Player fromJson(Map<String, dynamic> json) => Player(
-        id: json['id'] as int,
-        name: json['name'] as String,
-        cardAmount: json['cardAmount'] as int,
+  Player copyWith({String name, int cardAmount, List<GameCard> cards}) => Player(
+        id: this.id,
+        name: name ?? this.name,
+        cards: cards ?? this.cards,
+        cardAmount: cardAmount ?? this.cardAmount,
       );
 
-  Map<String, dynamic> toNetworkJson() => {
-        'id': id,
-        'name': name,
-        'cardAmount': cards.length,
-      };
+  factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PlayerToJson(this);
+
+  void drawCard(GameCard card) => cards.add(card);
 }
