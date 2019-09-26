@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:superbingo/constants/card_deck.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
+import 'package:superbingo/utils/stack.dart';
 
 class GameBloc {
   Firestore db;
@@ -43,10 +45,11 @@ class GameBloc {
 
   BehaviorSubject<String> _gameLinkController;
   Sink<String> get _gameLinkSink => _gameLinkController.sink;
-  Stream<String> get _gameLinkStream => _gameLinkController.stream;
+  Stream<String> get gameLinkStream => _gameLinkController.stream;
 
   Future<bool> createGame(Game game) async {
     try {
+      game.cardStack = _generateCardStack(game.cardAmount);
       final gameDoc = await db.collection('games').add(game.toNetworkJson());
       gameId = gameDoc.documentID;
       gamePath = gameDoc.path;
@@ -64,4 +67,13 @@ class GameBloc {
   }
 
   void handleNetworkDataChange(DocumentSnapshot snapshot) async {}
+
+  Stack<GameCard> _generateCardStack(int amount) {
+    int decks = amount % 32;
+    List<GameCard> cardDecks = defaultCardDeck;
+    for (var i = 0; i < decks; i++) {
+      cardDecks.addAll(defaultCardDeck);
+    }
+    return Stack.from(cardDecks);
+  }
 }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:core';
 
 import 'package:superbingo/models/app_models/card.dart';
@@ -18,7 +19,6 @@ class Game {
     this.public,
     this.cardAmount,
     this.isGameRunning = false,
-
   });
 
   GameCard get topCard => cardStack.first;
@@ -32,6 +32,7 @@ class Game {
         'public': public,
         'maxPlayer': maxPlayer,
         'name': name,
+        'cardstack': _buildCardStackJson(),
       };
 
   void shuffleCards({int times}) {
@@ -39,7 +40,7 @@ class Game {
     for (var i = 0; i < times ?? 1; i++) {
       cards.shuffle();
     }
-    cardStack.fromList(cards);
+    cardStack = Stack.from(cards);
   }
 
   void addPlayer(Player player) {
@@ -60,4 +61,9 @@ class Game {
   }
 
   void reversePlayerOrder() => players = players.reversed;
+
+  _buildCardStackJson(){
+    final cards = cardStack.toList();
+    return jsonEncode(cards);
+  }
 }

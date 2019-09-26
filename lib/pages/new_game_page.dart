@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 import 'package:superbingo/blocs/game_bloc.dart';
 import 'package:superbingo/models/app_models/game.dart';
 
@@ -101,7 +102,14 @@ class _NewGamePageState extends State<NewGamePage> {
                       focusedBorder: border,
                       labelText: 'Anzahl der Karten',
                     ),
-                    validator: (text) => text.isNotEmpty ? null : 'Name is required',
+                    validator: (text) {
+                      final parsedAmount = int.tryParse(text) ?? 0;
+                      if (text.isEmpty || parsedAmount > 2) {
+                        return null;
+                      } else {
+                        return 'Es sind nur Zahlen erlaubt';
+                      }
+                    },
                     onEditingComplete: () => _node.unfocus(),
                     onSaved: (text) => cardAmount = calculateCardAmount(text),
                   ),
@@ -127,6 +135,7 @@ class _NewGamePageState extends State<NewGamePage> {
                     title: Text('Öffentliches Spiel'),
                     value: isPublic,
                     onChanged: (value) => setState(() => isPublic = value),
+                    activeColor: Colors.deepOrange,
                   ),
                   if (_isValid)
                     Padding(
@@ -146,7 +155,7 @@ class _NewGamePageState extends State<NewGamePage> {
                         },
                       ),
                     ),
-                  if (showStartGame)
+                  if (showStartGame) ...[
                     Padding(
                       padding: EdgeInsets.only(top: 25),
                       child: RaisedButton(
@@ -159,6 +168,28 @@ class _NewGamePageState extends State<NewGamePage> {
                         },
                       ),
                     ),
+                    StreamBuilder<String>(
+                      stream: gameBloc.gameLinkStream,
+                      builder: (context, snapshot) {
+                        final canShare = snapshot.hasData && snapshot.data.isNotEmpty;
+
+                        return Padding(
+                          padding: EdgeInsets.only(top: 25),
+                          child: RaisedButton(
+                            child: Text('Freunde einladen'),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+                            onPressed: canShare
+                                ? () async {
+                                    Share.share(snapshot.data, subject: 'SuperBingo Spieleinladung');
+                                  }
+                                : null,
+                          ),
+                        );
+                      },
+                    ),
+                  ]
                 ],
               ),
             ),

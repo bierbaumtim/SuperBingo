@@ -31,14 +31,15 @@ class _SuperBingoState extends State<SuperBingo> {
 ThemeData get lightTheme => ThemeData.dark().copyWith(
       // scaffoldBackgroundColor: Colors.deepOrangeAccent,
       // primaryColor: Colors.deepOrangeAccent,
-      accentColor: Colors.white,
+      accentColor: Colors.deepOrange,
       primaryTextTheme: basicTextTheme,
       textTheme: basicTextTheme,
-      cardTheme: CardTheme(
-        color: Colors.grey,
-      ),
+      appBarTheme: AppBarTheme(elevation: 0),
       buttonTheme: ButtonThemeData(
         buttonColor: Colors.deepOrange,
+      ),
+      cardTheme: CardTheme(
+        color: Colors.grey,
       ),
     );
 

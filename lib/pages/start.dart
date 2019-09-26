@@ -32,11 +32,11 @@ class _StartPageState extends State<StartPage> {
             ),
             Positioned(
               bottom: 75,
-              left: 50,
-              right: 50,
+              left: 36,
+              right: 36,
               child: Center(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     RaisedButton(
                       onPressed: () {

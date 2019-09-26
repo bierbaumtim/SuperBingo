@@ -1,5 +1,12 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'card.g.dart';
+
+@JsonSerializable()
 class GameCard {
+  @JsonKey(name: 'color', fromJson: cardColorFromJson)
   final CardColor color;
+  @JsonKey(name: 'number')
   final CardNumber number;
   final SpecialRule rule;
 
@@ -7,10 +14,13 @@ class GameCard {
 
   factory GameCard.fromDefinitonString(String definition) {
     final parts = definition.split('|');
-    
 
     return GameCard();
   }
+
+  factory GameCard.fromJson(Map<String, dynamic> json) => null;
+
+  Map<String, dynamic> toJson() => null;
 
   static SpecialRule ruleFromNumber(CardNumber number) {
     switch (number) {
@@ -27,6 +37,8 @@ class GameCard {
         return null;
     }
   }
+
+  static cardColorFromJson(String json) => CardColor.values.firstWhere((c) => c.toString() == json);
 }
 
 enum CardColor { heart, diamond, spade, clover }

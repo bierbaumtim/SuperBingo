@@ -21,5 +21,8 @@ class Stack<E> {
 
   List<E> toList() => _queue.toList();
 
-  void fromList(Iterable<E> list) => _queue = Queue.from(list);
+  factory Stack.from(Iterable<E> list) => Stack().._queue = Queue.from(list);
+
+  @override
+  String toString() => _queue.toString();
 }
