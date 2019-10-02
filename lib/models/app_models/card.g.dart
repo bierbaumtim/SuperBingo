@@ -8,12 +8,64 @@ part of 'card.dart';
 
 GameCard _$GameCardFromJson(Map<String, dynamic> json) {
   return GameCard(
-    color: GameCard.cardColorFromJson(json['color'] as String),
-    number: GameCard.cardNumberFromJson(json['number'] as String),
+    color: _$enumDecodeNullable(_$CardColorEnumMap, json['color']),
+    number: _$enumDecodeNullable(_$CardNumberEnumMap, json['number']),
   );
 }
 
 Map<String, dynamic> _$GameCardToJson(GameCard instance) => <String, dynamic>{
-      'color': GameCard.cardColorToJson(instance.color),
-      'number': GameCard.cardNumberToJson(instance.number),
+      'color': _$CardColorEnumMap[instance.color],
+      'number': _$CardNumberEnumMap[instance.number],
     };
+
+T _$enumDecode<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    throw ArgumentError('A value must be provided. Supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+
+  final value = enumValues.entries
+      .singleWhere((e) => e.value == source, orElse: () => null)
+      ?.key;
+
+  if (value == null && unknownValue == null) {
+    throw ArgumentError('`$source` is not one of the supported values: '
+        '${enumValues.values.join(', ')}');
+  }
+  return value ?? unknownValue;
+}
+
+T _$enumDecodeNullable<T>(
+  Map<T, dynamic> enumValues,
+  dynamic source, {
+  T unknownValue,
+}) {
+  if (source == null) {
+    return null;
+  }
+  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+}
+
+const _$CardColorEnumMap = {
+  CardColor.heart: 'heart',
+  CardColor.diamond: 'diamond',
+  CardColor.spade: 'spade',
+  CardColor.clover: 'clover',
+};
+
+const _$CardNumberEnumMap = {
+  CardNumber.five: 'five',
+  CardNumber.six: 'six',
+  CardNumber.seven: 'seven',
+  CardNumber.eight: 'eight',
+  CardNumber.nine: 'nine',
+  CardNumber.jack: 'jack',
+  CardNumber.queen: 'queen',
+  CardNumber.king: 'king',
+  CardNumber.ace: 'ace',
+  CardNumber.joker: 'joker',
+};

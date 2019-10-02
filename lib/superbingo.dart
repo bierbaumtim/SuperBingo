@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:provider/provider.dart';
+import 'package:superbingo/blocs/info_bloc.dart';
 import 'package:superbingo/pages/game_page.dart';
 import 'package:superbingo/pages/join_game_page.dart';
 import 'package:superbingo/pages/new_game_page.dart';
+import 'package:superbingo/pages/player_page.dart';
 import 'package:superbingo/pages/start.dart';
 
 class SuperBingo extends StatefulWidget {
@@ -22,6 +25,7 @@ class _SuperBingoState extends State<SuperBingo> {
           '/new_game': (context) => NewGamePage(),
           '/join_game': (context) => JoinGamePage(),
           '/game': (context) => GamePage(),
+          '/user_page': (context) => PlayerPage(),
         },
       ),
     );
@@ -37,9 +41,15 @@ ThemeData get lightTheme => ThemeData.dark().copyWith(
       appBarTheme: AppBarTheme(elevation: 0),
       buttonTheme: ButtonThemeData(
         buttonColor: Colors.deepOrange,
+        textTheme: ButtonTextTheme.normal,
       ),
+      buttonColor: Colors.deepOrange,
       cardTheme: CardTheme(
         color: Colors.grey,
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: Colors.deepOrange,
+        foregroundColor: Colors.white,
       ),
     );
 

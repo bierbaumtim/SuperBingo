@@ -10,11 +10,19 @@ part 'game.g.dart';
 
 @JsonSerializable()
 class Game {
-  @JsonKey(name: 'playedCards', toJson: stackToJson, fromJson: stackFromJson)
+  @JsonKey(
+    name: 'playedCards',
+    toJson: stackToJson,
+    fromJson: stackFromJson,
+  )
   final Stack<GameCard> playedCardStack;
-  @JsonKey(name: 'unplayedCards', toJson: stackToJson, fromJson: stackFromJson)
+  @JsonKey(
+    name: 'unplayedCards',
+    toJson: stackToJson,
+    fromJson: stackFromJson,
+  )
   final Stack<GameCard> unplayedCardStack;
-  @JsonKey(name: 'players', defaultValue: <Player>[])
+  @JsonKey(name: 'players') //, toJson: playerToJson, fromJson: playerFromJson,-
   final List<Player> players;
   @JsonKey(name: 'isGameRunning', defaultValue: false)
   final bool isGameRunning;
@@ -66,9 +74,21 @@ class Game {
         unplayedCardStack: unplayedCardStack ?? this.unplayedCardStack,
       );
 
-  factory Game.fromJson(Map<String, dynamic> json) => _$GameFromJson(json);
-
   Map<String, dynamic> toJson() => _$GameToJson(this);
+
+  factory Game.fromJson(Map<String, dynamic> json) => Game(
+        gameID: json['id'] as String ?? '',
+        playedCardStack: Game.stackFromJson(json['playedCards'] as List),
+        unplayedCardStack: Game.stackFromJson(json['unplayedCards'] as List),
+        players: (json['players'] as List)
+            ?.map((e) => e == null ? null : Player.fromJson(Map<String, dynamic>.from(e)))
+            ?.toList(),
+        name: json['name'] as String ?? 'SuperBingo',
+        maxPlayer: json['maxPlayer'] as int ?? 6,
+        isPublic: json['isPublic'] as bool ?? true,
+        cardAmount: json['cardAmount'] as int ?? 32,
+        isGameRunning: json['isGameRunning'] as bool ?? false,
+      );
 
   Stack<GameCard> shuffleCards({int times}) {
     final cards = playedCardStack.toList();
@@ -97,7 +117,7 @@ class Game {
 
   List<Player> reversePlayerOrder() => players.reversed;
 
-  static stackToJson(Stack<GameCard> stack) {
+  static List stackToJson(Stack<GameCard> stack) {
     if (stack != null) {
       return stack.toList().map((gc) => gc.toJson()).toList();
     }
@@ -108,6 +128,17 @@ class Game {
     print(list);
     final cards = list.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
     return Stack.from(cards);
+  }
+
+  static playerToJson(List<Player> player) {
+    if (player != null) {
+      return player.map((p) => p.toJson()).toList();
+    }
+    return [];
+  }
+
+  static List<Player> playerFromJson(List list) {
+    return list.map((p) => Player.fromJson(Map<String, dynamic>.from(p))).toList();
   }
 
   String _fillGameId(String nGameId) {

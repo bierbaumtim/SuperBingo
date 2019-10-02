@@ -157,7 +157,7 @@ class _NewGamePageState extends State<NewGamePage> {
                         ),
                         onPressed: () async {
                           gameBloc.startGame();
-                          Navigator.of(context).pushNamed('/game');
+                          Navigator.of(context).pushReplacementNamed('/game');
                         },
                       ),
                     ),

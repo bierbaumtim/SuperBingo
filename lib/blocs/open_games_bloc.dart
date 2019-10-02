@@ -20,7 +20,7 @@ class PublicGamesBloc {
       final docs = (await games.getDocuments()).documents;
       List<DocumentSnapshot> publicGames = [];
       for (var game in docs) {
-        if (game.data['public'] == true) {
+        if (game.data['isPublic'] == true && game.data['isGameRunning'] == false) {
           publicGames.add(game);
         }
         // publicGames.add(game);

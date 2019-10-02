@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:superbingo/blocs/game_bloc.dart';
+import 'package:superbingo/blocs/info_bloc.dart';
 import 'package:superbingo/blocs/open_games_bloc.dart';
 import 'package:superbingo/superbingo.dart';
 
@@ -15,7 +16,6 @@ void main() async {
   runZoned(
     () => runApp(
       MultiProvider(
-        child: SuperBingo(),
         providers: [
           Provider<PublicGamesBloc>(
             builder: (_) => PublicGamesBloc(),
@@ -25,7 +25,12 @@ void main() async {
             builder: (_) => GameBloc(),
             dispose: (_, bloc) => bloc.dispose(),
           ),
+          Provider<InfoBloc>(
+            builder: (_) => InfoBloc(),
+            dispose: (_, bloc) => bloc.dispose(),
+          ),
         ],
+        child: SuperBingo(),
       ),
     ),
     onError: Crashlytics.instance.recordError,

@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:superbingo/blocs/game_bloc.dart';
 import 'package:superbingo/blocs/open_games_bloc.dart';
+import 'package:superbingo/utils/dialogs.dart';
 
 class JoinGamePage extends StatefulWidget {
   @override
@@ -12,6 +14,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
   @override
   Widget build(BuildContext context) {
     final publicGamesBloc = Provider.of<PublicGamesBloc>(context);
+    final gameBloc = Provider.of<GameBloc>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -51,8 +54,18 @@ class _JoinGamePageState extends State<JoinGamePage> {
                                   color: Colors.white,
                                 ),
                           ),
-                          onPressed: () {
-                            Navigator.of(context).pushNamed('/game');
+                          onPressed: () async {
+                            final success = await gameBloc.joinGame(game.documentID);
+                            if (success) {
+                              Navigator.of(context).pushNamed('/game');
+                            } else {
+                              Dialogs.showInformationDialog(
+                                context,
+                                title: 'Fehler',
+                                content: 'Aufgrund eines Fehler kannst du dem Spiel nicht beitreten. '
+                                    'Versuche es bitte später erneut.',
+                              );
+                            }
                           },
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),

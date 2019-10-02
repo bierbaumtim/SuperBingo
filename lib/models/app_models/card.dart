@@ -4,17 +4,9 @@ part 'card.g.dart';
 
 @JsonSerializable()
 class GameCard {
-  @JsonKey(
-    name: 'color',
-    fromJson: cardColorFromJson,
-    toJson: cardColorToJson,
-  )
+  @JsonKey(name: 'color')
   final CardColor color;
-  @JsonKey(
-    name: 'number',
-    fromJson: cardNumberFromJson,
-    toJson: cardNumberToJson,
-  )
+  @JsonKey(name: 'number')
   final CardNumber number;
   @JsonKey(ignore: true)
   final SpecialRule rule;
