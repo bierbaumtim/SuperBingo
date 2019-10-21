@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:overlay_support/overlay_support.dart';
-import 'package:provider/provider.dart';
-import 'package:superbingo/blocs/info_bloc.dart';
+
 import 'package:superbingo/pages/game_page.dart';
 import 'package:superbingo/pages/join_game_page.dart';
 import 'package:superbingo/pages/new_game_page.dart';
 import 'package:superbingo/pages/player_page.dart';
 import 'package:superbingo/pages/start.dart';
+
+import 'package:overlay_support/overlay_support.dart';
 
 class SuperBingo extends StatefulWidget {
   @override

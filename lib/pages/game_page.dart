@@ -25,9 +25,9 @@ class _GamePageState extends State<GamePage> {
       body: SafeArea(
         child: Stack(
           children: <Widget>[
-            const CardStack(),
-            const CardHand(),
-            const PlayerAvatars(),
+            CardStack(),
+            CardHand(),
+            PlayerAvatars(),
             Positioned(
               bottom: MediaQuery.of(context).size.height / 3,
               right: 8,

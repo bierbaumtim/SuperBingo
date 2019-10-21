@@ -35,7 +35,7 @@ dependencies:
   firebase_crashlytics: ^0.1.0+3
 
   provider: ^3.1.0
-  equatable: ^0.5.1
+  equatable: ^0.6.1
 
   # icons
   flat_icons_flutter: ^1.0.2

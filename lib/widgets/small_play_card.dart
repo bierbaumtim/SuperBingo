@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 import 'package:superbingo/blocs/game_bloc.dart';
 
@@ -18,7 +19,7 @@ class SmallPlayCard extends StatelessWidget {
   final double rotationAngle;
   final int index;
 
-  const SmallPlayCard({
+  SmallPlayCard({
     Key key,
     this.card,
     this.angle,
@@ -30,16 +31,28 @@ class SmallPlayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final gameBloc = Provider.of<GameBloc>(context);
 
-    final cardWidget = GestureDetector(
-      onTap: () {},
+    final cardWidget = Container(
+      constraints: BoxConstraints(maxHeight: 175, maxWidth: 100),
+      height: 175,
+      width: 100,
       child: Card(
         elevation: (index + 1).toDouble(),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
-        ),color: Colors.white,
-        child: SizedBox(
-          height: 175,
-          width: 100,
+        ),
+        color: Colors.white,
+        child: GestureDetector(
+          onTap: () async {
+            final message = await gameBloc.playCard(card);
+            if (message.isNotEmpty) {
+              showSimpleNotification(
+                Text(message),
+                elevation: 4,
+                foreground: Colors.white,
+              );
+            }
+          },
+          behavior: HitTestBehavior.opaque,
           child: Stack(
             children: <Widget>[
               if (!isNumberCard(card.number))
@@ -129,8 +142,10 @@ class SmallPlayCard extends StatelessWidget {
         ),
       ),
     );
+
     if (angle != null && rotationAngle != null) {
       final double rad = radians(angle);
+
       return Transform(
         transform: Matrix4.identity()
           ..translate(

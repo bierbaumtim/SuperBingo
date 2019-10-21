@@ -10,6 +10,7 @@ import 'package:superbingo/constants/card_deck.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
+import 'package:superbingo/models/app_models/rules.dart';
 import 'package:superbingo/utils/stack.dart';
 
 class GameBloc {
@@ -19,6 +20,8 @@ class GameBloc {
   String gameLink;
   String gamePath;
   int _playerId;
+  Game _game;
+  Player _self;
 
   GameBloc() {
     _playerController = BehaviorSubject<List<Player>>();
@@ -55,15 +58,15 @@ class GameBloc {
   Future<bool> createGame(Game game) async {
     try {
       final username = await getUsername();
-      Player player = createPlayer(username, isHost: true);
+      _self = createPlayer(username, isHost: true);
       Stack<GameCard> cardStack = _generateCardStack(game.cardAmount);
-      drawCards(player, cardStack);
-      _playerId = player.id;
+      drawCards(_self, cardStack);
+      _playerId = _self.id;
 
       Game filledGame = game.copyWith(
         unplayedCardStack: cardStack,
         players: [
-          player,
+          _self,
         ],
       );
 
@@ -91,16 +94,17 @@ class GameBloc {
     try {
       this.gameId = gameId;
       final username = await getUsername();
-      final player = createPlayer(username);
+      _self = createPlayer(username);
       final snapshot = await db.collection('games').document(gameId).get();
       final game = Game.fromJson(snapshot.data);
       Stack cardStack = game.unplayedCardStack;
-      drawCards(player, cardStack);
+      drawCards(_self, cardStack);
+      game.addPlayer(_self);
       Game filledGame = game.copyWith(
-        players: game.players..add(player),
+        // players: game.players..add(_self),
         unplayedCardStack: cardStack,
       );
-      _playerId = player.id;
+      _playerId = _self.id;
       final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
 
       gameSub = db.collection('games').document(gameId).snapshots().listen(handleNetworkDataChange);
@@ -118,10 +122,10 @@ class GameBloc {
   }
 
   void handleNetworkDataChange(DocumentSnapshot snapshot) async {
-    final game = Game.fromJson(snapshot.data);
-    final player = getPlayerFromGame(game.players, _playerId);
-    _playerSink.add(game?.players);
-    _cardSink.add(game?.playedCardStack?.toList());
+    _game = Game.fromJson(snapshot.data);
+    final player = getPlayerFromGame(_game.players, _playerId);
+    _playerSink.add(_game?.players);
+    _cardSink.add(_game?.playedCardStack?.toList());
     _handCardSink.add(player?.cards);
   }
 
@@ -146,6 +150,24 @@ class GameBloc {
     }
   }
 
+  Future<String> playCard(GameCard card) async {
+    if (_game.currentPlayerId != _playerId) return 'Du bist nicht an der Reihe';
+    if (!Rules.isCardAllowed(card, _game.topCard)) return 'Du darfst diese Karte nicht legen';
+
+    _self.cards.remove(card);
+    final nextPlayer = getNextPlayer(_game, _playerId);
+    Game filledGame = _game.copyWith(
+      playedCardStack: _game.playedCardStack..add(card),
+      currentPlayerId: nextPlayer.id,
+    );
+
+    final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
+
+    await db.collection('games').document(gameId).updateData(gameDBData);
+
+    return '';
+  }
+
   Player getPlayerFromGame(List<Player> player, int playerId) {
     if (player.isEmpty) {
       // TODO Logging hinzufügen
@@ -153,6 +175,16 @@ class GameBloc {
     } else {
       return player.firstWhere((p) => p.id == _playerId, orElse: () => null);
     }
+  }
+
+  Player getNextPlayer(Game game, int playerId) {
+    int index = game?.players?.indexWhere((p) => p.id == playerId) ?? -1;
+    if (index + 1 > game.players.length - 1) {
+      index = 0;
+    } else {
+      index++;
+    }
+    return game?.players?.elementAt(index);
   }
 
   Future<String> getUsername() async {
