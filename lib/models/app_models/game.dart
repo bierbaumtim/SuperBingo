@@ -24,8 +24,6 @@ class Game {
   final Stack<GameCard> unplayedCardStack;
   @JsonKey(name: 'players') //, toJson: playerToJson, fromJson: playerFromJson,-
   final List<Player> players;
-  @JsonKey(name: 'isGameRunning', defaultValue: false)
-  final bool isGameRunning;
   @JsonKey(name: 'isPublic', defaultValue: true)
   final bool isPublic;
   @JsonKey(name: 'maxPlayer', defaultValue: 6)
@@ -36,6 +34,10 @@ class Game {
   final String name;
   @JsonKey(name: 'id', defaultValue: '')
   final String gameID;
+  @JsonKey(name: 'currentPlayerId', defaultValue: '')
+  final int currentPlayerId;
+  @JsonKey(name: 'state', defaultValue: GameState.waitingForPlayer)
+  final GameState state;
 
   const Game({
     this.gameID,
@@ -46,7 +48,8 @@ class Game {
     this.maxPlayer = 6,
     this.isPublic,
     this.cardAmount = 32,
-    this.isGameRunning = false,
+    this.currentPlayerId,
+    this.state = GameState.waitingForPlayer,
   });
 
   GameCard get topCard => playedCardStack.first;
@@ -55,9 +58,10 @@ class Game {
     String name,
     String gameId,
     bool isPublic,
-    bool isGameRunning,
     int cardAmount,
+    int currentPlayerId,
     int maxPlayer,
+    GameState state,
     List<Player> players,
     Stack<GameCard> playedCardStack,
     Stack<GameCard> unplayedCardStack,
@@ -65,13 +69,14 @@ class Game {
       Game(
         name: name ?? this.name,
         cardAmount: cardAmount ?? this.cardAmount,
-        isGameRunning: isGameRunning ?? this.isGameRunning,
         isPublic: isPublic ?? this.isPublic,
         gameID: _fillGameId(gameId),
         maxPlayer: maxPlayer ?? this.maxPlayer,
         players: players ?? this.players,
         playedCardStack: playedCardStack ?? this.playedCardStack,
         unplayedCardStack: unplayedCardStack ?? this.unplayedCardStack,
+        currentPlayerId: currentPlayerId ?? this.currentPlayerId,
+        state: state ?? this.state,
       );
 
   Map<String, dynamic> toJson() => _$GameToJson(this);
@@ -87,7 +92,8 @@ class Game {
         maxPlayer: json['maxPlayer'] as int ?? 6,
         isPublic: json['isPublic'] as bool ?? true,
         cardAmount: json['cardAmount'] as int ?? 32,
-        isGameRunning: json['isGameRunning'] as bool ?? false,
+        currentPlayerId: json['currentPlayerId'] as int ?? 0,
+        state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ?? GameState.waitingForPlayer,
       );
 
   Stack<GameCard> shuffleCards({int times}) {
@@ -99,7 +105,7 @@ class Game {
   }
 
   void addPlayer(Player player) {
-    if (!isGameRunning) {
+    if (state == GameState.waitingForPlayer && !players.contains(player)) {
       players.add(player);
     }
   }
@@ -147,3 +153,5 @@ class Game {
     return gameID;
   }
 }
+
+enum GameState { waitingForPlayer, active, gameCompleted }
