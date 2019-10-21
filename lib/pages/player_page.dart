@@ -10,11 +10,23 @@ class PlayerPage extends StatefulWidget {
 
 class _PlayerPageState extends State<PlayerPage> {
   String username;
+  TextEditingController controller;
 
   @override
   void initState() {
     super.initState();
     username = '';
+    controller = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final username = ModalRoute.of(context).settings.arguments as String;
+    if (controller.text.isEmpty) {
+      controller.text = username;
+      this.username = username;
+    }
   }
 
   @override
@@ -37,6 +49,7 @@ class _PlayerPageState extends State<PlayerPage> {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
+              controller: controller,
               decoration: InputDecoration(
                 border: border,
                 enabledBorder: border,

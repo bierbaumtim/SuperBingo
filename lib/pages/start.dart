@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:superbingo/blocs/open_games_bloc.dart';
 
@@ -18,7 +19,11 @@ class _StartPageState extends State<StartPage> {
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.person),
-            onPressed: () => Navigator.pushNamed(context, '/user_page'),
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              final username = prefs.getString('username') ?? '';
+              Navigator.pushNamed(context, '/user_page', arguments: username);
+            },
           ),
         ],
       ),
