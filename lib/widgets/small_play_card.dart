@@ -20,10 +20,10 @@ class SmallPlayCard extends StatelessWidget {
 
   const SmallPlayCard({
     Key key,
-    this.card,
+    @required this.card,
     this.angle,
     this.rotationAngle,
-    this.index,
+    this.index = 0,
   }) : super(key: key);
 
   @override
@@ -36,7 +36,8 @@ class SmallPlayCard extends StatelessWidget {
         elevation: (index + 1).toDouble(),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
-        ),color: Colors.white,
+        ),
+        color: Colors.white,
         child: SizedBox(
           height: 175,
           width: 100,

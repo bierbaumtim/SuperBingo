@@ -24,25 +24,29 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
 
-  connectivity: ^0.4.4
-  rxdart: ^0.22.2
+  connectivity: ^0.4.5+1
+  rxdart: ^0.22.4
   overlay_support: ^1.0.1
-  share: ^0.6.2+1
+  share: ^0.6.2+4
   analyzer: 0.38.2
-  shared_preferences: ^0.5.3+4
+  shared_preferences: ^0.5.3+5
 
-  cloud_firestore: ^0.12.9+4
+  cloud_firestore: ^0.12.9+5
   firebase_crashlytics: ^0.1.0+3
 
-  provider: ^3.1.0
-  equatable: ^0.5.1
+  provider: ^3.1.0+1
+  equatable: ^0.6.1
+
+  sliding_up_panel:
+    git:
+      urL: https://github.com/tb2761/sliding_up_panel.git
 
   # icons
   flat_icons_flutter: ^1.0.2
   community_material_icon: 3.5.95
 
   # helper
-  matrix4_transform: ^1.1.0
+  matrix4_transform: ^1.1.1
   vector_math: ^2.0.8
 
   #Json Serialization
@@ -53,13 +57,11 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^1.7.1
   json_serializable: ^3.2.2
-  flutter_native_splash: ^0.1.8+2
+  flutter_native_splash: ^0.1.9
 
 
 flutter_native_splash:
-  image: assets/images/ic_launcher.png
   color: "FF6E40"
-  android: true
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
