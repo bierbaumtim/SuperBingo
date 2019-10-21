@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:superbingo/constants/card_deck.dart';
+import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
@@ -59,7 +61,7 @@ class GameBloc {
     try {
       final username = await getUsername();
       _self = createPlayer(username, isHost: true);
-      Stack<GameCard> cardStack = _generateCardStack(game.cardAmount);
+      Queue<GameCard> cardStack = _generateCardStack(game.cardAmount);
       drawCards(_self, cardStack);
       _playerId = _self.id;
 
@@ -96,24 +98,26 @@ class GameBloc {
     gameSub = db.collection('games').document(gameId).snapshots().listen(handleNetworkDataChange);
   }
 
-  Future<bool> joinGame(String gameId) async {
+  Future<JoiningState> joinGame(String gameId) async {
     try {
       if (gameId == null) {
-        return false;
+        return JoiningState.dataIssue;
       }
       if (gameId.isEmpty) {
-        return false;
+        return JoiningState.dataIssue;
       }
       this.gameId = gameId;
       final username = await getUsername();
       _self = createPlayer(username);
       final snapshot = await db.collection('games').document(gameId).get();
       final game = Game.fromJson(snapshot.data);
-      Stack cardStack = game.unplayedCardStack;
+      if (game.players.indexWhere((p) => p.id == _self.id) >= 0) {
+        return JoiningState.playerAlreadyJoined;
+      }
+      Queue cardStack = game.unplayedCardStack;
       drawCards(_self, cardStack);
       game.addPlayer(_self);
       Game filledGame = game.copyWith(
-        // players: game.players..add(_self),
         unplayedCardStack: cardStack,
       );
       _playerId = _self.id;
@@ -122,10 +126,10 @@ class GameBloc {
       gameSub = db.collection('games').document(gameId).snapshots().listen(handleNetworkDataChange);
       await db.collection('games').document(gameId).updateData(gameDBData);
 
-      return true;
+      return JoiningState.success;
     } catch (e, s) {
       Crashlytics.instance.recordError(e, s);
-      return false;
+      return JoiningState.error;
     }
   }
 
@@ -145,7 +149,7 @@ class GameBloc {
       game.players.removeWhere((t) => t.id == _self.id);
       final unplayerdCards = game.unplayedCardStack.toList();
       game = game.copyWith(
-        unplayedCardStack: Stack<GameCard>.from(_self.cards.toList() + unplayerdCards),
+        unplayedCardStack: Queue<GameCard>.from(_self.cards.toList() + unplayerdCards),
       );
     }
     gameSub.cancel();
@@ -170,13 +174,13 @@ class GameBloc {
     _handCardSink.add(player?.cards);
   }
 
-  Stack<GameCard> _generateCardStack(int amount) {
+  Queue<GameCard> _generateCardStack(int amount) {
     int decks = (amount / 32).truncate() - 1;
     List<GameCard> cardDecks = defaultCardDeck;
     for (var i = 0; i < decks; i++) {
       cardDecks += defaultCardDeck;
     }
-    return Stack.from(cardDecks..shuffle());
+    return Queue.from(cardDecks..shuffle());
   }
 
   Player createPlayer(String username, {bool isHost = false}) => Player(
@@ -185,21 +189,24 @@ class GameBloc {
         isHost: isHost,
       );
 
-  void drawCards(Player player, Stack<GameCard> cards, {int amount = 6}) {
+  void drawCards(Player player, Queue<GameCard> cards, {int amount = 6}) {
     for (var i = 0; i < amount - 1; i++) {
-      player.drawCard(cards.remove());
+      player.drawCard(cards.removeFirst());
     }
   }
 
   Future<String> playCard(GameCard card) async {
-    if (_game.currentPlayerId != _playerId) return 'Du bist nicht an der Reihe';
+    // if (_game.currentPlayerId != _playerId) return 'Du bist nicht an der Reihe';
     if (!Rules.isCardAllowed(card, _game.topCard)) return 'Du darfst diese Karte nicht legen';
 
-    _self.cards.remove(card);
+    _self.cards.removeWhere((c) => c == card);
+    final index = _game.players.indexWhere((p) => p.id == _self.id);
     final nextPlayer = getNextPlayer(_game, _playerId);
+    _game.players.replaceRange(index, index + 1, [_self]);
     Game filledGame = _game.copyWith(
       playedCardStack: _game.playedCardStack..add(card),
       currentPlayerId: nextPlayer.id,
+      players: _game.players,
     );
 
     final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);

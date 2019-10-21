@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:core';
 
 import 'package:superbingo/models/app_models/card.dart';
@@ -15,13 +16,13 @@ class Game {
     toJson: stackToJson,
     fromJson: stackFromJson,
   )
-  final Stack<GameCard> playedCardStack;
+  final Queue<GameCard> playedCardStack;
   @JsonKey(
     name: 'unplayedCards',
     toJson: stackToJson,
     fromJson: stackFromJson,
   )
-  final Stack<GameCard> unplayedCardStack;
+  final Queue<GameCard> unplayedCardStack;
   @JsonKey(name: 'players') //, toJson: playerToJson, fromJson: playerFromJson,-
   final List<Player> players;
   @JsonKey(name: 'isPublic', defaultValue: true)
@@ -39,9 +40,9 @@ class Game {
   @JsonKey(name: 'state', defaultValue: GameState.waitingForPlayer)
   final GameState state;
 
-  const Game({
+  Game({
     this.gameID = "",
-    this.playedCardStack,
+    Queue<GameCard> playedCardStack,
     this.unplayedCardStack,
     this.players,
     this.name,
@@ -50,9 +51,9 @@ class Game {
     this.cardAmount = 32,
     this.currentPlayerId,
     this.state = GameState.waitingForPlayer,
-  });
+  }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from([]);
 
-  GameCard get topCard => playedCardStack.first;
+  GameCard get topCard => playedCardStack.isEmpty ? null : playedCardStack.first;
 
   Game copyWith({
     String name,
@@ -63,8 +64,8 @@ class Game {
     int maxPlayer,
     GameState state,
     List<Player> players,
-    Stack<GameCard> playedCardStack,
-    Stack<GameCard> unplayedCardStack,
+    Queue<GameCard> playedCardStack,
+    Queue<GameCard> unplayedCardStack,
   }) =>
       Game(
         name: name ?? this.name,
@@ -98,12 +99,12 @@ class Game {
         state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ?? GameState.waitingForPlayer,
       );
 
-  Stack<GameCard> shuffleCards({int times}) {
+  Queue<GameCard> shuffleCards({int times}) {
     final cards = playedCardStack.toList();
     for (var i = 0; i < times ?? 1; i++) {
       cards.shuffle();
     }
-    return Stack<GameCard>.from(cards);
+    return Queue<GameCard>.from(cards);
   }
 
   void addPlayer(Player player) {
@@ -115,7 +116,7 @@ class Game {
   void dealCards(int amount) {
     int listIndex = 0;
     for (var i = 0; i < amount; i++) {
-      players[listIndex].drawCard(playedCardStack.remove());
+      players[listIndex].drawCard(playedCardStack.removeFirst());
       listIndex++;
       if (listIndex == players.length) {
         listIndex = 0;
@@ -125,17 +126,17 @@ class Game {
 
   List<Player> reversePlayerOrder() => players.reversed;
 
-  static List stackToJson(Stack<GameCard> stack) {
+  static List stackToJson(Queue<GameCard> stack) {
     if (stack != null) {
       return stack.toList().map((gc) => gc.toJson()).toList();
     }
     return [];
   }
 
-  static Stack<GameCard> stackFromJson(List list) {
+  static Queue<GameCard> stackFromJson(List list) {
     print(list);
     final cards = list.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
-    return Stack.from(cards);
+    return Queue.from(cards);
   }
 
   static playerToJson(List<Player> player) {

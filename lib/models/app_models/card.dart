@@ -1,9 +1,10 @@
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'card.g.dart';
 
 @JsonSerializable()
-class GameCard {
+class GameCard extends Equatable {
   @JsonKey(name: 'color')
   final CardColor color;
   @JsonKey(name: 'number')
@@ -32,6 +33,9 @@ class GameCard {
         return null;
     }
   }
+
+  @override
+  List<Object> get props => [rule, color, number];
 
   // static CardColor cardColorFromJson(String json) => CardColor.values.firstWhere((c) => c.toString() == json);
 

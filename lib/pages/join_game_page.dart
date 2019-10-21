@@ -1,8 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:superbingo/blocs/game_bloc.dart';
 import 'package:superbingo/blocs/open_games_bloc.dart';
+import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/utils/dialogs.dart';
 
@@ -56,15 +56,14 @@ class _JoinGamePageState extends State<JoinGamePage> {
                                 ),
                           ),
                           onPressed: () async {
-                            final success = await gameBloc.joinGame(game.gameID);
-                            if (success) {
+                            final result = await gameBloc.joinGame(game.gameID);
+                            if (result == JoiningState.success) {
                               Navigator.of(context).pushNamed('/game');
                             } else {
                               Dialogs.showInformationDialog(
                                 context,
                                 title: 'Fehler',
-                                content: 'Aufgrund eines Fehler kannst du dem Spiel nicht beitreten. '
-                                    'Versuche es bitte später erneut.',
+                                content: messageByJoiningState(result),
                               );
                             }
                           },
@@ -93,5 +92,15 @@ class _JoinGamePageState extends State<JoinGamePage> {
         },
       ),
     );
+  }
+
+  String messageByJoiningState(JoiningState state) {
+    if (state == JoiningState.dataIssue) {
+      return 'Beim erstellen des Spiels ist ein Fehler aufgetreten. Du kannst diesem Spiel daher nicht beitreten.';
+    } else if (state == JoiningState.playerAlreadyJoined) {
+      return 'Beim Verlassen des Spiels ist ein Fehler aufgetreten. Du kannstt diesem Spiel daher nicht erneut beitreten.';
+    } else {
+      return 'Aufgrund eines Fehler kannst du dem Spiel nicht beitreten. Versuche es bitte später erneut.';
+    }
   }
 }

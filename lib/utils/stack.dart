@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+@deprecated
 class Stack<E> {
   Queue<E> _queue;
 
