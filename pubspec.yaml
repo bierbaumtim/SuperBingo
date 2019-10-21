@@ -28,7 +28,7 @@ dependencies:
   rxdart: ^0.22.4
   overlay_support: ^1.0.1
   share: ^0.6.2+4
-  analyzer: 0.38.2
+  analyzer: 0.38.5
   shared_preferences: ^0.5.3+5
 
   cloud_firestore: ^0.12.9+5
@@ -39,7 +39,7 @@ dependencies:
 
   sliding_up_panel:
     git:
-      urL: https://github.com/tb2761/sliding_up_panel.git
+      url: https://github.com/tb2761/sliding_up_panel.git
 
   # icons
   flat_icons_flutter: ^1.0.2
@@ -56,7 +56,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^1.7.1
-  json_serializable: ^3.2.2
+  json_serializable: ^3.2.3
   flutter_native_splash: ^0.1.9
 
 

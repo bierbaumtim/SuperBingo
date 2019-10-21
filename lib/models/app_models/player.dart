@@ -8,8 +8,6 @@ part 'player.g.dart';
 class Player {
   @JsonKey(name: 'id', defaultValue: 0)
   final int id;
-  @JsonKey(name: 'cardamount', defaultValue: 32)
-  final int cardAmount;
   @JsonKey(name: 'name', defaultValue: '')
   final String name;
   @JsonKey(name: 'cards', defaultValue: <GameCard>[]) //, toJson: cardsToJson
@@ -21,15 +19,20 @@ class Player {
     this.id,
     this.name,
     List<GameCard> cards,
-    this.cardAmount,
     this.isHost = false,
   }) : cards = cards ?? <GameCard>[];
 
-  Player copyWith({String name, int cardAmount, List<GameCard> cards}) => Player(
+  Player copyWith({
+    String name,
+    int cardAmount,
+    List<GameCard> cards,
+    bool isHost,
+  }) =>
+      Player(
         id: this.id,
         name: name ?? this.name,
         cards: cards ?? this.cards,
-        cardAmount: cardAmount ?? this.cardAmount,
+        isHost: isHost ?? this.isHost,
       );
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
@@ -39,7 +42,6 @@ class Player {
                 ?.map((e) => e == null ? null : GameCard.fromJson(Map<String, dynamic>.from(e)))
                 ?.toList() ??
             [],
-        cardAmount: json['cardamount'] as int ?? 32,
         isHost: json['isHost'] as bool ?? false,
       );
 

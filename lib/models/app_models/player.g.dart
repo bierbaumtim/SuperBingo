@@ -15,14 +15,12 @@ Player _$PlayerFromJson(Map<String, dynamic> json) {
                 e == null ? null : GameCard.fromJson(e as Map<String, dynamic>))
             ?.toList() ??
         [],
-    cardAmount: json['cardamount'] as int ?? 32,
     isHost: json['isHost'] as bool ?? false,
   );
 }
 
 Map<String, dynamic> _$PlayerToJson(Player instance) => <String, dynamic>{
       'id': instance.id,
-      'cardamount': instance.cardAmount,
       'name': instance.name,
       'cards': instance.cards,
       'isHost': instance.isHost,

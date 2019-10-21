@@ -70,13 +70,19 @@ class GameBloc {
         ],
       );
 
-      final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
+      var gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
 
       final gameDoc = await db.collection('games').add(gameDBData);
       gameId = gameDoc.documentID;
       gamePath = gameDoc.path;
       gameLink = 'superbingo://id:$gameId|name:${game.name}';
       _gameLinkSink.add(gameLink);
+
+      filledGame = filledGame.copyWith(gameId: gameId);
+      gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
+
+      await db.collection('games').document(gameId).updateData(gameDBData);
+
       return true;
     } catch (e, s) {
       Crashlytics.instance.recordError(e, s);
@@ -92,6 +98,12 @@ class GameBloc {
 
   Future<bool> joinGame(String gameId) async {
     try {
+      if (gameId == null) {
+        return false;
+      }
+      if (gameId.isEmpty) {
+        return false;
+      }
       this.gameId = gameId;
       final username = await getUsername();
       _self = createPlayer(username);
@@ -115,6 +127,35 @@ class GameBloc {
       Crashlytics.instance.recordError(e, s);
       return false;
     }
+  }
+
+  Future<void> leaveGame() async {
+    final snapshot = await db.collection('games').document(gameId).get();
+    Game game = Game.fromJson(snapshot.data);
+    if (_self.isHost) {
+      game.players.removeWhere((t) => t.id == _self.id);
+      if (game.players.isNotEmpty) {
+        game.players[0] = game.players[0].copyWith(isHost: true);
+      } else {
+        gameSub.cancel();
+        await db.collection('games').document(gameId).delete();
+        return;
+      }
+    } else {
+      game.players.removeWhere((t) => t.id == _self.id);
+      final unplayerdCards = game.unplayedCardStack.toList();
+      game = game.copyWith(
+        unplayedCardStack: Stack<GameCard>.from(_self.cards.toList() + unplayerdCards),
+      );
+    }
+    gameSub.cancel();
+    final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, game);
+    await db.collection('games').document(gameId).updateData(gameDBData);
+    _self = null;
+    _playerId = null;
+    gameId = null;
+    gameLink = null;
+    gamePath = null;
   }
 
   Future<void> endGame() async {

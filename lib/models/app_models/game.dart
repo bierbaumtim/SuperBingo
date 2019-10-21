@@ -40,13 +40,13 @@ class Game {
   final GameState state;
 
   const Game({
-    this.gameID,
+    this.gameID = "",
     this.playedCardStack,
     this.unplayedCardStack,
     this.players,
     this.name,
     this.maxPlayer = 6,
-    this.isPublic,
+    this.isPublic = true,
     this.cardAmount = 32,
     this.currentPlayerId,
     this.state = GameState.waitingForPlayer,
@@ -80,6 +80,8 @@ class Game {
       );
 
   Map<String, dynamic> toJson() => _$GameToJson(this);
+
+  // factory Game.fromJson(Map<String, dynamic> json) => _$GameFromJson(json);
 
   factory Game.fromJson(Map<String, dynamic> json) => Game(
         gameID: json['id'] as String ?? '',

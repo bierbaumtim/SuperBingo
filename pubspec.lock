@@ -7,7 +7,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.38.2"
+    version: "0.38.5"
   archive:
     dependency: transitive
     description:
@@ -241,7 +241,7 @@ packages:
       name: front_end
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.24"
+    version: "0.1.27"
   glob:
     dependency: transitive
     description:
@@ -318,14 +318,14 @@ packages:
       name: json_serializable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.2.2"
+    version: "3.2.3"
   kernel:
     dependency: transitive
     description:
       name: kernel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.24"
+    version: "0.3.27"
   logging:
     dependency: transitive
     description:

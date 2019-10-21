@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:superbingo/blocs/game_bloc.dart';
 import 'package:superbingo/blocs/open_games_bloc.dart';
+import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/utils/dialogs.dart';
 
 class JoinGamePage extends StatefulWidget {
@@ -27,7 +28,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
           ),
         ],
       ),
-      body: StreamBuilder<List<DocumentSnapshot>>(
+      body: StreamBuilder<List<Game>>(
         stream: publicGamesBloc.publicGamesStream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -44,8 +45,8 @@ class _JoinGamePageState extends State<JoinGamePage> {
 
                     return Card(
                       child: ListTile(
-                        title: Text(game.data['name'] ?? ''),
-                        subtitle: Text('${game.data['player']?.length ?? 0}/${game.data['maxPlayer']} Player'),
+                        title: Text(game?.name ?? ''),
+                        subtitle: Text('${game?.players?.length ?? 0}/${game?.maxPlayer} Player'),
                         trailing: RaisedButton(
                           color: Colors.deepOrangeAccent,
                           child: Text(
@@ -55,7 +56,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
                                 ),
                           ),
                           onPressed: () async {
-                            final success = await gameBloc.joinGame(game.documentID);
+                            final success = await gameBloc.joinGame(game.gameID);
                             if (success) {
                               Navigator.of(context).pushNamed('/game');
                             } else {

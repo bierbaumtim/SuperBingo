@@ -33,13 +33,13 @@ class GameCard {
     }
   }
 
-  static CardColor cardColorFromJson(String json) => CardColor.values.firstWhere((c) => c.toString() == json);
+  // static CardColor cardColorFromJson(String json) => CardColor.values.firstWhere((c) => c.toString() == json);
 
-  static String cardColorToJson(CardColor color) => color.toString();
+  // static String cardColorToJson(CardColor color) => color.toString();
 
-  static CardNumber cardNumberFromJson(String json) => CardNumber.values.firstWhere((n) => n.toString() == json);
+  // static CardNumber cardNumberFromJson(String json) => CardNumber.values.firstWhere((n) => n.toString() == json);
 
-  static String cardNumberToJson(CardNumber number) => number.toString();
+  // static String cardNumberToJson(CardNumber number) => number.toString();
 }
 
 enum CardColor { heart, diamond, spade, clover }
