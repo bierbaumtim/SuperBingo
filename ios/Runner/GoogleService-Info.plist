@@ -29,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:736874250539:ios:ea554913d12de2fc8ec56e</string>
+	<string>1:736874250539:ios:2af42fdb04034a958ec56e</string>
 	<key>DATABASE_URL</key>
 	<string>https://superbingo-2af48.firebaseio.com</string>
 </dict>

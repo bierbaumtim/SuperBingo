@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:lumberdash/lumberdash.dart';
 
 import 'package:superbingo/models/app_models/game.dart';
 
@@ -34,6 +35,8 @@ class PublicGamesBloc {
       } else {
         _publicGamesSink.add(Error());
       }
+    } catch (e, s) {
+      logError(e, stacktrace: s);
     }
   }
 

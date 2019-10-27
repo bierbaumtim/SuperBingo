@@ -5,7 +5,6 @@ import 'package:superbingo/blocs/game_bloc.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/dialogs.dart';
 
-import 'package:superbingo/widgets/card_hand.dart';
 import 'package:superbingo/widgets/card_stack.dart';
 import 'package:superbingo/widgets/player_avatars.dart';
 import 'package:superbingo/widgets/small_play_card.dart';

@@ -17,7 +17,7 @@ class CardStack extends StatelessWidget {
     final gameBloc = Provider.of<GameBloc>(context);
 
     return StreamBuilder<List<GameCard>>(
-      stream: gameBloc.cardStream,
+      stream: gameBloc.playedCardsStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.isNotEmpty) {
@@ -28,7 +28,7 @@ class CardStack extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.only(top: 80),
                 child: Stack(
-                  children: cards.reversed.map<Widget>((c) {
+                  children: cards.map<Widget>((c) {
                     final rn = Random();
                     final index = cards.indexOf(c);
                     double angle = 1.0 + rn.nextInt(10);

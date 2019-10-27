@@ -1,6 +1,10 @@
 import 'dart:async';
 
+import 'package:colorize_lumberdash/colorize_lumberdash.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_lumberdash/firebase_lumberdash.dart';
 import 'package:flutter/material.dart';
+import 'package:lumberdash/lumberdash.dart';
 
 import 'package:superbingo/blocs/game_bloc.dart';
 import 'package:superbingo/blocs/info_bloc.dart';
@@ -12,6 +16,14 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 void main() async {
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
+  putLumberdashToWork(withClients: [
+    ColorizeLumberdash(),
+    FirebaseLumberdash(
+      firebaseAnalyticsClient: FirebaseAnalytics(),
+      environment: 'development',
+      releaseVersion: '1.0.0',
+    ),
+  ]);
 
   runZoned(
     () => runApp(
