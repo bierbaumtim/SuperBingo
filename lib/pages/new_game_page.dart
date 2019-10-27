@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 import 'package:superbingo/blocs/events/game_events.dart';
 import 'package:superbingo/blocs/game_bloc.dart';
-import 'package:superbingo/models/app_models/game.dart';
 
 class NewGamePage extends StatefulWidget {
   @override
@@ -30,7 +30,7 @@ class _NewGamePageState extends State<NewGamePage> {
 
   @override
   Widget build(BuildContext context) {
-    final gameBloc = Provider.of<GameBloc>(context);
+    final gameBloc = BlocProvider.of<GameBloc>(context);
 
     final border = OutlineInputBorder(
       borderSide: BorderSide(
