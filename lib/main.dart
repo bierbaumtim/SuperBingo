@@ -4,6 +4,7 @@ import 'package:colorize_lumberdash/colorize_lumberdash.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_lumberdash/firebase_lumberdash.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lumberdash/lumberdash.dart';
 
 import 'package:superbingo/blocs/game_bloc.dart';
@@ -33,9 +34,8 @@ void main() async {
             builder: (_) => PublicGamesBloc(),
             dispose: (_, bloc) => bloc.dispose(),
           ),
-          Provider<GameBloc>(
+          BlocProvider<GameBloc>(
             builder: (_) => GameBloc(),
-            dispose: (_, bloc) => bloc.dispose(),
           ),
           Provider<InfoBloc>(
             builder: (_) => InfoBloc(),

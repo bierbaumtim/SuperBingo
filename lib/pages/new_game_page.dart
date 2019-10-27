@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
+import 'package:superbingo/blocs/events/game_events.dart';
 import 'package:superbingo/blocs/game_bloc.dart';
 import 'package:superbingo/models/app_models/game.dart';
 
@@ -137,8 +138,13 @@ class _NewGamePageState extends State<NewGamePage> {
                           borderRadius: BorderRadius.circular(40),
                         ),
                         onPressed: () async {
-                          final game = buildGame();
-                          final success = await gameBloc.createGame(game);
+                          final success = true;
+                          gameBloc.add(CreateGame(
+                            isPublic: isPublic,
+                            maxPlayer: maxPlayer,
+                            name: name,
+                            cardAmount: cardAmount,
+                          ));
                           setState(() {
                             showStartGame = success;
                             isValid = !success;
@@ -191,13 +197,6 @@ class _NewGamePageState extends State<NewGamePage> {
       ),
     );
   }
-
-  Game buildGame() => Game(
-        name: name,
-        isPublic: isPublic,
-        maxPlayer: maxPlayer,
-        cardAmount: cardAmount,
-      );
 
   int calculateCardAmount(String amountString) {
     int amount = int.tryParse(amountString);

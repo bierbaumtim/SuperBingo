@@ -10,13 +10,17 @@ abstract class GameState extends Equatable {
 
 /// Spiel wurde erstellt und es wird auf Start des Spiels gewartet
 class GameCreated extends GameState {
-  final String playerId;
+  final String gameId, gameLink;
   final List<Player> player;
 
-  const GameCreated(this.playerId, this.player);
+  const GameCreated({
+    this.gameId,
+    this.player,
+    this.gameLink,
+  });
 
   @override
-  List<Object> get props => super.props..addAll([playerId, player]);
+  List<Object> get props => super.props..addAll([gameId, player, gameLink]);
 }
 
 /// Spiel wurde gestartet
@@ -28,3 +32,6 @@ class GameStarted extends GameState {
   @override
   List<Object> get props => super.props..addAll([gameId]);
 }
+
+/// Spiel wird erstellt
+class GameCreating extends GameState {}

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:superbingo/blocs/current_game_bloc.dart';
 
 import 'package:superbingo/blocs/game_bloc.dart';
 import 'package:superbingo/models/app_models/card.dart';
@@ -14,10 +15,10 @@ class CardStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gameBloc = Provider.of<GameBloc>(context);
+    final currentGameBloc = Provider.of<CurrentGameBloc>(context);
 
     return StreamBuilder<List<GameCard>>(
-      stream: gameBloc.playedCardsStream,
+      stream: currentGameBloc.playedCardsStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.isNotEmpty) {

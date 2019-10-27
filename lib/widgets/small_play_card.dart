@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
-import 'package:superbingo/blocs/game_bloc.dart';
+import 'package:superbingo/blocs/current_game_bloc.dart';
 
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/card_utils.dart';
@@ -29,7 +29,7 @@ class SmallPlayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gameBloc = Provider.of<GameBloc>(context);
+    final currentGameBloc = Provider.of<CurrentGameBloc>(context);
 
     final cardWidget = Container(
       constraints: BoxConstraints(maxHeight: 175, maxWidth: 100),
@@ -43,7 +43,7 @@ class SmallPlayCard extends StatelessWidget {
         color: Colors.white,
         child: GestureDetector(
           onTap: () async {
-            final message = await gameBloc.playCard(card);
+            final message = await currentGameBloc.playCard(card);
             if (message.isNotEmpty) {
               showSimpleNotification(
                 Text(message),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:superbingo/blocs/current_game_bloc.dart';
 import 'package:superbingo/blocs/game_bloc.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/dialogs.dart';
@@ -17,7 +18,7 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
-    final gameBloc = Provider.of<GameBloc>(context);
+    final currentGameBloc = Provider.of<CurrentGameBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -29,7 +30,7 @@ class _GamePageState extends State<GamePage> {
           yesText: 'Ja',
         );
         if (result) {
-          await gameBloc.leaveGame();
+          await currentGameBloc.leaveGame();
         }
         return Future(() => result);
       },
@@ -81,10 +82,10 @@ class _GamePageState extends State<GamePage> {
 class CardScrollView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final gameBloc = Provider.of<GameBloc>(context);
+    final currentGameBloc = Provider.of<CurrentGameBloc>(context);
 
     return StreamBuilder<List<GameCard>>(
-      stream: gameBloc.handCardStream,
+      stream: currentGameBloc.handCardStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           if (snapshot.data.isEmpty) {

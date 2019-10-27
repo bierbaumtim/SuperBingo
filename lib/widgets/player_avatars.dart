@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:superbingo/blocs/current_game_bloc.dart';
 
-import 'package:superbingo/blocs/game_bloc.dart';
 import 'package:superbingo/models/app_models/player.dart';
 
 import 'package:provider/provider.dart';
@@ -15,10 +15,10 @@ class PlayerAvatars extends StatelessWidget {
 
     final theme = Theme.of(context);
 
-    final gameBloc = Provider.of<GameBloc>(context);
+    final currentGameBloc = Provider.of<CurrentGameBloc>(context);
 
     return StreamBuilder<List<Player>>(
-      stream: gameBloc.playerStream,
+      stream: currentGameBloc.playerStream,
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data.isNotEmpty) {
           return Positioned(
