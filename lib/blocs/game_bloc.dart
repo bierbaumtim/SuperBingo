@@ -61,7 +61,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       cardAmount: event.cardAmount,
     );
 
-    var gameDBData = await compute<game.Game, Map<String, dynamic>>(gameToDbData, game);
+    var gameDBData =
+        await compute<game.Game, Map<String, dynamic>>(gameToDbData, game);
 
     final gameDoc = await db.collection('games').add(gameDBData);
     gameId = gameDoc.documentID;
@@ -70,7 +71,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     _gameLinkSink.add(gameLink);
 
     game = game.copyWith(gameId: gameId);
-    gameDBData = await compute<game.Game, Map<String, dynamic>>(gameToDbData, game);
+    gameDBData =
+        await compute<game.Game, Map<String, dynamic>>(gameToDbData, game);
 
     await db.collection('games').document(gameId).updateData(gameDBData);
 
@@ -111,7 +113,11 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Future<void> startGame() async {
     final snapshot = await db.collection('games').document(gameId).get();
     handleNetworkDataChange(snapshot);
-    gameSub = db.collection('games').document(gameId).snapshots().listen(handleNetworkDataChange);
+    gameSub = db
+        .collection('games')
+        .document(gameId)
+        .snapshots()
+        .listen(handleNetworkDataChange);
   }
 
   Future<JoiningState> joinGame(String gameId) async {
@@ -136,9 +142,14 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       game.Game filledGame = gamed.copyWith(
         unplayedCardStack: cardStack,
       );
-      final gameDBData = await compute<game.Game, Map<String, dynamic>>(gameToDbData, filledGame);
+      final gameDBData = await compute<game.Game, Map<String, dynamic>>(
+          gameToDbData, filledGame);
 
-      gameSub = db.collection('games').document(gameId).snapshots().listen(handleNetworkDataChange);
+      gameSub = db
+          .collection('games')
+          .document(gameId)
+          .snapshots()
+          .listen(handleNetworkDataChange);
       await db.collection('games').document(gameId).updateData(gameDBData);
 
       return JoiningState.success;
@@ -149,6 +160,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   }
 
   Future<void> endGame() async {
+    gameSub.cancel();
     await db.collection('games').document(gameId).delete();
   }
 
@@ -158,7 +170,13 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     for (var i = 0; i < decks; i++) {
       cardDecks += defaultCardDeck;
     }
-    return Queue.from(cardDecks..shuffle());
+    cardDecks.shuffle();
+    cardDecks = cardDecks.map((c) {
+      final index = cardDecks.indexOf(c);
+      return c.setId(index);
+    }).toList();
+
+    return Queue.from(cardDecks);
   }
 
   Player createPlayer(String username, {bool isHost = false}) => Player(

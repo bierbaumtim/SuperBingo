@@ -1,6 +1,7 @@
 import 'package:superbingo/models/app_models/card.dart';
 
-final List<GameCard> defaultCardDeck = heartCardDeck + spadeCardDeck + cloverCardDeck + diamondCardDeck;
+final List<GameCard> defaultCardDeck =
+    heartCardDeck + spadeCardDeck + cloverCardDeck + diamondCardDeck;
 
 final List<GameCard> heartCardDeck = [
   GameCard(

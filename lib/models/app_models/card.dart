@@ -5,6 +5,8 @@ part 'card.g.dart';
 
 @JsonSerializable()
 class GameCard extends Equatable {
+  @JsonKey(name: 'id')
+  final int id;
   @JsonKey(name: 'color')
   final CardColor color;
   @JsonKey(name: 'number')
@@ -12,9 +14,10 @@ class GameCard extends Equatable {
   @JsonKey(ignore: true)
   final SpecialRule rule;
 
-  GameCard({this.color, this.number}) : rule = ruleFromNumber(number);
+  GameCard({this.id, this.color, this.number}) : rule = ruleFromNumber(number);
 
-  factory GameCard.fromJson(Map<String, dynamic> json) => _$GameCardFromJson(json);
+  factory GameCard.fromJson(Map<String, dynamic> json) =>
+      _$GameCardFromJson(json);
 
   Map<String, dynamic> toJson() => _$GameCardToJson(this);
 
@@ -34,8 +37,14 @@ class GameCard extends Equatable {
     }
   }
 
+  GameCard setId(int id) => GameCard(
+        id: id,
+        color: this.color,
+        number: this.number,
+      );
+
   @override
-  List<Object> get props => [rule, color, number];
+  List<Object> get props => [rule, color, number, id];
 
   // static CardColor cardColorFromJson(String json) => CardColor.values.firstWhere((c) => c.toString() == json);
 
