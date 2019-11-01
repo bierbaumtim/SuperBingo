@@ -6,3 +6,5 @@ abstract class CurrentGameState extends Equatable {
   @override
   List<Object> get props => [];
 }
+
+class CurrentGameLoaded extends CurrentGameState {}

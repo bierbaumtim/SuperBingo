@@ -35,3 +35,14 @@ class GameStarted extends GameState {
 
 /// Spiel wird erstellt
 class GameCreating extends GameState {}
+
+class GameCreationFailed extends GameState {
+  final String error;
+
+  const GameCreationFailed(this.error);
+
+  @override
+  List<Object> get props => super.props..add(error);
+}
+
+class WaitingGameConfigInput extends GameState {}
