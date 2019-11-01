@@ -45,7 +45,7 @@ ThemeData get lightTheme => ThemeData.dark().copyWith(
       ),
       buttonColor: Colors.deepOrange,
       cardTheme: CardTheme(
-        color: Colors.grey,
+        color: Colors.grey[700],
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: Colors.deepOrange,

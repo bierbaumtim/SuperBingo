@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:superbingo/blocs/current_game_bloc.dart';
+import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/widgets/play_card.dart';

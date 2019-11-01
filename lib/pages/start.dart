@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
 
-import 'package:superbingo/blocs/open_games_bloc.dart';
+import 'package:superbingo/bloc/blocs/open_games_bloc.dart';
 
 import 'package:provider/provider.dart';
+import 'package:superbingo/bloc/events/game_events.dart';
 
 class StartPage extends StatefulWidget {
   @override
@@ -51,16 +54,17 @@ class _StartPageState extends State<StartPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     RaisedButton(
-                      onPressed: () {
-                        Navigator.of(context).pushNamed('/new_game');
+                      onPressed: () async {
+                        await Navigator.of(context).pushNamed('/new_game');
+                        BlocProvider.of<GameConfigurationBloc>(context).add(ResetGameConfiguration());
                       },
-                      child: const Text('New game'),
+                      child: const Text('Neues Spiel'),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
                       padding: const EdgeInsets.symmetric(
                         vertical: 12,
-                        horizontal: 36,
+                        horizontal: 24,
                       ),
                       textColor: Colors.white,
                       color: Colors.deepOrange,
@@ -71,13 +75,13 @@ class _StartPageState extends State<StartPage> {
                         Provider.of<PublicGamesBloc>(context).getPublicGames();
                         Navigator.of(context).pushNamed('/join_game');
                       },
-                      child: const Text('Join game'),
+                      child: const Text('Spiel beitreten'),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
                       padding: const EdgeInsets.symmetric(
                         vertical: 12,
-                        horizontal: 36,
+                        horizontal: 24,
                       ),
                       textColor: Colors.white,
                       color: Colors.deepOrange,

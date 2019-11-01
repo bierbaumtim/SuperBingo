@@ -1,30 +1,27 @@
 import 'package:equatable/equatable.dart';
-import 'package:superbingo/models/app_models/player.dart';
 
-abstract class GameState extends Equatable {
-  const GameState();
+abstract class GameConfigurationState extends Equatable {
+  const GameConfigurationState();
 
   @override
   List<Object> get props => [];
 }
 
 /// Spiel wurde erstellt und es wird auf Start des Spiels gewartet
-class GameCreated extends GameState {
+class GameCreated extends GameConfigurationState {
   final String gameId, gameLink;
-  final List<Player> player;
 
   const GameCreated({
     this.gameId,
-    this.player,
     this.gameLink,
   });
 
   @override
-  List<Object> get props => super.props..addAll([gameId, player, gameLink]);
+  List<Object> get props => super.props..addAll([gameId, gameLink]);
 }
 
 /// Spiel wurde gestartet
-class GameStarted extends GameState {
+class GameStarted extends GameConfigurationState {
   final String gameId;
 
   const GameStarted(this.gameId);
@@ -34,9 +31,9 @@ class GameStarted extends GameState {
 }
 
 /// Spiel wird erstellt
-class GameCreating extends GameState {}
+class GameCreating extends GameConfigurationState {}
 
-class GameCreationFailed extends GameState {
+class GameCreationFailed extends GameConfigurationState {
   final String error;
 
   const GameCreationFailed(this.error);
@@ -45,4 +42,4 @@ class GameCreationFailed extends GameState {
   List<Object> get props => super.props..add(error);
 }
 
-class WaitingGameConfigInput extends GameState {}
+class WaitingGameConfigInput extends GameConfigurationState {}

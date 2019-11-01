@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:superbingo/blocs/info_bloc.dart';
+import 'package:superbingo/bloc/blocs/info_bloc.dart';
 
 class PlayerPage extends StatefulWidget {
   @override

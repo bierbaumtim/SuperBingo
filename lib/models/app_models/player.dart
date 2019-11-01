@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:superbingo/models/app_models/card.dart';
 
 import 'package:json_annotation/json_annotation.dart';
@@ -35,6 +37,12 @@ class Player {
         isHost: isHost ?? this.isHost,
       );
 
+  factory Player.create(String username, {bool isHost = false}) => Player(
+        id: DateTime.now().millisecondsSinceEpoch,
+        name: username,
+        isHost: isHost,
+      );
+
   factory Player.fromJson(Map<String, dynamic> json) => Player(
         id: json['id'] as int ?? 0,
         name: json['name'] as String ?? '',
@@ -48,6 +56,12 @@ class Player {
   Map<String, dynamic> toJson() => _$PlayerToJson(this);
 
   void drawCard(GameCard card) => cards.add(card);
+
+  void drawCards(Queue<GameCard> cards, {int amount = 6}) {
+    for (var i = 0; i < amount - 1; i++) {
+      drawCard(cards.removeFirst());
+    }
+  }
 
   static List cardsToJson(List<GameCard> cards) => cards.map((c) => c.toJson()).toList();
 }

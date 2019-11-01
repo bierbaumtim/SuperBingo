@@ -1,13 +1,13 @@
 import 'package:equatable/equatable.dart';
 
-abstract class GameEvent extends Equatable {
-  const GameEvent();
+abstract class GameConfigurationEvent extends Equatable {
+  const GameConfigurationEvent();
 
   @override
   List<Object> get props => [];
 }
 
-class CreateGame extends GameEvent {
+class CreateGame extends GameConfigurationEvent {
   final String name;
   final bool isPublic;
   final int maxPlayer;
@@ -23,3 +23,5 @@ class CreateGame extends GameEvent {
   @override
   List<Object> get props => super.props..addAll([name, cardAmount, maxPlayer, isPublic]);
 }
+
+class ResetGameConfiguration extends GameConfigurationEvent {}

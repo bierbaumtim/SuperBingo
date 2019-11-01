@@ -7,13 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lumberdash/lumberdash.dart';
 
-import 'package:superbingo/blocs/game_bloc.dart';
-import 'package:superbingo/blocs/info_bloc.dart';
-import 'package:superbingo/blocs/open_games_bloc.dart';
+import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
+import 'package:superbingo/bloc/blocs/info_bloc.dart';
+import 'package:superbingo/bloc/blocs/join_game_bloc.dart';
+import 'package:superbingo/bloc/blocs/open_games_bloc.dart';
 import 'package:superbingo/superbingo.dart';
 
 import 'package:provider/provider.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:superbingo/utils/connection.dart';
 
 void main() async {
   FlutterError.onError = Crashlytics.instance.recordFlutterError;
@@ -25,6 +27,7 @@ void main() async {
       releaseVersion: '1.0.0',
     ),
   ]);
+  await Connection.instance.initConnection();
 
   runZoned(
     () => runApp(
@@ -34,8 +37,11 @@ void main() async {
             builder: (_) => PublicGamesBloc(),
             dispose: (_, bloc) => bloc.dispose(),
           ),
-          BlocProvider<GameBloc>(
-            builder: (_) => GameBloc(),
+          BlocProvider<GameConfigurationBloc>(
+            builder: (_) => GameConfigurationBloc(),
+          ),
+          BlocProvider<JoinGameBloc>(
+            builder: (_) => JoinGameBloc(),
           ),
           Provider<InfoBloc>(
             builder: (_) => InfoBloc(),

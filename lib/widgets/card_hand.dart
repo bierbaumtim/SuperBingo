@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:superbingo/blocs/current_game_bloc.dart';
+import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/list_utils.dart';

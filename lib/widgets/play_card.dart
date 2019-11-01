@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:superbingo/blocs/game_bloc.dart';
+import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
 
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/card_utils.dart';
@@ -34,7 +34,7 @@ class PlayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gameBloc = Provider.of<GameBloc>(context);
+    final gameBloc = Provider.of<GameConfigurationBloc>(context);
 
     final cardWidget = GestureDetector(
       onTap: () {},

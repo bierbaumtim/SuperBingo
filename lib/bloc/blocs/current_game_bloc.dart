@@ -57,6 +57,12 @@ class CurrentGameBloc {
   Sink<List<GameCard>> get _handCardSink => _handCardController.sink;
   Stream<List<GameCard>> get handCardStream => _handCardController.stream;
 
+  Future<void> startGame() async {
+    final snapshot = await db.collection('games').document(gameId).get();
+    handleNetworkDataChange(snapshot);
+    gameSub = db.collection('games').document(gameId).snapshots().listen(handleNetworkDataChange);
+  }
+
   Future<void> leaveGame() async {
     final snapshot = await db.collection('games').document(gameId).get();
     Game game = Game.fromJson(snapshot.data);

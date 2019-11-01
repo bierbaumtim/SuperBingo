@@ -113,12 +113,9 @@ class Game {
   }
 
   void dealCards(int amount) {
-    int listIndex = 0;
-    for (var i = 0; i < amount; i++) {
-      players[listIndex].drawCard(playedCardStack.removeFirst());
-      listIndex++;
-      if (listIndex == players.length) {
-        listIndex = 0;
+    for (var i = 0; i < amount - 1; i++) {
+      for (var k = 0; k < players.length - 1; k++) {
+        players[k].drawCard(playedCardStack.removeFirst());
       }
     }
   }
@@ -133,7 +130,6 @@ class Game {
   }
 
   static Queue<GameCard> stackFromJson(List list) {
-    print(list);
     final cards = list.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
     return Queue.from(cards);
   }

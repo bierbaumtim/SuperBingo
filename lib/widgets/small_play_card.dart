@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
-import 'package:superbingo/blocs/current_game_bloc.dart';
+import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/card_utils.dart';

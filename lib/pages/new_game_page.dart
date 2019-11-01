@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
-import 'package:superbingo/blocs/events/game_events.dart';
-import 'package:superbingo/blocs/game_bloc.dart';
-import 'package:superbingo/blocs/states/game_states.dart';
+import 'package:superbingo/bloc/events/game_events.dart';
+import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
+import 'package:superbingo/bloc/states/game_states.dart';
+import 'package:superbingo/utils/dialogs.dart';
 
 class NewGamePage extends StatefulWidget {
   @override
@@ -40,7 +41,7 @@ class _NewGamePageState extends State<NewGamePage> {
 
   @override
   Widget build(BuildContext context) {
-    final gameBloc = BlocProvider.of<GameBloc>(context);
+    final gameBloc = BlocProvider.of<GameConfigurationBloc>(context);
 
     final border = OutlineInputBorder(
       borderSide: BorderSide(
@@ -49,15 +50,23 @@ class _NewGamePageState extends State<NewGamePage> {
       ),
     );
 
-    return BlocListener<GameBloc, GameState>(
-      listener: (context, state) {
+    return BlocListener<GameConfigurationBloc, GameConfigurationState>(
+      listener: (context, state) async {
         if (state is GameCreating) {
           showGameCreationOverlay(context);
         } else if (state is GameCreated) {
           hideGameCreationOverlay();
+          Navigator.of(context).pushNamed('/game');
+        } else if (state is GameCreationFailed) {
+          hideGameCreationOverlay();
+          await Dialogs.showInformationDialog(
+            context,
+            title: 'Fehler',
+            content: state.error,
+          );
         }
       },
-      child: BlocBuilder<GameBloc, GameState>(
+      child: BlocBuilder<GameConfigurationBloc, GameConfigurationState>(
         builder: (context, state) {
           Widget body;
 
@@ -79,8 +88,7 @@ class _NewGamePageState extends State<NewGamePage> {
                             labelText: 'Name',
                             hintText: 'Gib den Spiel einen Namen',
                           ),
-                          validator: (text) =>
-                              text.isNotEmpty ? null : 'Name is required',
+                          validator: (text) => text.isNotEmpty ? null : 'Bitte gib den Namen des Spiels ein',
                           onEditingComplete: () => _node.nextFocus(),
                           onSaved: (text) => name = text,
                           enabled: !isDisabled,
@@ -104,8 +112,7 @@ class _NewGamePageState extends State<NewGamePage> {
                               return 'Es sind nur Zahlen erlaubt';
                             }
                           },
-                          onSaved: (text) =>
-                              maxPlayer = int.tryParse(text) ?? 6,
+                          onSaved: (text) => maxPlayer = int.tryParse(text) ?? 6,
                           onEditingComplete: () => _node.nextFocus(),
                           enabled: !isDisabled,
                         ),
@@ -126,17 +133,14 @@ class _NewGamePageState extends State<NewGamePage> {
                             }
                           },
                           onEditingComplete: () => _node.unfocus(),
-                          onSaved: (text) =>
-                              cardAmount = calculateCardAmount(text),
+                          onSaved: (text) => cardAmount = calculateCardAmount(text),
                           enabled: !isDisabled,
                         ),
                         SizedBox(height: 8),
                         CheckboxListTile(
                           title: Text('Öffentliches Spiel'),
                           value: isPublic,
-                          onChanged: (value) => !isDisabled
-                              ? setState(() => isPublic = value)
-                              : null,
+                          onChanged: (value) => !isDisabled ? setState(() => isPublic = value) : null,
                           activeColor: Colors.deepOrange,
                         ),
                         if (isValid)
@@ -147,19 +151,13 @@ class _NewGamePageState extends State<NewGamePage> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(40),
                               ),
-                              onPressed: () async {
-                                final success = true;
+                              onPressed: () {
                                 gameBloc.add(CreateGame(
                                   isPublic: isPublic,
                                   maxPlayer: maxPlayer,
                                   name: name,
                                   cardAmount: cardAmount,
                                 ));
-                                setState(() {
-                                  showStartGame = success;
-                                  isValid = !success;
-                                  isDisabled = success;
-                                });
                               },
                             ),
                           ),
@@ -172,17 +170,17 @@ class _NewGamePageState extends State<NewGamePage> {
                                 borderRadius: BorderRadius.circular(40),
                               ),
                               onPressed: () async {
-                                gameBloc.startGame();
-                                Navigator.of(context)
-                                    .pushReplacementNamed('/game');
+                                // TODO auf neue Struktur umstellen
+                                // gameBloc.startGame();
+                                // Navigator.of(context)
+                                //     .pushReplacementNamed('/game');
                               },
                             ),
                           ),
                           StreamBuilder<String>(
                             stream: gameBloc.gameLinkStream,
                             builder: (context, snapshot) {
-                              final canShare =
-                                  snapshot.hasData && snapshot.data.isNotEmpty;
+                              final canShare = snapshot.hasData && snapshot.data.isNotEmpty;
 
                               return Padding(
                                 padding: EdgeInsets.only(top: 25),
@@ -194,8 +192,7 @@ class _NewGamePageState extends State<NewGamePage> {
                                   onPressed: canShare
                                       ? () async => Share.share(
                                             snapshot.data,
-                                            subject:
-                                                'SuperBingo Spieleinladung',
+                                            subject: 'SuperBingo Spieleinladung',
                                           )
                                       : null,
                                 ),
@@ -207,27 +204,6 @@ class _NewGamePageState extends State<NewGamePage> {
                     ),
                   ),
                 ),
-              ),
-            );
-          } else if (state is GameCreated) {
-            body = Padding(
-              padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-              child: ListView.builder(
-                itemBuilder: (context, index) => ListTile(
-                  title: Text(
-                    state.player.elementAt(index).name,
-                  ),
-                  leading: CircleAvatar(
-                    child: Text(
-                      state.player
-                          .elementAt(index)
-                          .name
-                          .substring(0, 1)
-                          .toUpperCase(),
-                    ),
-                  ),
-                ),
-                itemCount: state.player.length,
               ),
             );
           }
