@@ -29,7 +29,7 @@ dependencies:
   overlay_support: ^1.0.2
   share: ^0.6.2+4
   analyzer: 0.38.5
-  shared_preferences: ^0.5.4+1
+  shared_preferences: ^0.5.4+3
 
   cloud_firestore: ^0.12.9+5
   firebase_crashlytics: ^0.1.0+3
