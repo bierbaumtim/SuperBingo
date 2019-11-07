@@ -2,12 +2,15 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lumberdash/lumberdash.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:superbingo/bloc/events/current_game_events.dart';
+import 'package:superbingo/bloc/states/current_game_states.dart';
 import 'package:superbingo/constants/card_deck.dart';
 import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/card.dart';
@@ -15,7 +18,7 @@ import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
 import 'package:superbingo/models/app_models/rules.dart';
 
-class CurrentGameBloc {
+class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Firestore db;
   StreamSubscription gameSub;
   String gameId;
@@ -33,12 +36,37 @@ class CurrentGameBloc {
     db ??= Firestore.instance;
   }
 
+  @override
+  CurrentGameState get initialState => CurrentGameEmpty();
+
+  @override
+  Stream<CurrentGameState> mapEventToState(CurrentGameEvent event) async* {
+    if (event is StartGame) {
+      yield* _mapStartGameToState(event);
+    }
+  }
+
+  @override
+  void close() {
+    _playerController.close();
+    _playedCardsController.close();
+    _unplayedCardsController.close();
+    _handCardController.close();
+    gameSub.cancel();
+    super.close();
+  }
+
   void dispose() {
     _playerController.close();
     _playedCardsController.close();
     _unplayedCardsController.close();
     _handCardController.close();
     gameSub.cancel();
+  }
+
+  Stream<CurrentGameState> _mapStartGameToState(StartGame event) async* {
+    yield CurrentGameStarting();
+    await startGame(event.gameId);
   }
 
   BehaviorSubject<List<Player>> _playerController;
@@ -51,16 +79,23 @@ class CurrentGameBloc {
 
   BehaviorSubject<List<GameCard>> _unplayedCardsController;
   Sink<List<GameCard>> get _unplayedCardsSink => _unplayedCardsController.sink;
-  Stream<List<GameCard>> get unplayedCardsStream => _unplayedCardsController.stream;
+  Stream<List<GameCard>> get unplayedCardsStream =>
+      _unplayedCardsController.stream;
 
   BehaviorSubject<List<GameCard>> _handCardController;
   Sink<List<GameCard>> get _handCardSink => _handCardController.sink;
   Stream<List<GameCard>> get handCardStream => _handCardController.stream;
 
-  Future<void> startGame() async {
-    final snapshot = await db.collection('games').document(gameId).get();
-    handleNetworkDataChange(snapshot);
-    gameSub = db.collection('games').document(gameId).snapshots().listen(handleNetworkDataChange);
+  Future<void> startGame(String gameId) async {
+    if (gameSub == null) {
+      final snapshot = await db.collection('games').document(gameId).get();
+      handleNetworkDataChange(snapshot);
+      gameSub = db
+          .collection('games')
+          .document(gameId)
+          .snapshots()
+          .listen(handleNetworkDataChange);
+    }
   }
 
   Future<void> leaveGame() async {
@@ -79,11 +114,13 @@ class CurrentGameBloc {
       game.players.removeWhere((t) => t.id == _self.id);
       final unplayerdCards = game.unplayedCardStack.toList();
       game = game.copyWith(
-        unplayedCardStack: Queue<GameCard>.from(_self.cards.toList() + unplayerdCards),
+        unplayedCardStack:
+            Queue<GameCard>.from(_self.cards.toList() + unplayerdCards),
       );
     }
     gameSub.cancel();
-    final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, game);
+    final gameDBData =
+        await compute<Game, Map<String, dynamic>>(gameToDbData, game);
     await db.collection('games').document(gameId).updateData(gameDBData);
     _self = null;
     _playerId = null;
@@ -103,7 +140,8 @@ class CurrentGameBloc {
 
   Future<String> playCard(GameCard card) async {
     // if (_game.currentPlayerId != _playerId) return 'Du bist nicht an der Reihe';
-    if (!Rules.isCardAllowed(card, _game.topCard)) return 'Du darfst diese Karte nicht legen';
+    if (!Rules.isCardAllowed(card, _game.topCard))
+      return 'Du darfst diese Karte nicht legen';
 
     _self.cards.removeWhere((c) => c == card);
     final index = _game.players.indexWhere((p) => p.id == _self.id);
@@ -115,7 +153,8 @@ class CurrentGameBloc {
       players: _game.players,
     );
 
-    final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
+    final gameDBData =
+        await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
 
     await db.collection('games').document(gameId).updateData(gameDBData);
 
@@ -124,7 +163,8 @@ class CurrentGameBloc {
 
   Player getPlayerFromGame(List<Player> player, int playerId) {
     if (player.isEmpty) {
-      logWarning('[getPlayerFromGame] Player in Game are empty. Can cause problems.');
+      logWarning(
+          '[getPlayerFromGame] Player in Game are empty. Can cause problems.');
       return null;
     } else {
       return player.firstWhere((p) => p.id == _playerId, orElse: () => null);
