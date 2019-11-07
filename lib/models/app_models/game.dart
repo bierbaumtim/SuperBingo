@@ -15,29 +15,29 @@ class Game {
     toJson: stackToJson,
     fromJson: stackFromJson,
   )
-  final Queue<GameCard> playedCardStack;
+  Queue<GameCard> playedCardStack;
   @JsonKey(
     name: 'unplayedCards',
     toJson: stackToJson,
     fromJson: stackFromJson,
   )
-  final Queue<GameCard> unplayedCardStack;
+  Queue<GameCard> unplayedCardStack;
   @JsonKey(name: 'players') //, toJson: playerToJson, fromJson: playerFromJson,-
-  final List<Player> players;
+  List<Player> players;
   @JsonKey(name: 'isPublic', defaultValue: true)
-  final bool isPublic;
+  bool isPublic;
   @JsonKey(name: 'maxPlayer', defaultValue: 6)
-  final int maxPlayer;
+  int maxPlayer;
   @JsonKey(name: 'cardAmount', defaultValue: 32)
-  final int cardAmount;
+  int cardAmount;
   @JsonKey(name: 'name', defaultValue: 'SuperBingo')
-  final String name;
+  String name;
   @JsonKey(name: 'id', defaultValue: '')
   final String gameID;
   @JsonKey(name: 'currentPlayerId', defaultValue: '')
-  final int currentPlayerId;
+  int currentPlayerId;
   @JsonKey(name: 'state', defaultValue: GameState.waitingForPlayer)
-  final GameState state;
+  GameState state;
 
   Game({
     this.gameID = "",
@@ -52,7 +52,8 @@ class Game {
     this.state = GameState.waitingForPlayer,
   }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from([]);
 
-  GameCard get topCard => playedCardStack.isEmpty ? null : playedCardStack.first;
+  GameCard get topCard =>
+      playedCardStack.isEmpty ? null : playedCardStack.first;
 
   Game copyWith({
     String name,
@@ -88,22 +89,25 @@ class Game {
         playedCardStack: Game.stackFromJson(json['playedCards'] as List),
         unplayedCardStack: Game.stackFromJson(json['unplayedCards'] as List),
         players: (json['players'] as List)
-            ?.map((e) => e == null ? null : Player.fromJson(Map<String, dynamic>.from(e)))
+            ?.map((e) => e == null
+                ? null
+                : Player.fromJson(Map<String, dynamic>.from(e)))
             ?.toList(),
         name: json['name'] as String ?? 'SuperBingo',
         maxPlayer: json['maxPlayer'] as int ?? 6,
         isPublic: json['isPublic'] as bool ?? true,
         cardAmount: json['cardAmount'] as int ?? 32,
         currentPlayerId: json['currentPlayerId'] as int ?? 0,
-        state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ?? GameState.waitingForPlayer,
+        state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
+            GameState.waitingForPlayer,
       );
 
-  Queue<GameCard> shuffleCards({int times}) {
+  void shuffleCards({int times}) {
     final cards = playedCardStack.toList();
     for (var i = 0; i < times ?? 1; i++) {
       cards.shuffle();
     }
-    return Queue<GameCard>.from(cards);
+    playedCardStack = Queue<GameCard>.from(cards);
   }
 
   void addPlayer(Player player) {
@@ -130,7 +134,8 @@ class Game {
   }
 
   static Queue<GameCard> stackFromJson(List list) {
-    final cards = list.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
+    final cards =
+        list.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
     return Queue.from(cards);
   }
 
@@ -142,7 +147,9 @@ class Game {
   }
 
   static List<Player> playerFromJson(List list) {
-    return list.map((p) => Player.fromJson(Map<String, dynamic>.from(p))).toList();
+    return list
+        .map((p) => Player.fromJson(Map<String, dynamic>.from(p)))
+        .toList();
   }
 
   String _fillGameId(String nGameId) {

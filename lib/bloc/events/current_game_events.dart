@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:superbingo/models/app_models/game.dart';
 
 abstract class CurrentGameEvent extends Equatable {
   const CurrentGameEvent();
@@ -29,3 +30,12 @@ class StartGameWaitingLobby extends CurrentGameEvent {
 class LeaveGame extends CurrentGameEvent {}
 
 class EndGame extends CurrentGameEvent {}
+
+class UpdateCurrentGame extends CurrentGameEvent {
+  final Game game;
+
+  const UpdateCurrentGame(this.game);
+
+  @override
+  List<Object> get props => super.props..add(game);
+}

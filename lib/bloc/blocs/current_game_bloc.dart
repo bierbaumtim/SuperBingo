@@ -23,16 +23,15 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   StreamSubscription gameSub;
   String gameId;
   String gameLink;
-  String gamePath;
   int _playerId;
   Game _game;
   Player _self;
 
+  /// {@macro currentgamebloc}
   CurrentGameBloc() {
     _playerController = BehaviorSubject<List<Player>>();
     _playedCardsController = BehaviorSubject<List<GameCard>>();
     _unplayedCardsController = BehaviorSubject<List<GameCard>>();
-    _handCardController = BehaviorSubject<List<GameCard>>();
     db ??= Firestore.instance;
   }
 
@@ -43,30 +42,37 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Stream<CurrentGameState> mapEventToState(CurrentGameEvent event) async* {
     if (event is StartGame) {
       yield* _mapStartGameToState(event);
-    }
+    } else if (event is StartGameWaitingLobby) {
+    } else if (event is LeaveGame) {
+      yield* _mapLeaveGameToState(event);
+    } else if (event is EndGame) {
+    } else if (event is UpdateCurrentGame) {}
   }
 
   @override
   void close() {
-    _playerController.close();
-    _playedCardsController.close();
-    _unplayedCardsController.close();
-    _handCardController.close();
     gameSub.cancel();
     super.close();
   }
 
-  void dispose() {
-    _playerController.close();
-    _playedCardsController.close();
-    _unplayedCardsController.close();
-    _handCardController.close();
-    gameSub.cancel();
-  }
-
   Stream<CurrentGameState> _mapStartGameToState(StartGame event) async* {
     yield CurrentGameStarting();
-    await startGame(event.gameId);
+    final success = await _startGame(event.gameId);
+    yield success
+        ? CurrentGameLoaded(
+            game: _game,
+            handCards: _self.cards,
+          )
+        : CurrentGameStartingFailed();
+  }
+
+  Stream<CurrentGameState> _mapLeaveGameToState(LeaveGame event) async* {
+    await leaveGame();
+    _self = null;
+    _playerId = null;
+    gameId = null;
+    gameLink = null;
+    yield CurrentGameEmpty();
   }
 
   BehaviorSubject<List<Player>> _playerController;
@@ -82,70 +88,77 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Stream<List<GameCard>> get unplayedCardsStream =>
       _unplayedCardsController.stream;
 
-  BehaviorSubject<List<GameCard>> _handCardController;
-  Sink<List<GameCard>> get _handCardSink => _handCardController.sink;
-  Stream<List<GameCard>> get handCardStream => _handCardController.stream;
-
-  Future<void> startGame(String gameId) async {
+  /// Ruft das Spiel, welches gestartet werden soll ab und setzt alle Variablen im Bloc.
+  /// Außerdem wird die StreamSubscription gestartet.
+  ///
+  /// Gab es beim Ausführen der Methode keine Fehler wird die Funktion mit `true` beendet,
+  /// tritt ein Fehler auf mit `false`.
+  Future<bool> _startGame(String gameId) async {
     if (gameSub == null) {
-      final snapshot = await db.collection('games').document(gameId).get();
-      handleNetworkDataChange(snapshot);
-      gameSub = db
-          .collection('games')
-          .document(gameId)
-          .snapshots()
-          .listen(handleNetworkDataChange);
+      try {
+        final snapshot = await db.collection('games').document(gameId).get();
+        _handleNetworkDataChange(snapshot);
+        gameSub = db
+            .collection('games')
+            .document(gameId)
+            .snapshots()
+            .listen(_handleNetworkDataChange);
+        return true;
+      } on dynamic catch (e) {
+        return false;
+      }
+    } else {
+      return false;
     }
   }
 
   Future<void> leaveGame() async {
-    final snapshot = await db.collection('games').document(gameId).get();
-    var game = Game.fromJson(snapshot.data);
+    var game = await _getGameSnapshot(gameId);
+    game.players.removeWhere((t) => t.id == _self.id);
+    gameSub.cancel();
     if (_self.isHost) {
-      game.players.removeWhere((t) => t.id == _self.id);
       if (game.players.isNotEmpty) {
         game.players[0] = game.players[0].copyWith(isHost: true);
       } else {
-        gameSub.cancel();
         await db.collection('games').document(gameId).delete();
         return;
       }
-    } else {
-      game.players.removeWhere((t) => t.id == _self.id);
-      final unplayerdCards = game.unplayedCardStack.toList();
-      game = game.copyWith(
-        unplayedCardStack:
-            Queue<GameCard>.from(_self.cards.toList() + unplayerdCards),
-      );
     }
-    gameSub.cancel();
+    final unplayerdCards = game.unplayedCardStack.toList();
+    game = game.copyWith(
+      unplayedCardStack:
+          Queue<GameCard>.from(_self.cards.toList() + unplayerdCards),
+
+      /// TODO Überprüfen ob die Reihenfolge so richtig ist, ggf. müssen die unplayedCards des Games als erstes genutzt werden und denn die des Spielers addeirt werden
+    );
     final gameDBData =
         await compute<Game, Map<String, dynamic>>(gameToDbData, game);
     await db.collection('games').document(gameId).updateData(gameDBData);
-    _self = null;
-    _playerId = null;
-    gameId = null;
-    gameLink = null;
-    gamePath = null;
   }
 
-  void handleNetworkDataChange(DocumentSnapshot snapshot) async {
+  Future<Game> _getGameSnapshot(String gameId) async {
+    final snapshot = await db.collection('games').document(gameId).get();
+    return Game.fromJson(snapshot.data);
+  }
+
+  void _handleNetworkDataChange(DocumentSnapshot snapshot) async {
     _game = Game.fromJson(snapshot.data);
     final player = getPlayerFromGame(_game.players, _playerId);
+    add(UpdateCurrentGame(_game));
     _playerSink.add(_game?.players);
     _playedCardsSink.add(_game?.playedCardStack?.toList()?.reversed);
     _unplayedCardsSink.add(_game.unplayedCardStack?.toList());
-    _handCardSink.add(player?.cards);
   }
 
   Future<String> playCard(GameCard card) async {
     // if (_game.currentPlayerId != _playerId) return 'Du bist nicht an der Reihe';
-    if (!Rules.isCardAllowed(card, _game.topCard))
+    if (!Rules.isCardAllowed(card, _game.topCard)) {
       return 'Du darfst diese Karte nicht legen';
+    }
 
     _self.cards.removeWhere((c) => c == card);
     final index = _game.players.indexWhere((p) => p.id == _self.id);
-    final nextPlayer = getNextPlayer(_game, _playerId);
+    final nextPlayer = getNextPlayer(_game.players, _playerId);
     _game.players.replaceRange(index, index + 1, [_self]);
     var filledGame = _game.copyWith(
       playedCardStack: _game.playedCardStack..add(card),
@@ -161,24 +174,32 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     return '';
   }
 
+  /// Ruft den Spieler mit der `playerId` aus der `player` Liste.
+  /// Ist keiner Vorhanden wird null zurückgegeben.
   Player getPlayerFromGame(List<Player> player, int playerId) {
     if (player.isEmpty) {
       logWarning(
-          '[getPlayerFromGame] Player in Game are empty. Can cause problems.');
+        '[getPlayerFromGame] Player in Game are empty. Can cause problems.',
+      );
       return null;
     } else {
       return player.firstWhere((p) => p.id == _playerId, orElse: () => null);
     }
   }
 
-  Player getNextPlayer(Game game, int playerId) {
-    var index = game?.players?.indexWhere((p) => p.id == playerId) ?? -1;
-    if (index + 1 > game.players.length - 1) {
+  /// Ruft den Index des Spielers mit der `playerId`,
+  /// erhöht dann den Index und gibt den Spieler an diesem
+  /// Index zurück.
+  ///
+  /// Ist der Index gleich dem Ende der Liste, wird der Index wieder auf 0 gesetzt.
+  Player getNextPlayer(List<Player> player, int playerId) {
+    var index = player?.indexWhere((p) => p.id == playerId) ?? -1;
+    if (index + 1 > player.length - 1) {
       index = 0;
     } else {
       index++;
     }
-    return game?.players?.elementAt(index);
+    return player?.elementAt(index);
   }
 
   static Map<String, dynamic> gameToDbData(Game game) {

@@ -1,28 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 
-import 'package:superbingo/models/app_models/card.dart';
+import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
+import 'package:superbingo/bloc/states/current_game_states.dart';
 import 'package:superbingo/utils/list_utils.dart';
 import 'package:superbingo/widgets/small_play_card.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+/// {@template cardhand}
+/// Dieses Widget bildet die aufgefächerten Karten eines Spielers nach.
+/// {@endtemplate}
 class CardHand extends StatelessWidget {
+  /// {@macro cardhand}
   const CardHand({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final currentGameBloc = Provider.of<CurrentGameBloc>(context);
+    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
 
     final theme = Theme.of(context);
 
     return Align(
       alignment: Alignment.bottomCenter,
-      child: StreamBuilder<List<GameCard>>(
-        stream: currentGameBloc.handCardStream,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (snapshot.data.isNotEmpty) {
-              final cards = snapshot.data;
+      child: BlocBuilder<CurrentGameBloc, CurrentGameState>(
+        bloc: currentGameBloc,
+        builder: (context, state) {
+          if (state is CurrentGameLoaded) {
+            if (state.handCards.isNotEmpty) {
+              final cards = state.handCards;
               return Stack(
                 alignment: Alignment.center,
                 children: cards.map<Widget>((c) {
@@ -59,7 +64,6 @@ class CardHand extends StatelessWidget {
               );
             }
           } else {
-            // TODO implement empty cardhand ui
             return Container();
           }
         },

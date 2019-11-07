@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
+import 'package:superbingo/bloc/states/current_game_states.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/dialogs.dart';
 
@@ -81,13 +83,13 @@ class _GamePageState extends State<GamePage> {
 class CardScrollView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final currentGameBloc = Provider.of<CurrentGameBloc>(context);
+    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
 
-    return StreamBuilder<List<GameCard>>(
-      stream: currentGameBloc.handCardStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data.isEmpty) {
+    return BlocBuilder<CurrentGameBloc, CurrentGameState>(
+      bloc: currentGameBloc,
+      builder: (context, state) {
+        if (state is CurrentGameLoaded) {
+          if (state.handCards.isEmpty) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(12),
@@ -95,11 +97,15 @@ class CardScrollView extends StatelessWidget {
               ),
             );
           } else {
-            final cards = snapshot.data;
-            final heart = cards.where((c) => c.color == CardColor.heart).toList();
-            final clover = cards.where((c) => c.color == CardColor.clover).toList();
-            final diamond = cards.where((c) => c.color == CardColor.diamond).toList();
-            final spade = cards.where((c) => c.color == CardColor.spade).toList();
+            final cards = state.handCards;
+            final heart =
+                cards.where((c) => c.color == CardColor.heart).toList();
+            final clover =
+                cards.where((c) => c.color == CardColor.clover).toList();
+            final diamond =
+                cards.where((c) => c.color == CardColor.diamond).toList();
+            final spade =
+                cards.where((c) => c.color == CardColor.spade).toList();
 
             return Column(
               children: <Widget>[
@@ -112,8 +118,12 @@ class CardScrollView extends StatelessWidget {
                     Container(
                       width: 30,
                       height: 5,
-                      decoration:
-                          BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.all(Radius.circular(12.0))),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(12.0),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -124,64 +134,18 @@ class CardScrollView extends StatelessWidget {
                   child: SingleChildScrollView(
                     child: Column(
                       children: <Widget>[
-                        if (clover.isNotEmpty) ...[
-                          SizedBox(
-                            height: 175,
-                            child: ListView.builder(
-                              itemBuilder: (context, index) => SmallPlayCard(
-                                card: clover.elementAt(index),
-                              ),
-                              itemCount: clover.length,
-                              scrollDirection: Axis.horizontal,
-                              physics: ClampingScrollPhysics(),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                        if (spade.isNotEmpty) ...[
-                          SizedBox(
-                            height: 175,
-                            child: ListView.builder(
-                              itemBuilder: (context, index) => SmallPlayCard(
-                                card: spade.elementAt(
-                                  index,
-                                ),
-                              ),
-                              itemCount: spade.length,
-                              scrollDirection: Axis.horizontal,
-                              physics: ClampingScrollPhysics(),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                        if (diamond.isNotEmpty) ...[
-                          SizedBox(
-                            height: 175,
-                            child: ListView.builder(
-                              itemBuilder: (context, index) => SmallPlayCard(
-                                card: diamond.elementAt(index),
-                              ),
-                              itemCount: diamond.length,
-                              scrollDirection: Axis.horizontal,
-                              physics: ClampingScrollPhysics(),
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 10),
-                        if (heart.isNotEmpty) ...[
-                          SizedBox(
-                            height: 175,
-                            child: ListView.builder(
-                              itemBuilder: (context, index) => SmallPlayCard(
-                                card: heart.elementAt(index),
-                              ),
-                              itemCount: heart.length,
-                              scrollDirection: Axis.horizontal,
-                              physics: ClampingScrollPhysics(),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
+                        HorizontalCardList(
+                          cards: clover,
+                        ),
+                        HorizontalCardList(
+                          cards: spade,
+                        ),
+                        HorizontalCardList(
+                          cards: diamond,
+                        ),
+                        HorizontalCardList(
+                          cards: heart,
+                        ),
                       ],
                     ),
                   ),
@@ -196,5 +160,39 @@ class CardScrollView extends StatelessWidget {
         }
       },
     );
+  }
+}
+
+///{@template horizontalcardlist}
+/// Erzeugt ein ListView, mit der `scrollDirection` `Axis.horizontal` und den `cards`.
+///{@endtemplate}
+class HorizontalCardList extends StatelessWidget {
+  /// Liste der Karten die angezeigt werden sollen
+  final List<GameCard> cards;
+
+  /// {@macro horizontalcardlist}
+  const HorizontalCardList({Key key, this.cards}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (cards == null || cards.isEmpty) {
+      return Container();
+    }
+    if (cards.isNotEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5),
+        child: SizedBox(
+          height: 175,
+          child: ListView.builder(
+            itemBuilder: (context, index) => SmallPlayCard(
+              card: cards.elementAt(index),
+            ),
+            itemCount: cards.length,
+            scrollDirection: Axis.horizontal,
+            physics: ClampingScrollPhysics(),
+          ),
+        ),
+      );
+    }
   }
 }
