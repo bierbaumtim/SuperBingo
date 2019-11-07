@@ -53,7 +53,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.refresh),
-              onPressed: () => publicGamesBloc.getPublicGames(),
+              onPressed: publicGamesBloc.getPublicGames,
             ),
           ],
         ),

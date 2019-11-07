@@ -39,8 +39,8 @@ class GameCard extends Equatable {
 
   GameCard setId(int id) => GameCard(
         id: id,
-        color: this.color,
-        number: this.number,
+        color: color,
+        number: number,
       );
 
   @override

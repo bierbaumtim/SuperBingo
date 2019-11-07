@@ -1,7 +1,8 @@
 int getMiddleIndex(Iterable list) {
-  double middle = list.length / 2;
-  if (middle % 2 != 0)
+  var middle = list.length / 2;
+  if (middle % 2 != 0) {
     return (middle - 0.5).truncate();
-  else
+  } else {
     return middle.truncate();
+  }
 }

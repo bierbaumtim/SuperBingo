@@ -28,7 +28,7 @@ class CardHand extends StatelessWidget {
                 children: cards.map<Widget>((c) {
                   final index = cards.indexOf(c);
 
-                  double angle = 160 / cards.length;
+                  var angle = 160 / cards.length;
                   double rotationAngle;
                   if (angle >= 50) angle = 20;
                   final middle = getMiddleIndex(cards);

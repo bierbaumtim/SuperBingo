@@ -1,16 +1,17 @@
 import 'dart:collection';
 import 'dart:convert';
 
-import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:rxdart/subjects.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:superbingo/bloc/events/join_game_events.dart';
 import 'package:superbingo/bloc/states/join_game_states.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
+
+import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   Firestore db;
@@ -46,7 +47,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
       yield WaitingForAction();
     } else {
       try {
-        this.gameId = gameId;
+        gameId = gameId;
         final username = await getUsername();
         _self = Player.create(username);
         final snapshot = await db.collection('games').document(gameId).get();
@@ -60,7 +61,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
           Queue cardStack = game.unplayedCardStack;
           _self.drawCards(cardStack);
           game.addPlayer(_self);
-          Game filledGame = game.copyWith(
+          var filledGame = game.copyWith(
             unplayedCardStack: cardStack,
           );
           final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
@@ -69,7 +70,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
 
           yield JoinedGame(filledGame.gameID);
         }
-      } catch (e, s) {
+      } on dynamic catch (e, s) {
         Crashlytics.instance.recordError(e, s);
         yield WaitingForAction();
       }

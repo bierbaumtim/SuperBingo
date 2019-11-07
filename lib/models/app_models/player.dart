@@ -31,7 +31,7 @@ class Player {
     bool isHost,
   }) =>
       Player(
-        id: this.id,
+        id: id,
         name: name ?? this.name,
         cards: cards ?? this.cards,
         isHost: isHost ?? this.isHost,

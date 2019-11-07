@@ -144,7 +144,7 @@ class SmallPlayCard extends StatelessWidget {
     );
 
     if (angle != null && rotationAngle != null) {
-      final double rad = radians(angle);
+      final rad = radians(angle);
 
       return Transform(
         transform: Matrix4.identity()
