@@ -11,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:superbingo/bloc/events/game_events.dart';
 import 'package:superbingo/bloc/states/game_states.dart';
 import 'package:superbingo/constants/card_deck.dart';
-import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
@@ -87,7 +86,7 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
         gameId: gameId,
         gameLink: gameLink,
       );
-    } catch (e, s) {
+    } on dynamic catch (e, s) {
       Crashlytics.instance.recordError(e, s);
       yield GameCreationFailed('Beim erstellen des Spiels ist ein Fehler aufgetreten.');
       yield WaitingGameConfigInput();
@@ -107,10 +106,10 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
   }) async {
     final username = await getUsername();
     _self = Player.create(username, isHost: true);
-    Queue<GameCard> cardStack = _generateCardStack(cardAmount);
+    var cardStack = _generateCardStack(cardAmount);
     _self.drawCards(cardStack);
 
-    Game filledGame = Game(
+    var filledGame = Game(
       unplayedCardStack: cardStack,
       playedCardStack: Queue<GameCard>(),
       players: [
@@ -131,8 +130,8 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
   }
 
   Queue<GameCard> _generateCardStack(int amount) {
-    int decks = (amount / 32).truncate() - 1;
-    List<GameCard> cardDecks = defaultCardDeck;
+    var decks = (amount / 32).truncate() - 1;
+    var cardDecks = defaultCardDeck;
     for (var i = 0; i < decks; i++) {
       cardDecks += defaultCardDeck;
     }

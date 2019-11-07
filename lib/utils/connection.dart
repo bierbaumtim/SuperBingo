@@ -20,8 +20,7 @@ class Connection {
   Future<void> initConnection() async {
     _currentConnectivityResult = await Connectivity().checkConnectivity();
     _hasConnection = await isConnected;
-    _connectivityListener =
-        Connectivity().onConnectivityChanged.listen((connection) async {
+    _connectivityListener = Connectivity().onConnectivityChanged.listen((connection) async {
       _hasConnection = await isConnected;
     });
   }
@@ -32,7 +31,7 @@ class Connection {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         return true;
       }
-    } catch (e) {
+    } on dynamic catch (e) {
       print(e);
       return false;
     }

@@ -31,9 +31,9 @@ class CardStack extends StatelessWidget {
                   children: cards.map<Widget>((c) {
                     final rn = Random();
                     final index = cards.indexOf(c);
-                    double angle = 1.0 + rn.nextInt(10);
+                    var angle = 1.0 + rn.nextInt(10);
                     double translationY, translationX;
-                    double elevation = 0;
+                    var elevation = 0.0;
                     if (c == cards.last) {
                       angle = radians(0);
                     } else {
@@ -75,8 +75,9 @@ class CardStack extends StatelessWidget {
           } else {
             return Container();
           }
-        } else
+        } else {
           return Container();
+        }
       },
     );
   }

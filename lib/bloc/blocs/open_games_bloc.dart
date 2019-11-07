@@ -22,7 +22,7 @@ class PublicGamesBloc {
     try {
       final docs = (await dbGames.getDocuments()).documents;
       final games = docs.map<Game>((g) => Game.fromJson(g.data)).toList();
-      List<Game> publicGames = [];
+      var publicGames = <Game>[];
       for (var game in games) {
         if (game.isPublic == true && game.state == GameState.waitingForPlayer) {
           publicGames.add(game);
@@ -35,7 +35,7 @@ class PublicGamesBloc {
       } else {
         _publicGamesSink.add(Error());
       }
-    } catch (e, s) {
+    } on dynamic catch (e, s) {
       logError(e, stacktrace: s);
     }
   }

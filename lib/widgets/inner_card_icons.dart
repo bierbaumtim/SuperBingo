@@ -15,7 +15,7 @@ class InnerCardIcons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double size = isSmall ? 20 : 36;
+    final size = isSmall ? 20.0 : 36.0;
 
     return Column(
       children: <Widget>[

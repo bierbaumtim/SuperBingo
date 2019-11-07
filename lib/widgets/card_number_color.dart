@@ -21,8 +21,8 @@ class CardNumberColor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double iconSize = isSmall ? 14 : 24;
-    final double fontSize = isSmall ? 16 : 20;
+    final iconSize = isSmall ? 14.0 : 24.0;
+    final fontSize = isSmall ? 16.0 : 20.0;
 
     return Container(
       color: Colors.white,

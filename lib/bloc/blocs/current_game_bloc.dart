@@ -65,7 +65,7 @@ class CurrentGameBloc {
 
   Future<void> leaveGame() async {
     final snapshot = await db.collection('games').document(gameId).get();
-    Game game = Game.fromJson(snapshot.data);
+    var game = Game.fromJson(snapshot.data);
     if (_self.isHost) {
       game.players.removeWhere((t) => t.id == _self.id);
       if (game.players.isNotEmpty) {
@@ -109,7 +109,7 @@ class CurrentGameBloc {
     final index = _game.players.indexWhere((p) => p.id == _self.id);
     final nextPlayer = getNextPlayer(_game, _playerId);
     _game.players.replaceRange(index, index + 1, [_self]);
-    Game filledGame = _game.copyWith(
+    var filledGame = _game.copyWith(
       playedCardStack: _game.playedCardStack..add(card),
       currentPlayerId: nextPlayer.id,
       players: _game.players,
@@ -132,7 +132,7 @@ class CurrentGameBloc {
   }
 
   Player getNextPlayer(Game game, int playerId) {
-    int index = game?.players?.indexWhere((p) => p.id == playerId) ?? -1;
+    var index = game?.players?.indexWhere((p) => p.id == playerId) ?? -1;
     if (index + 1 > game.players.length - 1) {
       index = 0;
     } else {

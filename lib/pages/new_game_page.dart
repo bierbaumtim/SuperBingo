@@ -1,13 +1,14 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-import 'package:share/share.dart';
+
 import 'package:superbingo/bloc/events/game_events.dart';
 import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
 import 'package:superbingo/bloc/states/game_states.dart';
 import 'package:superbingo/utils/dialogs.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share/share.dart';
 
 class NewGamePage extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _NewGamePageState extends State<NewGamePage> {
   String name;
   int maxPlayer, cardAmount;
 
-  FocusScopeNode _node = FocusScopeNode();
+  final FocusScopeNode _node = FocusScopeNode();
 
   @override
   void initState() {
@@ -68,10 +69,25 @@ class _NewGamePageState extends State<NewGamePage> {
       },
       child: BlocBuilder<GameConfigurationBloc, GameConfigurationState>(
         builder: (context, state) {
-          Widget body;
-
-          if (state is WaitingGameConfigInput) {
-            body = Padding(
+          return Scaffold(
+            appBar: AppBar(
+              elevation: 0,
+              title: Text('Neues Spiel'),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.check),
+                  onPressed: !isDisabled
+                      ? () {
+                          if (formKey.currentState.validate()) {
+                            formKey.currentState.save();
+                            setState(() => isValid = true);
+                          }
+                        }
+                      : null,
+                ),
+              ],
+            ),
+            body: Padding(
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
               child: SingleChildScrollView(
                 child: Form(
@@ -89,7 +105,7 @@ class _NewGamePageState extends State<NewGamePage> {
                             hintText: 'Gib den Spiel einen Namen',
                           ),
                           validator: (text) => text.isNotEmpty ? null : 'Bitte gib den Namen des Spiels ein',
-                          onEditingComplete: () => _node.nextFocus(),
+                          onEditingComplete: _node.nextFocus,
                           onSaved: (text) => name = text,
                           enabled: !isDisabled,
                         ),
@@ -113,7 +129,7 @@ class _NewGamePageState extends State<NewGamePage> {
                             }
                           },
                           onSaved: (text) => maxPlayer = int.tryParse(text) ?? 6,
-                          onEditingComplete: () => _node.nextFocus(),
+                          onEditingComplete: _node.nextFocus,
                           enabled: !isDisabled,
                         ),
                         SizedBox(height: 8),
@@ -132,7 +148,7 @@ class _NewGamePageState extends State<NewGamePage> {
                               return 'Es sind nur Zahlen erlaubt';
                             }
                           },
-                          onEditingComplete: () => _node.unfocus(),
+                          onEditingComplete: _node.unfocus,
                           onSaved: (text) => cardAmount = calculateCardAmount(text),
                           enabled: !isDisabled,
                         ),
@@ -205,28 +221,7 @@ class _NewGamePageState extends State<NewGamePage> {
                   ),
                 ),
               ),
-            );
-          }
-
-          return Scaffold(
-            appBar: AppBar(
-              elevation: 0,
-              title: Text('Neues Spiel'),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.check),
-                  onPressed: !isDisabled
-                      ? () {
-                          if (formKey.currentState.validate()) {
-                            formKey.currentState.save();
-                            setState(() => isValid = true);
-                          }
-                        }
-                      : null,
-                ),
-              ],
             ),
-            body: body,
           );
         },
       ),
@@ -234,7 +229,7 @@ class _NewGamePageState extends State<NewGamePage> {
   }
 
   int calculateCardAmount(String amountString) {
-    int amount = int.tryParse(amountString);
+    var amount = int.tryParse(amountString);
     if (amount == null) {
       amount = ((maxPlayer % 4) + 1) * 32;
     }

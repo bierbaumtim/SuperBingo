@@ -134,7 +134,7 @@ class Game {
     return Queue.from(cards);
   }
 
-  static playerToJson(List<Player> player) {
+  static List playerToJson(List<Player> player) {
     if (player != null) {
       return player.map((p) => p.toJson()).toList();
     }
