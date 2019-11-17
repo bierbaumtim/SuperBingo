@@ -8,7 +8,7 @@ import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/dialogs.dart';
 
 import 'package:superbingo/widgets/card_stack.dart';
-import 'package:superbingo/widgets/player_avatars.dart';
+import 'package:superbingo/widgets/avatars/player_avatars.dart';
 import 'package:superbingo/widgets/small_play_card.dart';
 
 class GamePage extends StatefulWidget {
@@ -19,7 +19,7 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
-    final currentGameBloc = Provider.of<CurrentGameBloc>(context);
+    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
 
     return WillPopScope(
       onWillPop: () async {
@@ -35,46 +35,60 @@ class _GamePageState extends State<GamePage> {
         }
         return Future(() => result);
       },
-      child: SlidingUpPanel(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(18.0),
-          topRight: Radius.circular(18.0),
-        ),
-        color: Theme.of(context).canvasColor,
-        minHeight: 95,
-        maxHeight: MediaQuery.of(context).size.height - kToolbarHeight - 20,
-        parallaxEnabled: true,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        body: Scaffold(
-          backgroundColor: Colors.deepOrangeAccent,
-          endDrawer: Drawer(
-            child: Column(
-              children: <Widget>[],
-            ),
-          ),
-          appBar: AppBar(
-            backgroundColor: Colors.deepOrangeAccent,
-          ),
-          body: SafeArea(
-            child: Stack(
-              children: <Widget>[
-                const CardStack(),
-                // const CardHand(),
-                const PlayerAvatars(),
-                Positioned(
-                  bottom: MediaQuery.of(context).size.height / 3,
-                  right: 8,
-                  child: FloatingActionButton(
-                    backgroundColor: Colors.orange,
-                    child: Icon(Icons.flag),
-                    onPressed: () {},
+      child: BlocBuilder<CurrentGameBloc, CurrentGameState>(
+        builder: (context, state) {
+          if (state is CurrentGameLoaded ||
+              state is CurrentGameWaitingForPlayer) {
+            return SlidingUpPanel(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(18.0),
+                topRight: Radius.circular(18.0),
+              ),
+              color: Theme.of(context).canvasColor,
+              minHeight: state is CurrentGameLoaded ? 95 : 0,
+              maxHeight:
+                  MediaQuery.of(context).size.height - kToolbarHeight - 20,
+              parallaxEnabled: true,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              isDraggable: state is CurrentGameLoaded,
+              body: Scaffold(
+                backgroundColor: Colors.deepOrangeAccent,
+                endDrawer: Drawer(
+                  child: Column(
+                    children: <Widget>[],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-        panel: CardScrollView(),
+                appBar: AppBar(
+                  backgroundColor: Colors.deepOrangeAccent,
+                ),
+                body: SafeArea(
+                  child: Stack(
+                    children: <Widget>[
+                      const CardStack(),
+                      // const CardHand(),
+                      const PlayerAvatars(),
+                      Positioned(
+                        bottom: MediaQuery.of(context).size.height / 3,
+                        right: 8,
+                        child: FloatingActionButton(
+                          backgroundColor: Colors.orange,
+                          child: Icon(Icons.flag),
+                          onPressed: () {},
+                        ),
+                      ),
+                      if (state is CurrentGameWaitingForPlayer) ...[
+                        
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+              panel: CardScrollView(),
+            );
+          }
+
+          return Container();
+        },
       ),
     );
   }
