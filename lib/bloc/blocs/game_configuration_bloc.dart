@@ -37,7 +37,7 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
   }
 
   @override
-  get initialState => WaitingGameConfigInput();
+  GameConfigurationState get initialState => WaitingGameConfigInput();
 
   @override
   Stream<GameConfigurationState> mapEventToState(GameConfigurationEvent event) async* {
@@ -146,7 +146,7 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
 
   Future<String> getUsername() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('username') ?? '';
+    return prefs.getString('username') ?? 'Spieler';
   }
 
   static Map<String, dynamic> gameToDbData(Game game) {

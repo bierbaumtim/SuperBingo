@@ -6,6 +6,7 @@ import 'package:firebase_lumberdash/firebase_lumberdash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lumberdash/lumberdash.dart';
+import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 
 import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
 import 'package:superbingo/bloc/blocs/info_bloc.dart';
@@ -42,6 +43,9 @@ void main() async {
           ),
           BlocProvider<JoinGameBloc>(
             builder: (_) => JoinGameBloc(),
+          ),
+          BlocProvider<CurrentGameBloc>(
+            builder: (_) => CurrentGameBloc(),
           ),
           Provider<InfoBloc>(
             builder: (_) => InfoBloc(),

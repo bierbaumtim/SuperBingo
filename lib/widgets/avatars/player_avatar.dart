@@ -36,7 +36,7 @@ class PlayerAvatar extends StatelessWidget {
               ),
               child: CircleAvatar(
                 child: Text(
-                  player.name.substring(0, 1).toUpperCase(),
+                  getPlayerFirstLetter(player.name),
                   style: theme.textTheme.body1.copyWith(fontSize: 17),
                 ),
                 backgroundColor: Colors.green,
@@ -48,11 +48,10 @@ class PlayerAvatar extends StatelessWidget {
               child: Material(
                 elevation: 14,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 1, horizontal: 2),
+                  padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 2),
                   color: Colors.white,
                   child: Text(
-                    player.name,
+                    player?.name ?? '',
                     maxLines: 1,
                     overflow: TextOverflow.fade,
                     style: theme.textTheme.body1.copyWith(
@@ -66,5 +65,13 @@ class PlayerAvatar extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String getPlayerFirstLetter(String name) {
+    if (name.isEmpty) {
+      return 'S';
+    } else {
+      return name.substring(0, 1).toUpperCase();
+    }
   }
 }

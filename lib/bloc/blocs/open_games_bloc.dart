@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/services.dart';
 import 'package:lumberdash/lumberdash.dart';
 
@@ -36,6 +37,7 @@ class PublicGamesBloc {
         _publicGamesSink.add(Error());
       }
     } on dynamic catch (e, s) {
+      Crashlytics.instance.recordError(e, s);
       logError(e, stacktrace: s);
     }
   }

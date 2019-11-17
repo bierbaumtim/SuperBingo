@@ -37,8 +37,16 @@ class _GamePageState extends State<GamePage> {
       },
       child: BlocBuilder<CurrentGameBloc, CurrentGameState>(
         builder: (context, state) {
-          if (state is CurrentGameLoaded ||
-              state is CurrentGameWaitingForPlayer) {
+          if (state is CurrentGameLoaded || state is CurrentGameWaitingForPlayer) {
+            var title;
+            if (state is CurrentGameLoaded) {
+              title = state.game.name;
+            } else if (state is CurrentGameWaitingForPlayer) {
+              title = state.game.name;
+            } else {
+              title = 'Aktuelles Spiel';
+            }
+
             return SlidingUpPanel(
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(18.0),
@@ -46,8 +54,7 @@ class _GamePageState extends State<GamePage> {
               ),
               color: Theme.of(context).canvasColor,
               minHeight: state is CurrentGameLoaded ? 95 : 0,
-              maxHeight:
-                  MediaQuery.of(context).size.height - kToolbarHeight - 20,
+              maxHeight: MediaQuery.of(context).size.height - kToolbarHeight - 20,
               parallaxEnabled: true,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               isDraggable: state is CurrentGameLoaded,
@@ -60,6 +67,7 @@ class _GamePageState extends State<GamePage> {
                 ),
                 appBar: AppBar(
                   backgroundColor: Colors.deepOrangeAccent,
+                  title: Text(title),
                 ),
                 body: SafeArea(
                   child: Stack(
@@ -76,9 +84,7 @@ class _GamePageState extends State<GamePage> {
                           onPressed: () {},
                         ),
                       ),
-                      if (state is CurrentGameWaitingForPlayer) ...[
-                        
-                      ],
+                      if (state is CurrentGameWaitingForPlayer) ...[],
                     ],
                   ),
                 ),
@@ -87,7 +93,7 @@ class _GamePageState extends State<GamePage> {
             );
           }
 
-          return Container();
+          return Scaffold();
         },
       ),
     );
@@ -112,14 +118,10 @@ class CardScrollView extends StatelessWidget {
             );
           } else {
             final cards = state.handCards;
-            final heart =
-                cards.where((c) => c.color == CardColor.heart).toList();
-            final clover =
-                cards.where((c) => c.color == CardColor.clover).toList();
-            final diamond =
-                cards.where((c) => c.color == CardColor.diamond).toList();
-            final spade =
-                cards.where((c) => c.color == CardColor.spade).toList();
+            final heart = cards.where((c) => c.color == CardColor.heart).toList();
+            final clover = cards.where((c) => c.color == CardColor.clover).toList();
+            final diamond = cards.where((c) => c.color == CardColor.diamond).toList();
+            final spade = cards.where((c) => c.color == CardColor.spade).toList();
 
             return Column(
               children: <Widget>[
@@ -191,8 +193,7 @@ class HorizontalCardList extends StatelessWidget {
   Widget build(BuildContext context) {
     if (cards == null || cards.isEmpty) {
       return Container();
-    }
-    if (cards.isNotEmpty) {
+    } else {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: SizedBox(
