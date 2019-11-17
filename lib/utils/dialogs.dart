@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
+/// Klasse mit static Methoden verschiedener Dialogs
 class Dialogs {
+  /// Einfacher Dialog, um Informationen dem Nutzer anzuzeigen.
+  ///
+  /// `title` - Titel für den Dialog(Standard - Hinweis)
+  /// `content` - Information für den Dialog
   static Future<T> showInformationDialog<T>(BuildContext context, {String title = 'Hinweis', String content = ''}) {
     return showDialog<T>(
       context: context,
@@ -24,6 +28,12 @@ class Dialogs {
     );
   }
 
+  /// Dialog, um eine Entscheidung des Nutzers zu überprüfen bzw. abzufragen.
+  ///
+  /// `title` - Titel für den Dialog(Standard - Hinweis)
+  /// `content` - Information für den Dialog
+  /// `noText` - Text für den Nein-Button
+  /// `yesText` - Text für den Ja-Button
   static Future<bool> showDecisionDialog<bool>(
     BuildContext context, {
     String title = 'Hinweis',

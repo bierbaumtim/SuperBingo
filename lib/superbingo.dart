@@ -32,6 +32,7 @@ class _SuperBingoState extends State<SuperBingo> {
   }
 }
 
+/// Theme der App
 ThemeData get lightTheme => ThemeData.dark().copyWith(
       // scaffoldBackgroundColor: Colors.deepOrangeAccent,
       // primaryColor: Colors.deepOrangeAccent,
@@ -53,6 +54,7 @@ ThemeData get lightTheme => ThemeData.dark().copyWith(
       ),
     );
 
+/// TextTheme mit Georgia als FontFamily
 TextTheme get basicTextTheme => TextTheme(
       body1: TextStyle(
         fontFamily: 'Georgia',

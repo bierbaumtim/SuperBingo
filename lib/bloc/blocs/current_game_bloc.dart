@@ -50,7 +50,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   @override
-  void close() {
+  Future<void> close() async {
     gameSub.cancel();
     super.close();
   }
@@ -85,8 +85,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
   BehaviorSubject<List<GameCard>> _unplayedCardsController;
   Sink<List<GameCard>> get _unplayedCardsSink => _unplayedCardsController.sink;
-  Stream<List<GameCard>> get unplayedCardsStream =>
-      _unplayedCardsController.stream;
+  Stream<List<GameCard>> get unplayedCardsStream => _unplayedCardsController.stream;
 
   /// Ruft das Spiel, welches gestartet werden soll ab und setzt alle Variablen im Bloc.
   /// Außerdem wird die StreamSubscription gestartet.
@@ -98,11 +97,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       try {
         final snapshot = await db.collection('games').document(gameId).get();
         _handleNetworkDataChange(snapshot);
-        gameSub = db
-            .collection('games')
-            .document(gameId)
-            .snapshots()
-            .listen(_handleNetworkDataChange);
+        gameSub = db.collection('games').document(gameId).snapshots().listen(_handleNetworkDataChange);
         return true;
       } on dynamic catch (e) {
         return false;
@@ -126,13 +121,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
     final unplayerdCards = game.unplayedCardStack.toList();
     game = game.copyWith(
-      unplayedCardStack:
-          Queue<GameCard>.from(_self.cards.toList() + unplayerdCards),
+      unplayedCardStack: Queue<GameCard>.from(_self.cards.toList() + unplayerdCards),
 
       /// TODO Überprüfen ob die Reihenfolge so richtig ist, ggf. müssen die unplayedCards des Games als erstes genutzt werden und denn die des Spielers addeirt werden
     );
-    final gameDBData =
-        await compute<Game, Map<String, dynamic>>(gameToDbData, game);
+    final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, game);
     await db.collection('games').document(gameId).updateData(gameDBData);
   }
 
@@ -166,8 +159,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       players: _game.players,
     );
 
-    final gameDBData =
-        await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
+    final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
 
     await db.collection('games').document(gameId).updateData(gameDBData);
 

@@ -4,6 +4,7 @@ import 'package:superbingo/models/app_models/card.dart';
 
 import 'package:community_material_icon/community_material_icon.dart';
 
+/// Gibt das zur `color` gehörende Icon zurück.
 IconData getIconByCardColor(CardColor color) {
   assert(color != null);
 
@@ -21,6 +22,7 @@ IconData getIconByCardColor(CardColor color) {
   }
 }
 
+/// Gibt die zur `color` gehörende Farbe zurück.
 Color getColorByCardColor(CardColor color) {
   assert(color != null);
 
@@ -31,6 +33,7 @@ Color getColorByCardColor(CardColor color) {
   }
 }
 
+/// Gibt die Nummer/den Buchstaben zur `number` zugehörigen zurück.
 String getTextByCardNumber(CardNumber number) {
   switch (number) {
     case CardNumber.ace:
@@ -58,6 +61,7 @@ String getTextByCardNumber(CardNumber number) {
   }
 }
 
+/// Abfrage ob die `number` eine Nummer ist.
 bool isNumberCard(CardNumber number) =>
     number == CardNumber.five ||
     number == CardNumber.six ||

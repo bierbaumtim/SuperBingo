@@ -31,7 +31,7 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
   }
 
   @override
-  void close() {
+  Future<void> close() async {
     _gameLinkController.close();
     super.close();
   }
