@@ -33,6 +33,13 @@ class CurrentGameLoaded extends CurrentGameState {
   List<Object> get props => super.props..add(game);
 }
 
+class CurrentGameWaitingForPlayer extends CurrentGameState {
+  /// Aktuelles Game Objekts
+  final Game game;
+
+  CurrentGameWaitingForPlayer({this.game});
+}
+
 /// State der eine
 class CurrentGameEmpty extends CurrentGameState {}
 

@@ -43,6 +43,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     if (event is StartGame) {
       yield* _mapStartGameToState(event);
     } else if (event is StartGameWaitingLobby) {
+      yield* _mapStartGameWaitingLobbyToState(event);
     } else if (event is LeaveGame) {
       yield* _mapLeaveGameToState(event);
     } else if (event is EndGame) {
@@ -64,6 +65,20 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
             handCards: _self.cards,
           )
         : CurrentGameStartingFailed();
+  }
+
+  Stream<CurrentGameState> _mapStartGameWaitingLobbyToState(
+      StartGameWaitingLobby event) async* {
+    yield CurrentGameStarting();
+    final success = await _startGame(event.gameId);
+    if (success) {
+      var game = await _getGameSnapshot(event.gameId);
+      game = game.copyWith(state: GameState.waitingForPlayer);
+      await _updateGameData(game);
+      yield CurrentGameWaitingForPlayer(game: game);
+    } else {
+      yield CurrentGameStartingFailed();
+    }
   }
 
   Stream<CurrentGameState> _mapLeaveGameToState(LeaveGame event) async* {
@@ -132,6 +147,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Future<Game> _getGameSnapshot(String gameId) async {
     final snapshot = await db.collection('games').document(gameId).get();
     return Game.fromJson(snapshot.data);
+  }
+
+  Future<void> _updateGameData(Game game) async {
+    final dbGame = await gameToDbData(game);
+    await db.collection('games').document(game.gameID).updateData(dbGame);
   }
 
   void _handleNetworkDataChange(DocumentSnapshot snapshot) async {
