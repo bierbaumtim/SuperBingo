@@ -40,7 +40,7 @@ class _StartPageState extends State<StartPage> {
         BlocListener<GameConfigurationBloc, GameConfigurationState>(
           listener: (context, state) {
             if (state is GameCreated) {
-              currentGameBloc.add(StartGame(state.gameId));
+              currentGameBloc.add(StartGameWaitingLobby(state.gameId));
             } else if (state is GameCreationFailed) {
               showSimpleNotification(
                 Text(state.error),

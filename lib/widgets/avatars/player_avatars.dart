@@ -4,6 +4,7 @@ import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:superbingo/models/app_models/player.dart';
 import 'package:superbingo/widgets/avatars/player_avatar.dart';
 
 /// {@template playeravatars}
@@ -24,33 +25,35 @@ class PlayerAvatars extends StatelessWidget {
     return BlocBuilder<CurrentGameBloc, CurrentGameState>(
       bloc: currentGameBloc,
       builder: (context, state) {
+        var player = <Player>[];
         if (state is CurrentGameLoaded) {
-          if (state.game.players.isNotEmpty) {
-            return Positioned(
-              bottom: playerAvatarBottomPosition,
-              top: 8,
-              left: 8,
-              right: 8,
-              child: Stack(
-                children: state.game.players.map((p) {
-                  final index = state.game.players.indexOf(p);
-                  final length = state.game.players.length;
-                  final postitionCoordinates = _getPositionCoordinates(
-                    index,
-                    length,
-                    playerAvatarBottomPosition,
-                  );
+          player = state.game.players;
+        } else if (state is CurrentGameWaitingForPlayer) {
+          player = state.game.players;
+        }
+        if (player.isNotEmpty) {
+          return Positioned(
+            bottom: playerAvatarBottomPosition,
+            top: 8,
+            left: 8,
+            right: 8,
+            child: Stack(
+              children: player.map((p) {
+                final index = player.indexOf(p);
+                final length = player.length;
+                final postitionCoordinates = _getPositionCoordinates(
+                  index,
+                  length,
+                  playerAvatarBottomPosition,
+                );
 
-                  return PlayerAvatar(
-                    postitionCoordinates: postitionCoordinates,
-                    player: p,
-                  );
-                }).toList(),
-              ),
-            );
-          } else {
-            return Container();
-          }
+                return PlayerAvatar(
+                  postitionCoordinates: postitionCoordinates,
+                  player: p,
+                );
+              }).toList(),
+            ),
+          );
         } else {
           return Container();
         }
@@ -117,8 +120,6 @@ class PlayerAvatars extends StatelessWidget {
       default:
         left = 0;
         top = 0;
-        right = 0;
-        bottom = 0;
     }
 
     return {

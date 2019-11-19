@@ -57,7 +57,11 @@ class _NewGamePageState extends State<NewGamePage> {
           showGameCreationOverlay(context);
         } else if (state is GameCreated) {
           hideGameCreationOverlay();
-          Navigator.of(context).pushNamed('/game');
+          // Navigator.of(context).pushNamed('/game');
+          setState(() {
+            showStartGame = true;
+            isValid = false;
+          });
         } else if (state is GameCreationFailed) {
           hideGameCreationOverlay();
           await Dialogs.showInformationDialog(
@@ -188,8 +192,7 @@ class _NewGamePageState extends State<NewGamePage> {
                               onPressed: () async {
                                 // TODO auf neue Struktur umstellen
                                 // gameBloc.startGame();
-                                // Navigator.of(context)
-                                //     .pushReplacementNamed('/game');
+                                Navigator.of(context).pushReplacementNamed('/game');
                               },
                             ),
                           ),
@@ -242,6 +245,9 @@ class _NewGamePageState extends State<NewGamePage> {
         children: <Widget>[
           BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
+            child: Container(
+              color: Colors.black.withOpacity(0.25),
+            ),
           ),
           Center(
             child: Card(
