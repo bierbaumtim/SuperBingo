@@ -16,7 +16,7 @@ class NewGamePage extends StatefulWidget {
 }
 
 class _NewGamePageState extends State<NewGamePage> {
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   bool isValid, isPublic, showStartGame, isDisabled;
   OverlayEntry _gameCreationOverlay;
 
@@ -82,8 +82,8 @@ class _NewGamePageState extends State<NewGamePage> {
                   icon: Icon(Icons.check),
                   onPressed: !isDisabled
                       ? () {
-                          if (formKey.currentState.validate()) {
-                            formKey.currentState.save();
+                          if (_formKey.currentState.validate()) {
+                            _formKey.currentState.save();
                             setState(() => isValid = true);
                           }
                         }
@@ -95,7 +95,7 @@ class _NewGamePageState extends State<NewGamePage> {
               padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
               child: SingleChildScrollView(
                 child: Form(
-                  key: formKey,
+                  key: _formKey,
                   child: FocusScope(
                     node: _node,
                     child: Column(

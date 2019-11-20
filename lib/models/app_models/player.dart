@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:lumberdash/lumberdash.dart';
 import 'package:superbingo/models/app_models/card.dart';
 
 import 'package:json_annotation/json_annotation.dart';
@@ -60,6 +61,35 @@ class Player {
   void drawCards(Queue<GameCard> cards, {int amount = 6}) {
     for (var i = 0; i < amount - 1; i++) {
       drawCard(cards.removeFirst());
+    }
+  }
+
+  /// Ruft den Index des Spielers mit der `playerId`,
+  /// erhöht dann den Index und gibt den Spieler an diesem
+  /// Index zurück.
+  ///
+  /// Ist der Index gleich dem Ende der Liste, wird der Index wieder auf 0 gesetzt.
+  Player getNextPlayer(List<Player> player, [int playerId]) {
+    final id = playerId ?? this.id;
+    var index = player?.indexWhere((p) => p.id == id) ?? -1;
+    if (index + 1 > player.length - 1) {
+      index = 0;
+    } else {
+      index++;
+    }
+    return player?.elementAt(index);
+  }
+
+  /// Ruft den Spieler mit der `playerId` aus der `player` Liste.
+  /// Ist keiner Vorhanden wird null zurückgegeben.
+  static Player getPlayerFromList(List<Player> player, int playerId) {
+    if (player.isEmpty) {
+      logWarning(
+        '[getPlayerFromList] Player in Game are empty. Can cause problems.',
+      );
+      return null;
+    } else {
+      return player.firstWhere((p) => p.id == playerId, orElse: () => null);
     }
   }
 

@@ -52,8 +52,7 @@ class Game {
     this.state = GameState.waitingForPlayer,
   }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from([]);
 
-  GameCard get topCard =>
-      playedCardStack.isEmpty ? null : playedCardStack.first;
+  GameCard get topCard => playedCardStack.isEmpty ? null : playedCardStack.first;
 
   Game copyWith({
     String name,
@@ -89,17 +88,14 @@ class Game {
         playedCardStack: Game.stackFromJson(json['playedCards'] as List),
         unplayedCardStack: Game.stackFromJson(json['unplayedCards'] as List),
         players: (json['players'] as List)
-            ?.map((e) => e == null
-                ? null
-                : Player.fromJson(Map<String, dynamic>.from(e)))
+            ?.map((e) => e == null ? null : Player.fromJson(Map<String, dynamic>.from(e)))
             ?.toList(),
         name: json['name'] as String ?? 'SuperBingo',
         maxPlayer: json['maxPlayer'] as int ?? 6,
         isPublic: json['isPublic'] as bool ?? true,
         cardAmount: json['cardAmount'] as int ?? 32,
         currentPlayerId: json['currentPlayerId'] as int ?? 0,
-        state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
-            GameState.waitingForPlayer,
+        state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ?? GameState.waitingForPlayer,
       );
 
   void shuffleCards({int times}) {
@@ -113,6 +109,15 @@ class Game {
   void addPlayer(Player player) {
     if (state == GameState.waitingForPlayer && !players.contains(player)) {
       players.add(player);
+    }
+  }
+
+  void removePlayer(Player player) {
+    players.removeWhere((p) => p.id == player.id);
+    if (!players.contains(player)) {
+      final playerCards = player.cards..shuffle();
+      final unplayedCards = unplayedCardStack;
+      unplayedCards.addAll(playerCards);
     }
   }
 
@@ -134,8 +139,7 @@ class Game {
   }
 
   static Queue<GameCard> stackFromJson(List list) {
-    final cards =
-        list.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
+    final cards = list.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
     return Queue.from(cards);
   }
 
@@ -147,9 +151,7 @@ class Game {
   }
 
   static List<Player> playerFromJson(List list) {
-    return list
-        .map((p) => Player.fromJson(Map<String, dynamic>.from(p)))
-        .toList();
+    return list.map((p) => Player.fromJson(Map<String, dynamic>.from(p))).toList();
   }
 
   String _fillGameId(String nGameId) {

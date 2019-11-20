@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,9 +7,7 @@ import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
 import 'package:superbingo/bloc/blocs/join_game_bloc.dart';
 
-import 'package:superbingo/bloc/blocs/open_games_bloc.dart';
 
-import 'package:provider/provider.dart';
 import 'package:superbingo/bloc/events/current_game_events.dart';
 import 'package:superbingo/bloc/events/game_events.dart';
 import 'package:superbingo/bloc/states/game_states.dart';
@@ -104,10 +103,7 @@ class _StartPageState extends State<StartPage> {
                         elevation: 6.0,
                       ),
                       RaisedButton(
-                        onPressed: () {
-                          Provider.of<PublicGamesBloc>(context).getPublicGames();
-                          Navigator.of(context).pushNamed('/join_game');
-                        },
+                        onPressed: () => Navigator.of(context).pushNamed('/join_game'),
                         child: const Text('Spiel beitreten'),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),

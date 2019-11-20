@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
@@ -93,7 +92,14 @@ class _GamePageState extends State<GamePage> {
             );
           }
 
-          return Scaffold();
+          return Scaffold(
+            appBar: AppBar(),
+            body: Center(
+              child: Text(
+                state.toString(),
+              ),
+            ),
+          );
         },
       ),
     );

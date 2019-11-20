@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/card_utils.dart';
@@ -32,8 +34,10 @@ class PlayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
+
     final cardWidget = GestureDetector(
-      onTap: () {},
+      onTap: () => currentGameBloc.playCard(card),
       child: Card(
         elevation: elevation,
         shape: RoundedRectangleBorder(
