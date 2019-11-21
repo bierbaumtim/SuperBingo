@@ -5,6 +5,7 @@ import 'package:superbingo/bloc/states/current_game_states.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:superbingo/models/app_models/player.dart';
+import 'package:superbingo/utils/ui_utils.dart';
 import 'package:superbingo/widgets/avatars/player_avatar.dart';
 
 /// {@template playeravatars}
@@ -41,7 +42,7 @@ class PlayerAvatars extends StatelessWidget {
               children: player.map((p) {
                 final index = player.indexOf(p);
                 final length = player.length;
-                final postitionCoordinates = _getPositionCoordinates(
+                final postitionCoordinates = getPositionCoordinates(
                   index,
                   length,
                   playerAvatarBottomPosition,
@@ -59,74 +60,5 @@ class PlayerAvatars extends StatelessWidget {
         }
       },
     );
-  }
-
-  Map<String, double> _getPositionCoordinates(
-    int index,
-    int length,
-    double playerAvatarBottomPosition,
-  ) {
-    double top, left, right, bottom;
-    switch (length) {
-      case 2:
-        if (index == 0) {
-          left = 0;
-        } else {
-          right = 0;
-        }
-        break;
-      case 3:
-        if (index < 2) {
-          left = 0;
-        } else {
-          right = 0;
-        }
-
-        if (index == 0) bottom = 0;
-        break;
-      case 4:
-        if (index < 2) {
-          left = 0;
-        } else {
-          right = 0;
-        }
-
-        if (index == 0 || index == 3) bottom = 0;
-        break;
-      case 5:
-        if (index < 3) {
-          left = 0;
-        } else {
-          right = 0;
-        }
-
-        if (index == 0) bottom = 0;
-        if (index == 1 || index == 4) {
-          top = (playerAvatarBottomPosition / 2) - 32;
-        }
-        break;
-      case 6:
-        if (index < 3) {
-          left = 0;
-        } else {
-          right = 0;
-        }
-
-        if (index == 0 || index == 5) bottom = 0;
-        if (index == 1 || index == 4) {
-          top = (playerAvatarBottomPosition / 2) - 32;
-        }
-        break;
-      default:
-        left = 0;
-        top = 0;
-    }
-
-    return {
-      'top': top,
-      'left': left,
-      'right': right,
-      'bottom': bottom,
-    };
   }
 }

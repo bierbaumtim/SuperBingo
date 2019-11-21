@@ -87,7 +87,7 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
         gameLink: gameLink,
       );
     } on dynamic catch (e, s) {
-      Crashlytics.instance.recordError(e, s);
+      await Crashlytics.instance.recordError(e, s);
       yield GameCreationFailed('Beim erstellen des Spiels ist ein Fehler aufgetreten.');
       yield WaitingGameConfigInput();
     }

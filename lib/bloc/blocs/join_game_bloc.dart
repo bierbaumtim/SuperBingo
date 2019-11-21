@@ -71,7 +71,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
           yield JoinedGame(filledGame.gameID);
         }
       } on dynamic catch (e, s) {
-        Crashlytics.instance.recordError(e, s);
+        await Crashlytics.instance.recordError(e, s);
         yield WaitingForAction();
       }
     }

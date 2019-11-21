@@ -111,7 +111,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         gameSub = db.collection('games').document(gameId).snapshots().listen(_handleNetworkDataChange);
         return true;
       } on dynamic catch (e, s) {
-        Crashlytics.instance.recordError(e, s);
+        await Crashlytics.instance.recordError(e, s);
         return false;
       }
     } else {
