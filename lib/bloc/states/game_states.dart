@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:superbingo/models/app_models/player.dart';
 
 abstract class GameConfigurationState extends Equatable {
   const GameConfigurationState();
@@ -10,14 +11,21 @@ abstract class GameConfigurationState extends Equatable {
 /// Spiel wurde erstellt und es wird auf Start des Spiels gewartet
 class GameCreated extends GameConfigurationState {
   final String gameId, gameLink;
+  final Player self;
 
   const GameCreated({
     this.gameId,
     this.gameLink,
+    this.self,
   });
 
   @override
-  List<Object> get props => super.props..addAll([gameId, gameLink]);
+  List<Object> get props => super.props
+    ..addAll([
+      gameId,
+      gameLink,
+      self,
+    ]);
 }
 
 /// Spiel wurde gestartet

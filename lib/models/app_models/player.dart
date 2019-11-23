@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:equatable/equatable.dart';
 import 'package:lumberdash/lumberdash.dart';
 import 'package:superbingo/models/app_models/card.dart';
 
@@ -8,7 +9,10 @@ import 'package:json_annotation/json_annotation.dart';
 part 'player.g.dart';
 
 @JsonSerializable()
-class Player {
+class Player with EquatableMixin {
+  @override
+  List<Object> get props => [id, name, cards, isHost];
+
   @JsonKey(name: 'id', defaultValue: 0)
   final int id;
   @JsonKey(name: 'name', defaultValue: '')

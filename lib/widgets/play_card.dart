@@ -20,6 +20,7 @@ class PlayCard extends StatelessWidget {
   final double rotationAngle;
   final double elevation;
   final int index;
+  final bool isActive;
 
   const PlayCard({
     Key key,
@@ -30,6 +31,7 @@ class PlayCard extends StatelessWidget {
     this.height = 175,
     this.width = 100,
     this.elevation = 0,
+    this.isActive = true,
   }) : super(key: key);
 
   @override
@@ -37,7 +39,11 @@ class PlayCard extends StatelessWidget {
     final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
 
     final cardWidget = GestureDetector(
-      onTap: () => currentGameBloc.playCard(card),
+      onTap: () {
+        if (isActive) {
+          currentGameBloc.playCard(card);
+        }
+      },
       child: Card(
         elevation: elevation,
         shape: RoundedRectangleBorder(

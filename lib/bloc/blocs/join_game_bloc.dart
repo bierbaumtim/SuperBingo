@@ -12,6 +12,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:superbingo/service/information_storage.dart';
 
 class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   Firestore db;
@@ -68,10 +69,19 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
 
           await db.collection('games').document(gameId).updateData(gameDBData);
 
-          yield JoinedGame(filledGame.gameID);
+          InformationStorage.instance.gameId = filledGame.gameID;
+          InformationStorage.instance.playerId = _self.id;
+
+          yield JoinedGame(
+            gameId: filledGame.gameID,
+            self: _self,
+          );
         }
       } on dynamic catch (e, s) {
         await Crashlytics.instance.recordError(e, s);
+        yield JoinGameFailed(
+          'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.'
+        );
         yield WaitingForAction();
       }
     }

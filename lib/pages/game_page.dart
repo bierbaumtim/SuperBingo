@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
+import 'package:superbingo/constants/card_deck.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/dialogs.dart';
 
@@ -19,6 +20,8 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
+    final height = MediaQuery.of(context).size.height;
+    final playerAvatarBottomPosition = (height - kToolbarHeight) / 2.1;
 
     return WillPopScope(
       onWillPop: () async {
@@ -38,12 +41,19 @@ class _GamePageState extends State<GamePage> {
         builder: (context, state) {
           if (state is CurrentGameLoaded || state is CurrentGameWaitingForPlayer) {
             var title;
+            List<GameCard> playedCards, unplayedCards;
             if (state is CurrentGameLoaded) {
               title = state.game.name;
+              playedCards = state.playedCards;
+              unplayedCards = state.unplayedCards;
             } else if (state is CurrentGameWaitingForPlayer) {
               title = state.game.name;
+              playedCards = state.game.playedCardStack.toList();
+              unplayedCards = state.game.unplayedCardStack.toList();
             } else {
               title = 'Aktuelles Spiel';
+              playedCards = [];
+              unplayedCards = [];
             }
 
             return SlidingUpPanel(
@@ -52,11 +62,13 @@ class _GamePageState extends State<GamePage> {
                 topRight: Radius.circular(18.0),
               ),
               color: Theme.of(context).canvasColor,
-              minHeight: state is CurrentGameLoaded ? 95 : 0,
+              // minHeight: state is CurrentGameLoaded ? 95 : 0,
+              minHeight: 95,
               maxHeight: MediaQuery.of(context).size.height - kToolbarHeight - 20,
-              parallaxEnabled: true,
+              // parallaxEnabled: true,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              isDraggable: state is CurrentGameLoaded,
+              // isDraggable: state is CurrentGameLoaded,
+              isDraggable: true,
               body: Scaffold(
                 backgroundColor: Colors.deepOrangeAccent,
                 endDrawer: Drawer(
@@ -71,7 +83,35 @@ class _GamePageState extends State<GamePage> {
                 body: SafeArea(
                   child: Stack(
                     children: <Widget>[
-                      const CardStack(),
+                      Positioned(
+                        top: 80,
+                        left: 76,
+                        right: 76,
+                        bottom: playerAvatarBottomPosition,
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Expanded(
+                                child: CardStack(
+                                  type: CardStackType.unplayedCards,
+                                  cards: unplayedCards,
+                                  // cards: defaultCardDeck,
+                                ),
+                              ),
+                              Expanded(
+                                child: CardStack(
+                                  type: CardStackType.playedCards,
+                                  cards: playedCards,
+                                  // cards: defaultCardDeck,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       // const CardHand(),
                       const PlayerAvatars(),
                       Positioned(
@@ -83,7 +123,19 @@ class _GamePageState extends State<GamePage> {
                           onPressed: () {},
                         ),
                       ),
-                      if (state is CurrentGameWaitingForPlayer) ...[],
+                      if (state is CurrentGameWaitingForPlayer) ...[
+                        Positioned(
+                          bottom: 2,
+                          left: 8,
+                          right: 8,
+                          child: Center(
+                            child: RaisedButton(
+                              onPressed: () {},
+                              child: Text('Spiel starten'),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -176,8 +228,56 @@ class CardScrollView extends StatelessWidget {
             );
           }
         } else {
-          return Center(
-            child: CircularProgressIndicator(),
+          final cards = defaultCardDeck;
+          final heart = cards.where((c) => c.color == CardColor.heart).toList();
+          final clover = cards.where((c) => c.color == CardColor.clover).toList();
+          final diamond = cards.where((c) => c.color == CardColor.diamond).toList();
+          final spade = cards.where((c) => c.color == CardColor.spade).toList();
+
+          return Column(
+            children: <Widget>[
+              SizedBox(
+                height: 12.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    width: 30,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(12.0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 18.0,
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: <Widget>[
+                      HorizontalCardList(
+                        cards: clover,
+                      ),
+                      HorizontalCardList(
+                        cards: spade,
+                      ),
+                      HorizontalCardList(
+                        cards: diamond,
+                      ),
+                      HorizontalCardList(
+                        cards: heart,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           );
         }
       },

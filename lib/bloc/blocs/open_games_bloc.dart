@@ -23,28 +23,9 @@ class PublicGamesBloc {
   Stream get publicGamesStream => _publicGamesController.stream;
 
   Future<void> getPublicGames() async {
-    final dbGames = Firestore.instance.collection('games');
+    final dbGames = await Firestore.instance.collection('games').getDocuments();
     _publicGamesSink.add(null);
-    try {
-      final docs = (await dbGames.getDocuments()).documents;
-      final games = docs.map<Game>((g) => Game.fromJson(g.data)).toList();
-      var publicGames = <Game>[];
-      for (var game in games) {
-        if (game.isPublic == true && game.state == GameState.waitingForPlayer) {
-          publicGames.add(game);
-        }
-      }
-      _publicGamesSink.add(publicGames);
-    } on PlatformException catch (e) {
-      if (e.message.contains('PERMISSION_DENIED')) {
-        _publicGamesSink.add(PermissionError(e.message.replaceAll('PERMISSION_DENIED:', '').trim()));
-      } else {
-        _publicGamesSink.add(Error());
-      }
-    } on dynamic catch (e, s) {
-      await Crashlytics.instance.recordError(e, s);
-      logError(e, stacktrace: s);
-    }
+    _handleSnapshot(dbGames);
   }
 
   void initListener() {

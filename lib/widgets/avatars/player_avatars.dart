@@ -40,7 +40,7 @@ class PlayerAvatars extends StatelessWidget {
             right: 8,
             child: Stack(
               children: player.map((p) {
-                final index = player.indexOf(p);
+                final index = player.indexWhere((player) => player.id == p.id);
                 final length = player.length;
                 final postitionCoordinates = getPositionCoordinates(
                   index,

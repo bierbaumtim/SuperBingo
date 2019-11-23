@@ -7,7 +7,6 @@ import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
 import 'package:superbingo/bloc/blocs/join_game_bloc.dart';
 
-
 import 'package:superbingo/bloc/events/current_game_events.dart';
 import 'package:superbingo/bloc/events/game_events.dart';
 import 'package:superbingo/bloc/states/game_states.dart';
@@ -28,7 +27,11 @@ class _StartPageState extends State<StartPage> {
         BlocListener<JoinGameBloc, JoinGameState>(
           listener: (context, state) {
             if (state is JoinedGame) {
-              currentGameBloc.add(StartGame(state.gameId));
+              currentGameBloc.add(StartGame(
+                gameId: state.gameId,
+                self: state.self,
+              ));
+              Navigator.of(context).pushNamed('/game');
             } else if (state is JoinGameFailed) {
               showSimpleNotification(
                 Text(state.error),
@@ -39,7 +42,10 @@ class _StartPageState extends State<StartPage> {
         BlocListener<GameConfigurationBloc, GameConfigurationState>(
           listener: (context, state) {
             if (state is GameCreated) {
-              currentGameBloc.add(StartGameWaitingLobby(state.gameId));
+              currentGameBloc.add(StartGameWaitingLobby(
+                gameId: state.gameId,
+                self: state.self,
+              ));
             } else if (state is GameCreationFailed) {
               showSimpleNotification(
                 Text(state.error),

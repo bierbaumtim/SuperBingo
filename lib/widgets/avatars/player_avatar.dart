@@ -20,42 +20,81 @@ class PlayerAvatar extends StatelessWidget {
       bottom: postitionCoordinates['bottom'],
       right: postitionCoordinates['right'],
       top: postitionCoordinates['top'],
-      child: Container(
-        constraints: BoxConstraints(
-          maxWidth: 52,
-          maxHeight: 70,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+      child: SizedBox(
+        width: 52,
+        height: 60,
+        child: Stack(
+          fit: StackFit.expand,
           children: <Widget>[
-            Material(
-              elevation: 12,
-              color: Colors.deepOrange,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: CircleAvatar(
-                child: Text(
-                  getPlayerFirstLetter(player.name),
-                  style: theme.textTheme.body1.copyWith(fontSize: 17),
+            Align(
+              alignment: Alignment.topCenter,
+              child: SizedBox(
+                width: 50,
+                height: 50,
+                child: Material(
+                  elevation: 12,
+                  color: Colors.deepOrangeAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: CircleAvatar(
+                    child: Text(
+                      getPlayerFirstLetter(player.name),
+                      style: theme.textTheme.body1.copyWith(fontSize: 17),
+                    ),
+                    backgroundColor: Colors.green,
+                    minRadius: 25,
+                  ),
                 ),
-                backgroundColor: Colors.green,
-                minRadius: 25,
               ),
             ),
-            FractionalTranslation(
-              translation: Offset(0, -0.6),
-              child: Material(
-                elevation: 14,
+            Positioned(
+              top: 0,
+              right: 0,
+              child: FractionalTranslation(
+                translation: Offset(.175, -.175),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 1, horizontal: 2),
-                  color: Colors.white,
+                  width: 18,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.red,
+                  ),
+                  padding: const EdgeInsets.all(3),
                   child: Text(
-                    player?.name ?? '',
-                    maxLines: 1,
-                    overflow: TextOverflow.fade,
-                    style: theme.textTheme.body1.copyWith(
-                      color: Colors.black,
+                    '${player.cards.length}',
+                    // '30',
+                    style: TextStyle(
+                      fontSize: 10,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(25),
+                  color: Colors.black,
+                ),
+                padding: const EdgeInsets.symmetric(vertical: 2.5, horizontal: 6),
+                child: ClipRRect(
+                  child: Material(
+                    elevation: 14,
+                    color: Colors.black,
+                    child: Text(
+                      player?.name ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.visible,
+                      style: theme.textTheme.body1.copyWith(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),

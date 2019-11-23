@@ -14,6 +14,7 @@ import 'package:superbingo/constants/card_deck.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
+import 'package:superbingo/service/information_storage.dart';
 import 'package:superbingo/utils/connection.dart';
 
 enum GameBlocState { empty, created, waitingForPlayer }
@@ -82,9 +83,14 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
 
       await db.collection('games').document(gameId).updateData(gameDBData);
 
+      InformationStorage.instance.playerId = _self.id;
+      InformationStorage.instance.gameId = gameId;
+      InformationStorage.instance.gameLink = gameLink;
+
       yield GameCreated(
         gameId: gameId,
         gameLink: gameLink,
+        self: _self,
       );
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
@@ -106,6 +112,7 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
   }) async {
     final username = await getUsername();
     _self = Player.create(username, isHost: true);
+
     var cardStack = _generateCardStack(cardAmount);
     _self.drawCards(cardStack);
 

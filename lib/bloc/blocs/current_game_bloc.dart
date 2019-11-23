@@ -15,13 +15,14 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:superbingo/service/information_storage.dart';
 
 class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Firestore db;
   StreamSubscription gameSub;
-  String gameId;
-  String gameLink;
-  int _playerId;
+  String get gameId => InformationStorage.instance.gameId;
+  String get gameLink => InformationStorage.instance.gameLink;
+  int get _playerId => InformationStorage.instance.playerId;
   Game _game;
   Player _self;
 
@@ -49,38 +50,60 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
   @override
   Future<void> close() async {
-    gameSub.cancel();
+    gameSub?.cancel();
     super.close();
   }
 
   Stream<CurrentGameState> _mapStartGameToState(StartGame event) async* {
     yield CurrentGameStarting();
-    final success = await _startGame(event.gameId);
-    yield success
-        ? CurrentGameLoaded(
-            game: _game,
-            handCards: _self.cards,
-            playedCards: _game.playedCardStack.toList(),
-            unplayedCards: _game.unplayedCardStack.toList(),
-          )
-        : CurrentGameStartingFailed();
+    try {
+      _self = event.self;
+      final success = await _startGame(event.gameId);
+      yield success
+          ? CurrentGameLoaded(
+              game: _game,
+              handCards: _self.cards,
+              playedCards: _game.playedCardStack.toList(),
+              unplayedCards: _game.unplayedCardStack.toList(),
+            )
+          : CurrentGameStartingFailed();
+    } on dynamic catch (e, s) {
+      await Crashlytics.instance.recordError(e, s);
+      yield CurrentGameStartingFailed();
+    }
   }
 
   Stream<CurrentGameState> _mapStartGameWaitingLobbyToState(StartGameWaitingLobby event) async* {
     yield CurrentGameStarting();
-    final success = await _startGame(event.gameId);
-    if (success) {
-      var game = await _getGameSnapshot(event.gameId);
-      game = game.copyWith(state: GameState.waitingForPlayer);
-      await _updateGameData(game);
-      yield CurrentGameWaitingForPlayer(game: game);
-    } else {
+    try {
+      _self = event.self;
+      final success = await _startGame(event.gameId);
+      if (success) {
+        var game = await _getGameSnapshot(event.gameId);
+        game = game.copyWith(state: GameState.waitingForPlayer);
+        await _updateGameData(game);
+        yield CurrentGameWaitingForPlayer(game: game);
+      } else {
+        yield CurrentGameStartingFailed();
+      }
+    } on dynamic catch (e, s) {
+      await Crashlytics.instance.recordError(e, s);
       yield CurrentGameStartingFailed();
     }
   }
 
   Stream<CurrentGameState> _mapUpdateCurrentGameToState(UpdateCurrentGame event) async* {
     final self = Player.getPlayerFromList(event.game.players, _playerId);
+    if (_game.players.length < event.game.players.length) {
+      final newPlayer = event.game.players.firstWhere(
+        (p) => _game.players.indexWhere((oldPlayer) => p.id == oldPlayer.id) == -1,
+        orElse: () => null,
+      );
+      if (newPlayer != null) {
+        yield PlayerJoined(newPlayer);
+      }
+    }
+    _game = event.game;
     yield CurrentGameLoaded(
       game: event.game,
       handCards: self.cards,
@@ -92,9 +115,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Stream<CurrentGameState> _mapLeaveGameToState(LeaveGame event) async* {
     await leaveGame();
     _self = null;
-    _playerId = null;
-    gameId = null;
-    gameLink = null;
+    InformationStorage.instance.clearInformations();
     yield CurrentGameEmpty();
   }
 
@@ -104,10 +125,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   /// Gab es beim Ausführen der Methode keine Fehler wird die Funktion mit `true` beendet,
   /// tritt ein Fehler auf mit `false`.
   Future<bool> _startGame(String gameId) async {
-    if (gameSub != null) {
+    if (gameId != null) {
       try {
         final snapshot = await db.collection('games').document(gameId).get();
-        _handleNetworkDataChange(snapshot);
+        _game = Game.fromJson(snapshot.data);
         gameSub = db.collection('games').document(gameId).snapshots().listen(_handleNetworkDataChange);
         return true;
       } on dynamic catch (e, s) {
@@ -147,10 +168,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   void _handleNetworkDataChange(DocumentSnapshot snapshot) async {
-    _game = Game.fromJson(snapshot.data);
-    // final player = getPlayerFromGame(_game.players, _playerId);
-    add(UpdateCurrentGame(_game));
-    // _playedCardsSink.add(_game?.playedCardStack?.toList()?.reversed);
+    final game = Game.fromJson(snapshot.data);
+    add(UpdateCurrentGame(game));
   }
 
   // TODO in Event umwandeln
@@ -163,7 +182,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     _self.cards.removeWhere((c) => c == card);
     final index = _game.players.indexWhere((p) => p.id == _self.id);
     final nextPlayer = _self.getNextPlayer(_game.players);
-    _game.players.replaceRange(index, index + 1, [_self]);
+    if (index == _game.players.length) {
+      _game.players.replaceRange(index, index, [_self]);
+    } else {
+      _game.players.replaceRange(index, index + 1, [_self]);
+    }
     var filledGame = _game.copyWith(
       playedCardStack: _game.playedCardStack..add(card),
       currentPlayerId: nextPlayer.id,

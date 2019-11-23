@@ -10,7 +10,7 @@ class InnerCardIcons extends StatelessWidget {
   const InnerCardIcons({
     Key key,
     this.color,
-    this.isSmall = false,
+    this.isSmall = true,
   }) : super(key: key);
 
   @override

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:superbingo/models/app_models/player.dart';
 
 abstract class JoinGameState extends Equatable {
   const JoinGameState();
@@ -11,8 +12,15 @@ class JoiningGame extends JoinGameState {}
 
 class JoinedGame extends JoinGameState {
   final String gameId;
+  final Player self;
 
-  JoinedGame(this.gameId);
+  JoinedGame({
+    this.gameId,
+    this.self,
+  });
+
+  @override
+  List<Object> get props => super.props..addAll([gameId, self]);
 }
 
 class JoinGameFailed extends JoinGameState {
