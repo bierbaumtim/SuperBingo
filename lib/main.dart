@@ -12,6 +12,7 @@ import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
 import 'package:superbingo/bloc/blocs/info_bloc.dart';
 import 'package:superbingo/bloc/blocs/join_game_bloc.dart';
 import 'package:superbingo/bloc/blocs/open_games_bloc.dart';
+import 'package:superbingo/bloc/events/info_events.dart';
 import 'package:superbingo/superbingo.dart';
 
 import 'package:provider/provider.dart';
@@ -48,9 +49,8 @@ void main() async {
           BlocProvider<CurrentGameBloc>(
             builder: (_) => CurrentGameBloc(),
           ),
-          Provider<InfoBloc>(
-            builder: (_) => InfoBloc(),
-            dispose: (_, bloc) => bloc.dispose(),
+          BlocProvider<InfoBloc>(
+            builder: (_) => InfoBloc()..add(LoadInfos()),
           ),
         ],
         child: SuperBingo(),

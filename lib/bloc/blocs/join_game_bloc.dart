@@ -48,7 +48,6 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
       yield WaitingForAction();
     } else {
       try {
-        gameId = gameId;
         final username = await getUsername();
         _self = Player.create(username);
         final snapshot = await db.collection('games').document(gameId).get();

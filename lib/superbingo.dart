@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:superbingo/pages/game_page.dart';
 import 'package:superbingo/pages/join_game_page.dart';
@@ -7,6 +8,9 @@ import 'package:superbingo/pages/player_page.dart';
 import 'package:superbingo/pages/start.dart';
 
 import 'package:overlay_support/overlay_support.dart';
+
+import 'bloc/blocs/info_bloc.dart';
+import 'bloc/states/info_states.dart';
 
 class SuperBingo extends StatefulWidget {
   @override
@@ -20,7 +24,25 @@ class _SuperBingoState extends State<SuperBingo> {
       child: MaterialApp(
         themeMode: ThemeMode.light,
         theme: lightTheme,
-        home: StartPage(),
+        home: BlocBuilder<InfoBloc, InfoState>(
+          builder: (context, state) {
+            if (state is InfosLoaded) {
+              return StartPage();
+            } else if (state is InfosLoading) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (state is FirstStart) {
+              return PlayerPage();
+            } else {
+              return Scaffold(
+                body: Center(
+                  child: Text('Test'),
+                ),
+              );
+            }
+          },
+        ),
         routes: {
           '/new_game': (context) => NewGamePage(),
           '/join_game': (context) => JoinGamePage(),

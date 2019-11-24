@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:superbingo/bloc/blocs/info_bloc.dart';
+import 'package:superbingo/bloc/events/info_events.dart';
+import 'package:superbingo/bloc/states/info_states.dart';
 
 class PlayerPage extends StatefulWidget {
   @override
@@ -22,7 +24,8 @@ class _PlayerPageState extends State<PlayerPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final username = ModalRoute.of(context).settings.arguments as String;
+    final infoBloc = BlocProvider.of<InfoBloc>(context);
+    final username = infoBloc.state is InfosLoaded ? (infoBloc.state as InfosLoaded).playerName : '';
     if (controller.text.isEmpty) {
       controller.text = username;
       this.username = username;
@@ -31,7 +34,7 @@ class _PlayerPageState extends State<PlayerPage> {
 
   @override
   Widget build(BuildContext context) {
-    final infoBloc = Provider.of<InfoBloc>(context);
+    final infoBloc = BlocProvider.of<InfoBloc>(context);
 
     final border = OutlineInputBorder(
       borderSide: BorderSide(
@@ -40,62 +43,69 @@ class _PlayerPageState extends State<PlayerPage> {
       ),
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Neuer Spieler'),
-      ),
-      body: ListView(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: controller,
-              decoration: InputDecoration(
-                border: border,
-                enabledBorder: border,
-                focusedBorder: border,
-                labelText: 'Name',
-                hintText: 'Gib den Spiel einen Namen',
-              ),
-              onChanged: (text) => username = text,
-              onSubmitted: (text) => setState(() => username = text),
-            ),
+    return BlocBuilder<InfoBloc, InfoState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('Neuer Spieler'),
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: Colors.deepOrange,
-        label: Text('Spieler erstellen'),
-        icon: Icon(Icons.arrow_forward_ios),
-        onPressed: () async {
-          if (username != null && username.isNotEmpty) {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('username', username);
-            infoBloc.firstStartCompleted();
-            Navigator.pop(context);
-          } else {
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text('Hinweis'),
-                content: Text('Der Benutzername darf nicht leer sein.'),
-                actions: <Widget>[
-                  RaisedButton(
-                    color: Colors.deepOrange,
-                    child: Text(
-                      'Ok',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    onPressed: () => Navigator.pop(context),
+          body: ListView(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: controller,
+                  decoration: InputDecoration(
+                    border: border,
+                    enabledBorder: border,
+                    focusedBorder: border,
+                    labelText: 'Name',
                   ),
-                ],
+                  onChanged: (text) => username = text,
+                  onSubmitted: (text) => setState(() => username = text),
+                ),
               ),
-            );
-          }
-        },
-      ),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            backgroundColor: Colors.deepOrange,
+            label: Text(
+              state is InfosLoaded ? 'Name ändern' : 'Spieler erstellen',
+            ),
+            icon: Icon(Icons.arrow_forward_ios),
+            onPressed: () async {
+              if (username != null && username.isNotEmpty) {
+                if (state is FirstStart) {
+                  infoBloc.add(CompleteFirstStartConfiguration(username));
+                } else {
+                  infoBloc.add(SetPlayerName(username));
+                  Navigator.pop(context);
+                }
+              } else {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('Hinweis'),
+                    content: Text('Der Benutzername darf nicht leer sein.'),
+                    actions: <Widget>[
+                      RaisedButton(
+                        color: Colors.deepOrange,
+                        child: Text(
+                          'Ok',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }

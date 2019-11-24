@@ -1,30 +1,72 @@
 import 'dart:async';
 
-import 'package:rxdart/rxdart.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:superbingo/bloc/events/info_events.dart';
+import 'package:superbingo/bloc/states/info_states.dart';
 
-class InfoBloc {
-  BehaviorSubject<bool> _firstStartController;
+import 'package:bloc/bloc.dart';
 
-  Sink<bool> get _firstStartSink => _firstStartController.sink;
-  Stream<bool> get firstStartStream => _firstStartController.stream;
+class InfoBloc extends Bloc<InfoEvent, InfoState> {
+  @override
+  InfoState get initialState => InfosEmpty();
 
-  InfoBloc() {
-    _firstStartController = BehaviorSubject();
-    SharedPreferences.getInstance().then((prefs) {
+  @override
+  Stream<InfoState> mapEventToState(InfoEvent event) async* {
+    if (event is LoadInfos) {
+      yield* _mapLoadInfosToState(event);
+    } else if (event is CompleteFirstStartConfiguration) {
+      yield* _mapCompleteFirstStartConfigurationToState(event);
+    } else if (event is SetPlayerName) {
+      yield* _mapSetPlayerNameToState(event);
+    }
+  }
+
+  Stream<InfoState> _mapLoadInfosToState(LoadInfos event) async* {
+    yield InfosLoading();
+    try {
+      final prefs = await SharedPreferences.getInstance();
       final firstStart = prefs.getBool('firststart') ?? true;
-      _firstStartSink.add(firstStart);
       if (firstStart) {
-        prefs.setBool('firststart', false);
+        await prefs.setInt('starttime', DateTime.now().millisecondsSinceEpoch);
+        yield FirstStart();
+      } else {
+        final playerName = prefs.getString('playername') ?? '';
+        final playerId = prefs.getInt('playerid') ?? -1;
+        yield InfosLoaded(
+          playerName: playerName,
+          playerId: playerId,
+        );
       }
-    });
+    } on dynamic catch (e, s) {
+      await Crashlytics.instance.recordError(e, s);
+
+      yield InfosEmpty();
+    }
   }
 
-  void firstStartCompleted() {
-    _firstStartSink.add(false);
+  Stream<InfoState> _mapCompleteFirstStartConfigurationToState(CompleteFirstStartConfiguration event) async* {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('firststart', false);
+    add(SetPlayerName(event.playerName));
   }
 
-  void dispose() {
-    _firstStartController.close();
+  Stream<InfoState> _mapSetPlayerNameToState(SetPlayerName event) async* {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('playername', event.playerName);
+    final time = await prefs.getInt('starttime');
+    final playerId = _generatePlayerId(event.playerName, time);
+    await prefs.setInt('playerid', playerId);
+    yield InfosLoaded(
+      playerName: event.playerName,
+      playerId: playerId,
+    );
+  }
+
+  int _generatePlayerId(String playerName, int time) {
+    var hash = playerName.hashCode;
+    hash = hash & time.hashCode;
+    hash = hash ^ playerName.hashCode;
+    return hash;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
@@ -37,122 +38,136 @@ class _GamePageState extends State<GamePage> {
         }
         return Future(() => result);
       },
-      child: BlocBuilder<CurrentGameBloc, CurrentGameState>(
-        builder: (context, state) {
-          if (state is CurrentGameLoaded || state is CurrentGameWaitingForPlayer) {
-            var title;
-            List<GameCard> playedCards, unplayedCards;
-            if (state is CurrentGameLoaded) {
-              title = state.game.name;
-              playedCards = state.playedCards;
-              unplayedCards = state.unplayedCards;
-            } else if (state is CurrentGameWaitingForPlayer) {
-              title = state.game.name;
-              playedCards = state.game.playedCardStack.toList();
-              unplayedCards = state.game.unplayedCardStack.toList();
-            } else {
-              title = 'Aktuelles Spiel';
-              playedCards = [];
-              unplayedCards = [];
-            }
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<CurrentGameBloc, CurrentGameState>(
+            listener: (context, state) {
+              if (state is PlayerJoined) {
+                showSimpleNotification(
+                  Text('${state.player?.name} ist dem Spiel beigetreten.'),
+                  foreground: Colors.white,
+                );
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<CurrentGameBloc, CurrentGameState>(
+          builder: (context, state) {
+            if (state is CurrentGameLoaded || state is CurrentGameWaitingForPlayer) {
+              var title;
+              List<GameCard> playedCards, unplayedCards;
+              if (state is CurrentGameLoaded) {
+                title = state.game.name;
+                playedCards = state.playedCards;
+                unplayedCards = state.unplayedCards;
+              } else if (state is CurrentGameWaitingForPlayer) {
+                title = state.game.name;
+                playedCards = state.game.playedCardStack.toList();
+                unplayedCards = state.game.unplayedCardStack.toList();
+              } else {
+                title = 'Aktuelles Spiel';
+                playedCards = [];
+                unplayedCards = [];
+              }
 
-            return SlidingUpPanel(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(18.0),
-                topRight: Radius.circular(18.0),
-              ),
-              color: Theme.of(context).canvasColor,
-              // minHeight: state is CurrentGameLoaded ? 95 : 0,
-              minHeight: 95,
-              maxHeight: MediaQuery.of(context).size.height - kToolbarHeight - 20,
-              // parallaxEnabled: true,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              // isDraggable: state is CurrentGameLoaded,
-              isDraggable: true,
-              body: Scaffold(
-                backgroundColor: Colors.deepOrangeAccent,
-                endDrawer: Drawer(
-                  child: Column(
-                    children: <Widget>[],
-                  ),
+              return SlidingUpPanel(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(18.0),
+                  topRight: Radius.circular(18.0),
                 ),
-                appBar: AppBar(
+                color: Theme.of(context).canvasColor,
+                // minHeight: state is CurrentGameLoaded ? 95 : 0,
+                minHeight: 95,
+                maxHeight: MediaQuery.of(context).size.height - kToolbarHeight - 20,
+                // parallaxEnabled: true,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                // isDraggable: state is CurrentGameLoaded,
+                isDraggable: true,
+                body: Scaffold(
                   backgroundColor: Colors.deepOrangeAccent,
-                  title: Text(title),
-                ),
-                body: SafeArea(
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        top: 80,
-                        left: 76,
-                        right: 76,
-                        bottom: playerAvatarBottomPosition,
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Expanded(
-                                child: CardStack(
-                                  type: CardStackType.unplayedCards,
-                                  cards: unplayedCards,
-                                  // cards: defaultCardDeck,
-                                ),
-                              ),
-                              Expanded(
-                                child: CardStack(
-                                  type: CardStackType.playedCards,
-                                  cards: playedCards,
-                                  // cards: defaultCardDeck,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      // const CardHand(),
-                      const PlayerAvatars(),
-                      Positioned(
-                        bottom: MediaQuery.of(context).size.height / 3,
-                        right: 8,
-                        child: FloatingActionButton(
-                          backgroundColor: Colors.orange,
-                          child: Icon(Icons.flag),
-                          onPressed: () {},
-                        ),
-                      ),
-                      if (state is CurrentGameWaitingForPlayer) ...[
+                  endDrawer: Drawer(
+                    child: Column(
+                      children: <Widget>[],
+                    ),
+                  ),
+                  appBar: AppBar(
+                    backgroundColor: Colors.deepOrangeAccent,
+                    title: Text(title),
+                  ),
+                  body: SafeArea(
+                    child: Stack(
+                      children: <Widget>[
                         Positioned(
-                          bottom: 2,
-                          left: 8,
-                          right: 8,
-                          child: Center(
-                            child: RaisedButton(
-                              onPressed: () {},
-                              child: Text('Spiel starten'),
+                          top: 80,
+                          left: 76,
+                          right: 76,
+                          bottom: playerAvatarBottomPosition,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Expanded(
+                                  child: CardStack(
+                                    type: CardStackType.unplayedCards,
+                                    cards: unplayedCards,
+                                    // cards: defaultCardDeck,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: CardStack(
+                                    type: CardStackType.playedCards,
+                                    cards: playedCards,
+                                    // cards: defaultCardDeck,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
+                        // const CardHand(),
+                        const PlayerAvatars(),
+                        Positioned(
+                          bottom: MediaQuery.of(context).size.height / 3,
+                          right: 8,
+                          child: FloatingActionButton(
+                            backgroundColor: Colors.orange,
+                            child: Icon(Icons.flag),
+                            onPressed: () {},
+                          ),
+                        ),
+                        if (state is CurrentGameWaitingForPlayer) ...[
+                          Positioned(
+                            bottom: 2,
+                            left: 8,
+                            right: 8,
+                            child: Center(
+                              child: RaisedButton(
+                                onPressed: () {},
+                                child: Text('Spiel starten'),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
-              ),
-              panel: CardScrollView(),
-            );
-          }
+                panel: CardScrollView(),
+              );
+            }
 
-          return Scaffold(
-            appBar: AppBar(),
-            body: Center(
-              child: Text(
-                state.toString(),
+            return Scaffold(
+              appBar: AppBar(),
+              body: Center(
+                child: Text(
+                  state.toString(),
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

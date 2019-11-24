@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:overlay_support/overlay_support.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
 import 'package:superbingo/bloc/blocs/join_game_bloc.dart';
-
 import 'package:superbingo/bloc/events/current_game_events.dart';
 import 'package:superbingo/bloc/events/game_events.dart';
 import 'package:superbingo/bloc/states/game_states.dart';
 import 'package:superbingo/bloc/states/join_game_states.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 class StartPage extends StatefulWidget {
   @override
@@ -60,11 +59,7 @@ class _StartPageState extends State<StartPage> {
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.person),
-              onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                final username = prefs.getString('username') ?? '';
-                Navigator.pushNamed(context, '/user_page', arguments: username);
-              },
+              onPressed: () => Navigator.pushNamed(context, '/user_page'),
             ),
           ],
         ),

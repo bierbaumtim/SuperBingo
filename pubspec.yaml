@@ -38,7 +38,7 @@ dependencies:
   bloc: ^2.0.0
   flutter_bloc: ^2.0.0
   # bloc_test: ^2.1.0
-  equatable: ^1.0.0
+  equatable: ^1.0.1
 
   sliding_up_panel:
     git:
