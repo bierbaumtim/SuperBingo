@@ -1,0 +1,49 @@
+on:
+  push:
+    branches:
+      - "master"
+    paths:
+      - "superbingo/pubspec.yaml"
+      - ".github/workflows/main.yaml"
+name: Test, Build and Release apk
+jobs:
+  build-android:
+    name: Build APK
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    - uses: subosito/flutter-action@v1
+      with:
+        flutter-version: '1.12.13+hotfix.2'
+        channel: 'beta'
+    - run: flutter pub get
+    - run: flutter test
+    - run: flutter build apk --split-per-abi
+    - name: upload android artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: superbingo-android
+        path: superbingo/build/app/outputs
+  build-ios:
+    name: Build APK
+    runs-on: macOS-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    - uses: subosito/flutter-action@v1
+      with:
+        flutter-version: '1.12.13+hotfix.2'
+        channel: 'beta'
+    - run: flutter pub get
+    - run: flutter test
+    - run: flutter build ios  --release --no-codesign
+    - name: upload ios artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: superbingo-ios
+        path: superbingo/build/ios/iphoneos
