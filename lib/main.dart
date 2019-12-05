@@ -37,20 +37,20 @@ void main() async {
       MultiProvider(
         providers: [
           Provider<PublicGamesBloc>(
-            builder: (_) => PublicGamesBloc(),
+            create: (_) => PublicGamesBloc(),
             dispose: (_, bloc) => bloc.dispose(),
           ),
           BlocProvider<GameConfigurationBloc>(
-            builder: (_) => GameConfigurationBloc(),
+            create: (_) => GameConfigurationBloc(),
           ),
           BlocProvider<JoinGameBloc>(
-            builder: (_) => JoinGameBloc(),
+            create: (_) => JoinGameBloc(),
           ),
           BlocProvider<CurrentGameBloc>(
-            builder: (_) => CurrentGameBloc(),
+            create: (_) => CurrentGameBloc(),
           ),
           BlocProvider<InfoBloc>(
-            builder: (_) => InfoBloc()..add(LoadInfos()),
+            create: (_) => InfoBloc()..add(LoadInfos()),
           ),
         ],
         child: SuperBingo(),
