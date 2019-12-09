@@ -21,7 +21,7 @@ void main() {
           expect(coordinates1['bottom'], null);
 
           final coordinates2 = getPositionCoordinates(1, 2, 350);
-          expect(coordinates2['top'], 0);
+          expect(coordinates2['top'], null);
           expect(coordinates2['left'], null);
           expect(coordinates2['right'], 0);
           expect(coordinates2['bottom'], null);
@@ -44,7 +44,7 @@ void main() {
           expect(coordinates3['top'], null);
           expect(coordinates3['left'], null);
           expect(coordinates3['right'], 0);
-          expect(coordinates3['bottom'], 0);
+          expect(coordinates3['bottom'], null);
         });
       });
     });
