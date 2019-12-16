@@ -77,14 +77,14 @@ class _GamePageState extends State<GamePage> {
                   topRight: Radius.circular(18.0),
                 ),
                 color: Theme.of(context).canvasColor,
-                // minHeight: state is CurrentGameLoaded ? 95 : 0,
-                minHeight: 95,
+                minHeight: state is CurrentGameLoaded ? 125 : 0,
+                // minHeight: 125,
                 maxHeight:
                     MediaQuery.of(context).size.height - kToolbarHeight - 20,
                 // parallaxEnabled: true,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                // isDraggable: state is CurrentGameLoaded,
-                isDraggable: true,
+                isDraggable: state is CurrentGameLoaded,
+                // isDraggable: true,
                 body: Scaffold(
                   backgroundColor: Colors.deepOrangeAccent,
                   endDrawer: Drawer(

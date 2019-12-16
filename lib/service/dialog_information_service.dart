@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:overlay_support/overlay_support.dart';
 
-
 class DialogInformationService {
   static final DialogInformationService instance = DialogInformationService._();
 
@@ -46,7 +45,7 @@ class DialogInformationService {
 
   void _showInformationNotification({
     String content,
-    String subtitle,
+    String subtitle = '',
     Color background,
     Color foreground,
     EdgeInsets padding,

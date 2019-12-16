@@ -55,3 +55,12 @@ class PlayCard extends CurrentGameEvent {
   @override
   List<Object> get props => super.props..add(card);
 }
+
+class PullCard extends CurrentGameEvent {
+  final GameCard card;
+
+  const PullCard(this.card);
+
+  @override
+  List<Object> get props => super.props..add(card);
+}

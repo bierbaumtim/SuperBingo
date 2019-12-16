@@ -66,7 +66,13 @@ class CardStack extends StatelessWidget {
                 elevation: elevation,
                 angle: angle,
                 isActive: type == CardStackType.playedCards,
-                onCardTap: (card) => currentGameBloc.add(events.PlayCard(card)),
+                onCardTap: (card) {
+                  if (type == CardStackType.playedCards) {
+                    currentGameBloc.add(events.PlayCard(card));
+                  } else {
+                    currentGameBloc.add(events.PullCard(card));
+                  }
+                },
               ),
               angle: angle,
             ),

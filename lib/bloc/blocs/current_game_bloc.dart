@@ -45,6 +45,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       yield* _mapUpdateCurrentGameToState(event);
     } else if (event is PlayCard) {
       yield* _mapPlayCardToState(event);
+    } else if (event is PullCard) {
+      yield* _mapPullCardToState(event);
     }
   }
 
@@ -128,13 +130,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
       if (message == null) {
         _self.cards.removeWhere((c) => c == event.card);
-        final index = _game.players.indexWhere((p) => p.id == _self.id);
         final nextPlayer = _self.getNextPlayer(_game.players);
-        if (index == _game.players.length) {
-          _game.players.replaceRange(index, index, [_self]);
-        } else {
-          _game.players.replaceRange(index, index + 1, [_self]);
-        }
+        _game.updatePlayer(_self);
         var filledGame = _game.copyWith(
           playedCardStack: _game.playedCardStack..add(event.card),
           currentPlayerId: nextPlayer.id,
@@ -153,6 +150,17 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
     }
+  }
+
+  Stream<CurrentGameState> _mapPullCardToState(PullCard event) async* {
+    final game = await _getGameSnapshot(gameId);
+    final card = game.unplayedCardStack.removeFirst();
+    _self = Player.getPlayerFromList(game.players, _self.id);
+    _self.cards.add(card);
+    game.players = game.players
+        .map((player) => player.id == _self.id ? _self : player)
+        .toList();
+    await _updateGameData(game);
   }
 
   /// Ruft das Spiel, welches gestartet werden soll ab und setzt alle Variablen im Bloc.

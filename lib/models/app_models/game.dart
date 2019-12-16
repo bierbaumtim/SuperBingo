@@ -66,8 +66,7 @@ class Game with EquatableMixin {
     this.state = GameState.waitingForPlayer,
   }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from([]);
 
-  GameCard get topCard =>
-      playedCardStack.isEmpty ? null : playedCardStack.first;
+  GameCard get topCard => playedCardStack.isEmpty ? null : playedCardStack.last;
 
   Game copyWith({
     String name,
@@ -150,6 +149,12 @@ class Game with EquatableMixin {
         players[k].drawCard(playedCardStack.removeFirst());
       }
     }
+  }
+
+  void updatePlayer(Player newPlayer) {
+    players = players
+        .map((player) => player.id == newPlayer.id ? newPlayer : player)
+        .toList();
   }
 
   List<Player> reversePlayerOrder() => players.reversed;

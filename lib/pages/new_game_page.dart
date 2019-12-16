@@ -17,13 +17,13 @@ class NewGamePage extends StatefulWidget {
 
 class _NewGamePageState extends State<NewGamePage> {
   final _formKey = GlobalKey<FormState>();
+  final FocusScopeNode _node = FocusScopeNode();
+  TextEditingController _playerAmountController, _cardDecksAmountController;
   bool isValid, isPublic, showStartGame, isDisabled;
   OverlayEntry _gameCreationOverlay;
 
   String name;
   int maxPlayer, cardAmount;
-
-  final FocusScopeNode _node = FocusScopeNode();
 
   @override
   void initState() {
@@ -32,11 +32,16 @@ class _NewGamePageState extends State<NewGamePage> {
     isPublic = false;
     showStartGame = false;
     isDisabled = false;
+
+    _playerAmountController = TextEditingController(text: '6');
+    _cardDecksAmountController = TextEditingController(text: '2');
   }
 
   @override
   void dispose() {
     hideGameCreationOverlay();
+    _playerAmountController?.dispose();
+    _cardDecksAmountController?.dispose();
     super.dispose();
   }
 
@@ -108,13 +113,16 @@ class _NewGamePageState extends State<NewGamePage> {
                             labelText: 'Name',
                             hintText: 'Gib den Spiel einen Namen',
                           ),
-                          validator: (text) => text.isNotEmpty ? null : 'Bitte gib den Namen des Spiels ein',
+                          validator: (text) => text.isNotEmpty
+                              ? null
+                              : 'Bitte gib den Namen des Spiels ein',
                           onEditingComplete: _node.nextFocus,
                           onSaved: (text) => name = text,
                           enabled: !isDisabled,
                         ),
                         SizedBox(height: 8),
                         TextFormField(
+                          controller: _playerAmountController,
                           decoration: InputDecoration(
                             border: border,
                             enabledBorder: border,
@@ -124,43 +132,48 @@ class _NewGamePageState extends State<NewGamePage> {
                           ),
                           validator: (text) {
                             final parsedAmount = int.tryParse(text) ?? 0;
-                            if (parsedAmount < 2 || parsedAmount > 6) {
-                              return 'Es nur Zahlen zwischen 2 und 6 erlaubt';
-                            } else if (text.isEmpty || parsedAmount > 2) {
+                            if (text.isEmpty || parsedAmount > 2) {
                               return null;
+                            } else if (parsedAmount < 2 || parsedAmount > 6) {
+                              return 'Es nur Zahlen zwischen 2 und 6 erlaubt';
                             } else {
                               return 'Es sind nur Zahlen erlaubt';
                             }
                           },
-                          onSaved: (text) => maxPlayer = int.tryParse(text) ?? 6,
+                          onSaved: (text) =>
+                              maxPlayer = int.tryParse(text) ?? 6,
                           onEditingComplete: _node.nextFocus,
                           enabled: !isDisabled,
                         ),
                         SizedBox(height: 8),
                         TextFormField(
+                          controller: _cardDecksAmountController,
                           decoration: InputDecoration(
                             border: border,
                             enabledBorder: border,
                             focusedBorder: border,
-                            labelText: 'Anzahl der Karten',
+                            labelText: 'Anzahl der Kartendecks',
                           ),
                           validator: (text) {
                             final parsedAmount = int.tryParse(text) ?? 0;
-                            if (text.isEmpty || parsedAmount > 2) {
+                            if (text.isEmpty || parsedAmount > 0) {
                               return null;
                             } else {
                               return 'Es sind nur Zahlen erlaubt';
                             }
                           },
                           onEditingComplete: _node.unfocus,
-                          onSaved: (text) => cardAmount = calculateCardAmount(text),
+                          onSaved: (text) =>
+                              cardAmount = calculateCardAmount(text),
                           enabled: !isDisabled,
                         ),
                         SizedBox(height: 8),
                         CheckboxListTile(
                           title: Text('Öffentliches Spiel'),
                           value: isPublic,
-                          onChanged: (value) => !isDisabled ? setState(() => isPublic = value) : null,
+                          onChanged: (value) => !isDisabled
+                              ? setState(() => isPublic = value)
+                              : null,
                           activeColor: Colors.deepOrange,
                         ),
                         if (isValid)
@@ -192,14 +205,16 @@ class _NewGamePageState extends State<NewGamePage> {
                               onPressed: () async {
                                 // TODO auf neue Struktur umstellen
                                 // gameBloc.startGame();
-                                Navigator.of(context).pushReplacementNamed('/game');
+                                Navigator.of(context)
+                                    .pushReplacementNamed('/game');
                               },
                             ),
                           ),
                           StreamBuilder<String>(
                             stream: gameBloc.gameLinkStream,
                             builder: (context, snapshot) {
-                              final canShare = snapshot.hasData && snapshot.data.isNotEmpty;
+                              final canShare =
+                                  snapshot.hasData && snapshot.data.isNotEmpty;
 
                               return Padding(
                                 padding: EdgeInsets.only(top: 25),
@@ -211,7 +226,8 @@ class _NewGamePageState extends State<NewGamePage> {
                                   onPressed: canShare
                                       ? () async => Share.share(
                                             snapshot.data,
-                                            subject: 'SuperBingo Spieleinladung',
+                                            subject:
+                                                'SuperBingo Spieleinladung',
                                           )
                                       : null,
                                 ),
@@ -232,11 +248,12 @@ class _NewGamePageState extends State<NewGamePage> {
   }
 
   int calculateCardAmount(String amountString) {
-    var amount = int.tryParse(amountString);
-    if (amount == null) {
-      amount = ((maxPlayer % 4) + 1) * 32;
-    }
-    return amount;
+    final decks = int.tryParse(amountString) ?? 1;
+    return decks * 32;
+    // if (amount == null) {
+    //   amount = ((maxPlayer % 4) + 1) * 32;
+    // }
+    // return amount;
   }
 
   void showGameCreationOverlay(BuildContext context) {

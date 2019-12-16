@@ -40,9 +40,10 @@ class PlayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cardWidget = GestureDetector(
       onTap: () {
-        if (isActive && onCardTap != null) {
-          onCardTap(card);
-        }
+        onCardTap?.call(card);
+        // if (isActive && onCardTap != null) {
+        //   onCardTap(card);
+        // }
       },
       child: Card(
         elevation: elevation,
@@ -53,8 +54,7 @@ class PlayCard extends StatelessWidget {
         child: SizedBox(
           height: height,
           width: width,
-          child:
-              isActive ? _ActivePaint(card: card) : _InactivePaint(card: card),
+          child: isActive ? _ActivePaint(card: card) : _InactivePaint(),
         ),
       ),
     );
@@ -171,22 +171,22 @@ class _ActivePaint extends StatelessWidget {
 }
 
 class _InactivePaint extends StatelessWidget {
-  final GameCard card;
-
-  const _InactivePaint({Key key, this.card}) : super(key: key);
+  const _InactivePaint({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8),
-      child: FractionalTranslation(
-        translation: Offset(-.25, -.25),
-        child: Transform.rotate(
-          child: CustomPaint(
-            child: SizedBox.expand(),
-            painter: CardBackPainter(),
+      padding: const EdgeInsets.all(4),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(15),
+        child: FractionalTranslation(
+          translation: Offset(-.5, -.25),
+          child: Transform.rotate(
+            child: CustomPaint(
+              painter: CardBackPainter(),
+            ),
+            angle: radians(45),
           ),
-          angle: radians(45),
         ),
       ),
     );
