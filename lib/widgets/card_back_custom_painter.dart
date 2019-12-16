@@ -33,7 +33,7 @@ class CardBackPainter extends CustomPainter {
 
     // horizontale Linien
     for (var i = 0; i < horizontalLines; i++) {
-      if (i % 2 != 0) continue;
+      if (i & 1 != 0) continue;
 
       final topPoint = (i * lineHeight) + lineHeight;
       final bottomPoint = topPoint + lineHeight;
@@ -51,7 +51,7 @@ class CardBackPainter extends CustomPainter {
 
     // vetikale Linien
     for (var i = 0; i < verticalLines; i++) {
-      if (i % 2 != 0) continue;
+      if (i & 1 != 0) continue;
       final leftPoint = ((i + 1) * lineHeight) + lineHeight;
       final rightPoint = leftPoint + lineHeight;
       paint.color = Colors.deepOrange;

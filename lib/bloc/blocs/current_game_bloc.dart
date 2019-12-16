@@ -12,6 +12,7 @@ import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
+import 'package:superbingo/service/dialog_information_service.dart';
 import 'package:superbingo/service/information_storage.dart';
 
 class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
@@ -42,6 +43,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     } else if (event is EndGame) {
     } else if (event is UpdateCurrentGame) {
       yield* _mapUpdateCurrentGameToState(event);
+    } else if (event is PlayCard) {
+      yield* _mapPlayCardToState(event);
     }
   }
 
@@ -70,7 +73,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
   }
 
-  Stream<CurrentGameState> _mapStartGameWaitingLobbyToState(StartGameWaitingLobby event) async* {
+  Stream<CurrentGameState> _mapStartGameWaitingLobbyToState(
+      StartGameWaitingLobby event) async* {
     yield CurrentGameStarting();
     try {
       _self = event.self;
@@ -89,11 +93,13 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
   }
 
-  Stream<CurrentGameState> _mapUpdateCurrentGameToState(UpdateCurrentGame event) async* {
+  Stream<CurrentGameState> _mapUpdateCurrentGameToState(
+      UpdateCurrentGame event) async* {
     final self = Player.getPlayerFromList(event.game.players, _playerId);
     if (_game.players.length < event.game.players.length) {
       final newPlayer = event.game.players.firstWhere(
-        (p) => _game.players.indexWhere((oldPlayer) => p.id == oldPlayer.id) == -1,
+        (p) =>
+            _game.players.indexWhere((oldPlayer) => p.id == oldPlayer.id) == -1,
         orElse: () => null,
       );
       if (newPlayer != null) {
@@ -116,6 +122,39 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     yield CurrentGameEmpty();
   }
 
+  Stream<CurrentGameState> _mapPlayCardToState(PlayCard event) async* {
+    try {
+      final message = _checkRules(event.card);
+
+      if (message == null) {
+        _self.cards.removeWhere((c) => c == event.card);
+        final index = _game.players.indexWhere((p) => p.id == _self.id);
+        final nextPlayer = _self.getNextPlayer(_game.players);
+        if (index == _game.players.length) {
+          _game.players.replaceRange(index, index, [_self]);
+        } else {
+          _game.players.replaceRange(index, index + 1, [_self]);
+        }
+        var filledGame = _game.copyWith(
+          playedCardStack: _game.playedCardStack..add(event.card),
+          currentPlayerId: nextPlayer.id,
+          players: _game.players,
+        );
+
+        await _updateGameData(filledGame);
+      } else {
+        DialogInformationService().showNotification(
+          NotificationType.error,
+          config: NotificationConfiguration(
+            content: message,
+          ),
+        );
+      }
+    } on dynamic catch (e, s) {
+      await Crashlytics.instance.recordError(e, s);
+    }
+  }
+
   /// Ruft das Spiel, welches gestartet werden soll ab und setzt alle Variablen im Bloc.
   /// Außerdem wird die StreamSubscription gestartet.
   ///
@@ -126,7 +165,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       try {
         final snapshot = await db.collection('games').document(gameId).get();
         _game = Game.fromJson(snapshot.data);
-        gameSub = db.collection('games').document(gameId).snapshots().listen(_handleNetworkDataChange);
+        gameSub = db
+            .collection('games')
+            .document(gameId)
+            .snapshots()
+            .listen(_handleNetworkDataChange);
         return true;
       } on dynamic catch (e, s) {
         await Crashlytics.instance.recordError(e, s);
@@ -150,7 +193,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       }
     }
 
-    final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, game);
+    final gameDBData =
+        await compute<Game, Map<String, dynamic>>(gameToDbData, game);
     await db.collection('games').document(gameId).updateData(gameDBData);
   }
 
@@ -169,32 +213,13 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     add(UpdateCurrentGame(game));
   }
 
-  // TODO in Event umwandeln
-  Future<String> playCard(GameCard card) async {
+  String _checkRules(GameCard card) {
     // if (_game.currentPlayerId != _playerId) return 'Du bist nicht an der Reihe';
     if (!Rules.isCardAllowed(card, _game.topCard)) {
       return 'Du darfst diese Karte nicht legen';
     }
 
-    _self.cards.removeWhere((c) => c == card);
-    final index = _game.players.indexWhere((p) => p.id == _self.id);
-    final nextPlayer = _self.getNextPlayer(_game.players);
-    if (index == _game.players.length) {
-      _game.players.replaceRange(index, index, [_self]);
-    } else {
-      _game.players.replaceRange(index, index + 1, [_self]);
-    }
-    var filledGame = _game.copyWith(
-      playedCardStack: _game.playedCardStack..add(card),
-      currentPlayerId: nextPlayer.id,
-      players: _game.players,
-    );
-
-    final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
-
-    await db.collection('games').document(gameId).updateData(gameDBData);
-
-    return '';
+    return null;
   }
 
   static Map<String, dynamic> gameToDbData(Game game) {

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
+import 'package:superbingo/bloc/events/current_game_events.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
 import 'package:superbingo/constants/card_deck.dart';
 import 'package:superbingo/models/app_models/card.dart';
@@ -53,7 +54,8 @@ class _GamePageState extends State<GamePage> {
         ],
         child: BlocBuilder<CurrentGameBloc, CurrentGameState>(
           builder: (context, state) {
-            if (state is CurrentGameLoaded || state is CurrentGameWaitingForPlayer) {
+            if (state is CurrentGameLoaded ||
+                state is CurrentGameWaitingForPlayer) {
               var title;
               List<GameCard> playedCards, unplayedCards;
               if (state is CurrentGameLoaded) {
@@ -78,7 +80,8 @@ class _GamePageState extends State<GamePage> {
                 color: Theme.of(context).canvasColor,
                 // minHeight: state is CurrentGameLoaded ? 95 : 0,
                 minHeight: 95,
-                maxHeight: MediaQuery.of(context).size.height - kToolbarHeight - 20,
+                maxHeight:
+                    MediaQuery.of(context).size.height - kToolbarHeight - 20,
                 // parallaxEnabled: true,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 // isDraggable: state is CurrentGameLoaded,
@@ -191,10 +194,14 @@ class CardScrollView extends StatelessWidget {
             );
           } else {
             final cards = state.handCards;
-            final heart = cards.where((c) => c.color == CardColor.heart).toList();
-            final clover = cards.where((c) => c.color == CardColor.clover).toList();
-            final diamond = cards.where((c) => c.color == CardColor.diamond).toList();
-            final spade = cards.where((c) => c.color == CardColor.spade).toList();
+            final heart =
+                cards.where((c) => c.color == CardColor.heart).toList();
+            final clover =
+                cards.where((c) => c.color == CardColor.clover).toList();
+            final diamond =
+                cards.where((c) => c.color == CardColor.diamond).toList();
+            final spade =
+                cards.where((c) => c.color == CardColor.spade).toList();
 
             return Column(
               children: <Widget>[
@@ -242,58 +249,10 @@ class CardScrollView extends StatelessWidget {
               ],
             );
           }
+        } else if (state is CurrentGameStarting) {
+          return Container();
         } else {
-          final cards = defaultCardDeck;
-          final heart = cards.where((c) => c.color == CardColor.heart).toList();
-          final clover = cards.where((c) => c.color == CardColor.clover).toList();
-          final diamond = cards.where((c) => c.color == CardColor.diamond).toList();
-          final spade = cards.where((c) => c.color == CardColor.spade).toList();
-
-          return Column(
-            children: <Widget>[
-              SizedBox(
-                height: 12.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Container(
-                    width: 30,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(12.0),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 18.0,
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: <Widget>[
-                      HorizontalCardList(
-                        cards: clover,
-                      ),
-                      HorizontalCardList(
-                        cards: spade,
-                      ),
-                      HorizontalCardList(
-                        cards: diamond,
-                      ),
-                      HorizontalCardList(
-                        cards: heart,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          );
+          return Container();
         }
       },
     );
@@ -312,6 +271,8 @@ class HorizontalCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
+
     if (cards == null || cards.isEmpty) {
       return Container();
     } else {
@@ -322,6 +283,7 @@ class HorizontalCardList extends StatelessWidget {
           child: ListView.builder(
             itemBuilder: (context, index) => SmallPlayCard(
               card: cards.elementAt(index),
+              onCardTap: (card) => currentGameBloc.add(PlayCard(card)),
             ),
             itemCount: cards.length,
             scrollDirection: Axis.horizontal,

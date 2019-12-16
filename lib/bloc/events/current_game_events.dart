@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
 
@@ -44,4 +45,13 @@ class UpdateCurrentGame extends CurrentGameEvent {
 
   @override
   List<Object> get props => super.props..add(game);
+}
+
+class PlayCard extends CurrentGameEvent {
+  final GameCard card;
+
+  const PlayCard(this.card);
+
+  @override
+  List<Object> get props => super.props..add(card);
 }
