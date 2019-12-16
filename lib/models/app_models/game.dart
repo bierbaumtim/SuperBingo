@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:core';
 
 import 'package:equatable/equatable.dart';
@@ -65,7 +66,8 @@ class Game with EquatableMixin {
     this.state = GameState.waitingForPlayer,
   }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from([]);
 
-  GameCard get topCard => playedCardStack.isEmpty ? null : playedCardStack.first;
+  GameCard get topCard =>
+      playedCardStack.isEmpty ? null : playedCardStack.first;
 
   Game copyWith({
     String name,
@@ -101,15 +103,23 @@ class Game with EquatableMixin {
         playedCardStack: Game.stackFromJson(json['playedCards'] as List),
         unplayedCardStack: Game.stackFromJson(json['unplayedCards'] as List),
         players: (json['players'] as List)
-            ?.map((e) => e == null ? null : Player.fromJson(Map<String, dynamic>.from(e)))
+            ?.map((e) => e == null
+                ? null
+                : Player.fromJson(Map<String, dynamic>.from(e)))
             ?.toList(),
         name: json['name'] as String ?? 'SuperBingo',
         maxPlayer: json['maxPlayer'] as int ?? 6,
         isPublic: json['isPublic'] as bool ?? true,
         cardAmount: json['cardAmount'] as int ?? 32,
         currentPlayerId: json['currentPlayerId'] as int ?? 0,
-        state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ?? GameState.waitingForPlayer,
+        state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
+            GameState.waitingForPlayer,
       );
+
+  static Map<String, dynamic> toDBData(Game game) {
+    final json = jsonEncode(game);
+    return jsonDecode(json);
+  }
 
   void shuffleCards({int times}) {
     final cards = playedCardStack.toList();
@@ -152,7 +162,8 @@ class Game with EquatableMixin {
   }
 
   static Queue<GameCard> stackFromJson(List list) {
-    final cards = list.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
+    final cards =
+        list.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
     return Queue.from(cards);
   }
 
@@ -164,7 +175,9 @@ class Game with EquatableMixin {
   }
 
   static List<Player> playerFromJson(List list) {
-    return list.map((p) => Player.fromJson(Map<String, dynamic>.from(p))).toList();
+    return list
+        .map((p) => Player.fromJson(Map<String, dynamic>.from(p)))
+        .toList();
   }
 
   String _fillGameId(String nGameId) {

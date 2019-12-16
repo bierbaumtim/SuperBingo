@@ -116,7 +116,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   Stream<CurrentGameState> _mapLeaveGameToState(LeaveGame event) async* {
-    await leaveGame();
+    await _leaveGame();
     _self = null;
     InformationStorage.instance.clearInformations();
     yield CurrentGameEmpty();
@@ -180,7 +180,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
   }
 
-  Future<void> leaveGame() async {
+  Future<void> _leaveGame() async {
     var game = await _getGameSnapshot(gameId);
     game.removePlayer(_self);
     gameSub.cancel();
@@ -194,7 +194,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
 
     final gameDBData =
-        await compute<Game, Map<String, dynamic>>(gameToDbData, game);
+        await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
     await db.collection('games').document(gameId).updateData(gameDBData);
   }
 
@@ -204,7 +204,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   Future<void> _updateGameData(Game game) async {
-    final dbGame = await gameToDbData(game);
+    final dbGame =
+        await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
     await db.collection('games').document(game.gameID).updateData(dbGame);
   }
 
@@ -220,10 +221,5 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
 
     return null;
-  }
-
-  static Map<String, dynamic> gameToDbData(Game game) {
-    final json = jsonEncode(game);
-    return jsonDecode(json);
   }
 }

@@ -5,13 +5,12 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 import 'package:superbingo/bloc/events/current_game_events.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
-import 'package:superbingo/constants/card_deck.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/dialogs.dart';
+import 'package:superbingo/widgets/card_scroll_view.dart';
 
 import 'package:superbingo/widgets/card_stack.dart';
 import 'package:superbingo/widgets/avatars/player_avatars.dart';
-import 'package:superbingo/widgets/small_play_card.dart';
 
 class GamePage extends StatefulWidget {
   @override
@@ -35,7 +34,7 @@ class _GamePageState extends State<GamePage> {
           yesText: 'Ja',
         );
         if (result) {
-          await currentGameBloc.leaveGame();
+          currentGameBloc.add(LeaveGame());
         }
         return Future(() => result);
       },
@@ -173,124 +172,5 @@ class _GamePageState extends State<GamePage> {
         ),
       ),
     );
-  }
-}
-
-class CardScrollView extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
-
-    return BlocBuilder<CurrentGameBloc, CurrentGameState>(
-      bloc: currentGameBloc,
-      builder: (context, state) {
-        if (state is CurrentGameLoaded) {
-          if (state.handCards.isEmpty) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Text('You´ve finished'),
-              ),
-            );
-          } else {
-            final cards = state.handCards;
-            final heart =
-                cards.where((c) => c.color == CardColor.heart).toList();
-            final clover =
-                cards.where((c) => c.color == CardColor.clover).toList();
-            final diamond =
-                cards.where((c) => c.color == CardColor.diamond).toList();
-            final spade =
-                cards.where((c) => c.color == CardColor.spade).toList();
-
-            return Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 12.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      width: 30,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(12.0),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 18.0,
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        HorizontalCardList(
-                          cards: clover,
-                        ),
-                        HorizontalCardList(
-                          cards: spade,
-                        ),
-                        HorizontalCardList(
-                          cards: diamond,
-                        ),
-                        HorizontalCardList(
-                          cards: heart,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            );
-          }
-        } else if (state is CurrentGameStarting) {
-          return Container();
-        } else {
-          return Container();
-        }
-      },
-    );
-  }
-}
-
-///{@template horizontalcardlist}
-/// Erzeugt ein ListView, mit der `scrollDirection` `Axis.horizontal` und den `cards`.
-///{@endtemplate}
-class HorizontalCardList extends StatelessWidget {
-  /// Liste der Karten die angezeigt werden sollen
-  final List<GameCard> cards;
-
-  /// {@macro horizontalcardlist}
-  const HorizontalCardList({Key key, this.cards}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
-
-    if (cards == null || cards.isEmpty) {
-      return Container();
-    } else {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: SizedBox(
-          height: 175,
-          child: ListView.builder(
-            itemBuilder: (context, index) => SmallPlayCard(
-              card: cards.elementAt(index),
-              onCardTap: (card) => currentGameBloc.add(PlayCard(card)),
-            ),
-            itemCount: cards.length,
-            scrollDirection: Axis.horizontal,
-            physics: ClampingScrollPhysics(),
-          ),
-        ),
-      );
-    }
   }
 }

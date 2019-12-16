@@ -64,7 +64,10 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
           var filledGame = game.copyWith(
             unplayedCardStack: cardStack,
           );
-          final gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, filledGame);
+          final gameDBData = await compute<Game, Map<String, dynamic>>(
+            Game.toDBData,
+            filledGame,
+          );
 
           await db.collection('games').document(gameId).updateData(gameDBData);
 
@@ -79,8 +82,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
       } on dynamic catch (e, s) {
         await Crashlytics.instance.recordError(e, s);
         yield JoinGameFailed(
-          'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.'
-        );
+            'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.');
         yield WaitingForAction();
       }
     }
@@ -89,10 +91,5 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   Future<String> getUsername() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('username') ?? '';
-  }
-
-  static Map<String, dynamic> gameToDbData(Game game) {
-    final json = jsonEncode(game);
-    return jsonDecode(json);
   }
 }

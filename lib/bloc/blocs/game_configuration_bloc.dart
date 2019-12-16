@@ -19,7 +19,8 @@ import 'package:superbingo/utils/connection.dart';
 
 enum GameBlocState { empty, created, waitingForPlayer }
 
-class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurationState> {
+class GameConfigurationBloc
+    extends Bloc<GameConfigurationEvent, GameConfigurationState> {
   Firestore db;
   String gameId;
   String gameLink;
@@ -41,7 +42,8 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
   GameConfigurationState get initialState => WaitingGameConfigInput();
 
   @override
-  Stream<GameConfigurationState> mapEventToState(GameConfigurationEvent event) async* {
+  Stream<GameConfigurationState> mapEventToState(
+      GameConfigurationEvent event) async* {
     if (event is CreateGame) {
       yield* _mapCreateGameToState(event);
     } else if (event is ResetGameConfiguration) {
@@ -53,7 +55,8 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
   Sink<String> get _gameLinkSink => _gameLinkController.sink;
   Stream<String> get gameLinkStream => _gameLinkController.stream;
 
-  Stream<GameConfigurationState> _mapCreateGameToState(CreateGame event) async* {
+  Stream<GameConfigurationState> _mapCreateGameToState(
+      CreateGame event) async* {
     yield GameCreating();
     try {
       if (!Connection.instance.hasConnection) {
@@ -70,7 +73,8 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
         cardAmount: event.cardAmount,
       );
 
-      var gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, game);
+      var gameDBData =
+          await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
 
       final gameDoc = await db.collection('games').add(gameDBData);
       gameId = gameDoc.documentID;
@@ -79,7 +83,8 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
       _gameLinkSink.add(gameLink);
 
       game = game.copyWith(gameId: gameId);
-      gameDBData = await compute<Game, Map<String, dynamic>>(gameToDbData, game);
+      gameDBData =
+          await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
 
       await db.collection('games').document(gameId).updateData(gameDBData);
 
@@ -94,7 +99,8 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
       );
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
-      yield GameCreationFailed('Beim erstellen des Spiels ist ein Fehler aufgetreten.');
+      yield GameCreationFailed(
+          'Beim erstellen des Spiels ist ein Fehler aufgetreten.');
       yield WaitingGameConfigInput();
     }
   }
@@ -154,10 +160,5 @@ class GameConfigurationBloc extends Bloc<GameConfigurationEvent, GameConfigurati
   Future<String> getUsername() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('username') ?? 'Spieler';
-  }
-
-  static Map<String, dynamic> gameToDbData(Game game) {
-    final json = jsonEncode(game);
-    return jsonDecode(json);
   }
 }
