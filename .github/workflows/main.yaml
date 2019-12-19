@@ -26,7 +26,12 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: superbingo-android
-        path: build/app/outputs/apk/release
+        path: build/app/outputs/apk/release/*.apk
+    - name: release android-artifacts
+      uses: ncipollo/release-action@v1
+      with: 
+        artifacts: build/app/outputs/apk/release/*.apk
+        token: ${{ secrets.ACTIONS_TOKEN }}
   build-ios:
     name: Build APK
     runs-on: macOS-latest
@@ -46,4 +51,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: superbingo-ios
-        path: build/ios/iphoneos
+        path: build/ios/iphoneos/*.app
