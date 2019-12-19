@@ -32,6 +32,7 @@ jobs:
       with: 
         artifacts: build/app/outputs/apk/release/
         token: ${{ secrets.ACTIONS_TOKEN }}
+        tag: v0.3
   build-ios:
     name: Build iOS
     runs-on: macOS-latest
@@ -57,3 +58,4 @@ jobs:
       with: 
         artifacts: build/ios/iphoneos/Runner.app
         token: ${{ secrets.ACTIONS_TOKEN }}
+        tag: v0.3
