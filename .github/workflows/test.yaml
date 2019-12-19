@@ -1,0 +1,32 @@
+on:
+  push:
+    branches:
+      - "master"
+    paths:
+      - "superbingo/pubspec.yaml"
+      - ".github/workflows/test.yaml"
+name: Test, Build and Release apk
+jobs:
+  lint-and-test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+    steps:
+      steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    - uses: subosito/flutter-action@v1
+      with:
+        flutter-version: '1.12.13+hotfix.6'
+        channel: 'beta'
+    - run: flutter pub get
+    - run: flutter analyze
+    - run: flutter test
+    - name: Codecov Action
+        - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} #required
