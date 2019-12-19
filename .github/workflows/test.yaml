@@ -24,7 +24,7 @@ jobs:
           channel: 'beta'
       - run: flutter pub get
       # - run: flutter analyze
-      - run: flutter test
+      - run: flutter test --coverage
       - name: Codecov Action
         uses: codecov/codecov-action@v1
         with:
