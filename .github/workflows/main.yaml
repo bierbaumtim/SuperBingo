@@ -26,7 +26,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: superbingo-android
-        path: superbingo/build/app/outputs
+        path: build/app/outputs/apk/release
   build-ios:
     name: Build APK
     runs-on: macOS-latest
@@ -46,4 +46,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: superbingo-ios
-        path: superbingo/build/ios/iphoneos
+        path: build/ios/iphoneos
