@@ -47,8 +47,13 @@ jobs:
     - run: flutter pub get
     - run: flutter test
     - run: flutter build ios  --release --no-codesign
-    # - name: upload ios artifacts
-    #   uses: actions/upload-artifact@v1
-    #   with:
-    #     name: superbingo-ios
-    #     path: build/ios/iphoneos/
+    - name: upload ios artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: superbingo-ios
+        path: build/ios/iphoneos/Runner.app
+    - name: release android-artifacts
+      uses: ncipollo/release-action@v1
+      with: 
+        artifacts: build/ios/iphoneos/Runner.app
+        token: ${{ secrets.ACTIONS_TOKEN }}
