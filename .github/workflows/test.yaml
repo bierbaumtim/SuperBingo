@@ -5,7 +5,7 @@ on:
     paths:
       - "superbingo/pubspec.yaml"
       - ".github/workflows/test.yaml"
-name: Test, Build and Release apk
+name: Run Unit Tests
 jobs:
   lint-and-test:
     name: Test on ${{ matrix.os }}
@@ -23,7 +23,7 @@ jobs:
           flutter-version: '1.12.13+hotfix.6'
           channel: 'beta'
       - run: flutter pub get
-      - run: flutter analyze
+      # - run: flutter analyze
       - run: flutter test
       - name: Codecov Action
         uses: codecov/codecov-action@v1
