@@ -1,3 +1,4 @@
+import 'package:dart_ping/dart_ping.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -89,7 +90,26 @@ class _GamePageState extends State<GamePage> {
                   backgroundColor: Colors.deepOrangeAccent,
                   endDrawer: Drawer(
                     child: Column(
-                      children: <Widget>[],
+                      children: <Widget>[
+                        FutureBuilder<Stream<PingInfo>>(
+                          future: ping('google.com'),
+                          builder: (context, snapshot) {
+                            return StreamBuilder<PingInfo>(
+                              stream: snapshot.data,
+                              builder: (context, snapshot) {
+                                final ping = snapshot.hasData
+                                    ? snapshot.data.time
+                                    : Duration(seconds: 0);
+
+                                return ListTile(
+                                  title: Text('Test'),
+                                  subtitle: Text('${ping.inMilliseconds} ms'),
+                                );
+                              },
+                            );
+                          },
+                        )
+                      ],
                     ),
                   ),
                   appBar: AppBar(

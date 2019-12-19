@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
@@ -11,8 +10,8 @@ import 'package:superbingo/models/app_models/player.dart';
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:superbingo/service/information_storage.dart';
+import 'package:superbingo/utils/configuration_utils.dart';
 
 class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   Firestore db;
@@ -82,14 +81,10 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
       } on dynamic catch (e, s) {
         await Crashlytics.instance.recordError(e, s);
         yield JoinGameFailed(
-            'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.');
+          'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.',
+        );
         yield WaitingForAction();
       }
     }
-  }
-
-  Future<String> getUsername() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('username') ?? '';
   }
 }

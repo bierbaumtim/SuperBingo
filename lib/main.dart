@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorize_lumberdash/colorize_lumberdash.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_lumberdash/firebase_lumberdash.dart';
@@ -41,13 +42,13 @@ void main() async {
             dispose: (_, bloc) => bloc.dispose(),
           ),
           BlocProvider<GameConfigurationBloc>(
-            create: (_) => GameConfigurationBloc(),
+            create: (_) => GameConfigurationBloc(Firestore.instance),
           ),
           BlocProvider<JoinGameBloc>(
             create: (_) => JoinGameBloc(),
           ),
           BlocProvider<CurrentGameBloc>(
-            create: (_) => CurrentGameBloc(),
+            create: (_) => CurrentGameBloc(Firestore.instance),
           ),
           BlocProvider<InfoBloc>(
             create: (_) => InfoBloc()..add(LoadInfos()),

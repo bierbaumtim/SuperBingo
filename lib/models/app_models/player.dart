@@ -5,6 +5,7 @@ import 'package:lumberdash/lumberdash.dart';
 import 'package:superbingo/models/app_models/card.dart';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:superbingo/service/information_storage.dart';
 
 part 'player.g.dart';
 
@@ -43,7 +44,8 @@ class Player with EquatableMixin {
       );
 
   factory Player.create(String username, {bool isHost = false}) => Player(
-        id: DateTime.now().millisecondsSinceEpoch,
+        // id: DateTime.now().millisecondsSinceEpoch,
+        id: InformationStorage.instance.playerId,
         name: username,
         isHost: isHost,
       );
@@ -52,7 +54,9 @@ class Player with EquatableMixin {
         id: json['id'] as int ?? 0,
         name: json['name'] as String ?? '',
         cards: (json['cards'] as List)
-                ?.map((e) => e == null ? null : GameCard.fromJson(Map<String, dynamic>.from(e)))
+                ?.map((e) => e == null
+                    ? null
+                    : GameCard.fromJson(Map<String, dynamic>.from(e)))
                 ?.toList() ??
             [],
         isHost: json['isHost'] as bool ?? false,
@@ -97,5 +101,6 @@ class Player with EquatableMixin {
     }
   }
 
-  static List cardsToJson(List<GameCard> cards) => cards.map((c) => c.toJson()).toList();
+  static List cardsToJson(List<GameCard> cards) =>
+      cards.map((c) => c.toJson()).toList();
 }

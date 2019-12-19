@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:superbingo/bloc/events/current_game_events.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
@@ -7,16 +6,19 @@ import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
 import 'package:superbingo/models/app_models/rules.dart';
+import 'package:superbingo/service/dialog_information_service.dart';
+import 'package:superbingo/service/information_storage.dart';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:superbingo/service/dialog_information_service.dart';
-import 'package:superbingo/service/information_storage.dart';
 
+/// {@template currentgamebloc}
+///
+/// {@endtemplate}
 class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
-  Firestore db;
+  final Firestore db;
   StreamSubscription gameSub;
   String get gameId => InformationStorage.instance.gameId;
   String get gameLink => InformationStorage.instance.gameLink;
@@ -25,9 +27,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Player _self;
 
   /// {@macro currentgamebloc}
-  CurrentGameBloc() {
-    db ??= Firestore.instance;
-  }
+  CurrentGameBloc(this.db);
 
   @override
   CurrentGameState get initialState => CurrentGameEmpty();
@@ -97,31 +97,46 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
   Stream<CurrentGameState> _mapUpdateCurrentGameToState(
       UpdateCurrentGame event) async* {
-    final self = Player.getPlayerFromList(event.game.players, _playerId);
-    if (_game.players.length < event.game.players.length) {
-      final newPlayer = event.game.players.firstWhere(
-        (p) =>
-            _game.players.indexWhere((oldPlayer) => p.id == oldPlayer.id) == -1,
-        orElse: () => null,
-      );
-      if (newPlayer != null) {
-        yield PlayerJoined(newPlayer);
+    try {
+      final self = Player.getPlayerFromList(event.game.players, _playerId);
+      if (_game.players.length < event.game.players.length) {
+        final newPlayer = event.game.players.firstWhere(
+          (p) =>
+              _game.players.indexWhere((oldPlayer) => p.id == oldPlayer.id) ==
+              -1,
+          orElse: () => null,
+        );
+        if (newPlayer != null) {
+          yield PlayerJoined(newPlayer);
+        }
       }
+      _game = event.game;
+      yield CurrentGameLoaded(
+        game: event.game,
+        handCards: self.cards,
+        playedCards: event.game.playedCardStack.toList(),
+        unplayedCards: event.game.playedCardStack.toList(),
+      );
+    } on dynamic catch (e, s) {
+      await Crashlytics.instance.recordError(e, s);
     }
-    _game = event.game;
-    yield CurrentGameLoaded(
-      game: event.game,
-      handCards: self.cards,
-      playedCards: event.game.playedCardStack.toList(),
-      unplayedCards: event.game.playedCardStack.toList(),
-    );
   }
 
   Stream<CurrentGameState> _mapLeaveGameToState(LeaveGame event) async* {
-    await _leaveGame();
-    _self = null;
-    InformationStorage.instance.clearInformations();
-    yield CurrentGameEmpty();
+    try {
+      await _leaveGame();
+      _self = null;
+      InformationStorage.instance.clearInformations();
+      yield CurrentGameEmpty();
+    } on GameLeaveException catch (e) {
+      if (e.subscriptionCanceled) {
+        gameSub = db
+            .collection('games')
+            .document(gameId)
+            .snapshots()
+            .listen(_handleNetworkDataChange);
+      }
+    }
   }
 
   Stream<CurrentGameState> _mapPlayCardToState(PlayCard event) async* {
@@ -140,7 +155,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
         await _updateGameData(filledGame);
       } else {
-        DialogInformationService().showNotification(
+        DialogInformationService.instance.showNotification(
           NotificationType.error,
           config: NotificationConfiguration(
             content: message,
@@ -189,21 +204,26 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   Future<void> _leaveGame() async {
-    var game = await _getGameSnapshot(gameId);
-    game.removePlayer(_self);
-    gameSub.cancel();
-    if (_self.isHost) {
-      if (game.players.isNotEmpty) {
-        game.players[0] = game.players[0].copyWith(isHost: true);
-      } else {
-        await db.collection('games').document(gameId).delete();
-        return;
+    try {
+      var game = await _getGameSnapshot(gameId);
+      game.removePlayer(_self);
+      await gameSub.cancel();
+      if (_self.isHost) {
+        if (game.players.isNotEmpty) {
+          game.players[0] = game.players[0].copyWith(isHost: true);
+        } else {
+          await db.collection('games').document(gameId).delete();
+          return;
+        }
       }
-    }
 
-    final gameDBData =
-        await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
-    await db.collection('games').document(gameId).updateData(gameDBData);
+      final gameDBData =
+          await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
+      await db.collection('games').document(gameId).updateData(gameDBData);
+    } on dynamic catch (e, s) {
+      await Crashlytics.instance.recordError(e, s);
+      throw GameLeaveException(gameSub == null);
+    }
   }
 
   Future<Game> _getGameSnapshot(String gameId) async {
@@ -230,4 +250,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
     return null;
   }
+}
+
+class GameLeaveException implements Exception {
+  final bool subscriptionCanceled;
+
+  GameLeaveException(this.subscriptionCanceled);
 }

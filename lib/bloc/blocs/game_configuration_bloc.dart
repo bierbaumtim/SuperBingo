@@ -1,13 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 
-import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:superbingo/bloc/events/game_events.dart';
 import 'package:superbingo/bloc/states/game_states.dart';
 import 'package:superbingo/constants/card_deck.dart';
@@ -15,21 +8,27 @@ import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
 import 'package:superbingo/service/information_storage.dart';
+import 'package:superbingo/utils/configuration_utils.dart';
 import 'package:superbingo/utils/connection.dart';
+
+import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
+import 'package:rxdart/rxdart.dart';
 
 enum GameBlocState { empty, created, waitingForPlayer }
 
 class GameConfigurationBloc
     extends Bloc<GameConfigurationEvent, GameConfigurationState> {
-  Firestore db;
+  final Firestore db;
   String gameId;
   String gameLink;
   String gamePath;
   Player _self;
 
-  GameConfigurationBloc() {
+  GameConfigurationBloc(this.db) {
     _gameLinkController = BehaviorSubject<String>();
-    db ??= Firestore.instance;
   }
 
   @override
@@ -155,10 +154,5 @@ class GameConfigurationBloc
     }).toList();
 
     return Queue.from(cardDecks);
-  }
-
-  Future<String> getUsername() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('username') ?? 'Spieler';
   }
 }

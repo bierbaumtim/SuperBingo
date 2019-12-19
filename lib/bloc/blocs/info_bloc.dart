@@ -6,6 +6,7 @@ import 'package:superbingo/bloc/states/info_states.dart';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:superbingo/service/information_storage.dart';
 
 class InfoBloc extends Bloc<InfoEvent, InfoState> {
   @override
@@ -33,6 +34,7 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       } else {
         final playerName = prefs.getString('playername') ?? '';
         final playerId = prefs.getInt('playerid') ?? -1;
+        InformationStorage.instance.playerId = playerId;
         yield InfosLoaded(
           playerName: playerName,
           playerId: playerId,
@@ -45,7 +47,8 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
     }
   }
 
-  Stream<InfoState> _mapCompleteFirstStartConfigurationToState(CompleteFirstStartConfiguration event) async* {
+  Stream<InfoState> _mapCompleteFirstStartConfigurationToState(
+      CompleteFirstStartConfiguration event) async* {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('firststart', false);
     add(SetPlayerName(event.playerName));
@@ -57,6 +60,7 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
     final time = await prefs.getInt('starttime');
     final playerId = _generatePlayerId(event.playerName, time);
     await prefs.setInt('playerid', playerId);
+    InformationStorage.instance.playerId = playerId;
     yield InfosLoaded(
       playerName: event.playerName,
       playerId: playerId,
