@@ -160,17 +160,27 @@ class _GamePageState extends State<GamePage> {
                           ),
                         ),
                         if (state is CurrentGameWaitingForPlayer) ...[
-                          Positioned(
-                            bottom: 2,
-                            left: 8,
-                            right: 8,
-                            child: Center(
-                              child: RaisedButton(
-                                onPressed: () {},
-                                child: Text('Spiel starten'),
+                          if (state.self.isHost)
+                            Positioned(
+                              bottom: 2,
+                              left: 8,
+                              right: 8,
+                              child: Center(
+                                child: RaisedButton(
+                                  onPressed: () {},
+                                  child: Text('Spiel starten'),
+                                ),
                               ),
                             ),
-                          ),
+                          if (!state.self.isHost)
+                            Positioned(
+                              bottom: 2,
+                              left: 8,
+                              right: 8,
+                              child: Center(
+                                child: Text('Warten auf weitere Spieler...'),
+                              ),
+                            ),
                         ],
                       ],
                     ),

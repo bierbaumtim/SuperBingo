@@ -61,14 +61,23 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     try {
       _self = event.self;
       final success = await _startGame(event.gameId);
-      yield success
-          ? CurrentGameLoaded(
-              game: _game,
-              handCards: _self.cards,
-              playedCards: _game.playedCardStack.toList(),
-              unplayedCards: _game.unplayedCardStack.toList(),
-            )
-          : CurrentGameStartingFailed();
+      if (success) {
+        if (_game.state == GameState.waitingForPlayer) {
+          yield CurrentGameWaitingForPlayer(
+            game: _game,
+            self: _self,
+          );
+        } else {
+          yield CurrentGameLoaded(
+            game: _game,
+            handCards: _self.cards,
+            playedCards: _game.playedCardStack.toList(),
+            unplayedCards: _game.unplayedCardStack.toList(),
+          );
+        }
+      } else {
+        yield CurrentGameStartingFailed();
+      }
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
       yield CurrentGameStartingFailed();
@@ -85,7 +94,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         var game = await _getGameSnapshot(event.gameId);
         game = game.copyWith(state: GameState.waitingForPlayer);
         await _updateGameData(game);
-        yield CurrentGameWaitingForPlayer(game: game);
+        yield CurrentGameWaitingForPlayer(game: game, self: _self);
       } else {
         yield CurrentGameStartingFailed();
       }
@@ -111,12 +120,19 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         }
       }
       _game = event.game;
-      yield CurrentGameLoaded(
-        game: event.game,
-        handCards: self.cards,
-        playedCards: event.game.playedCardStack.toList(),
-        unplayedCards: event.game.playedCardStack.toList(),
-      );
+      if (_game.state == GameState.waitingForPlayer) {
+        yield CurrentGameWaitingForPlayer(
+          game: _game,
+          self: _self,
+        );
+      } else {
+        yield CurrentGameLoaded(
+          game: event.game,
+          handCards: self.cards,
+          playedCards: event.game.playedCardStack.toList(),
+          unplayedCards: event.game.playedCardStack.toList(),
+        );
+      }
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
     }
@@ -243,7 +259,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   String _checkRules(GameCard card) {
-    // if (_game.currentPlayerId != _playerId) return 'Du bist nicht an der Reihe';
+    if (_game.currentPlayerId != _playerId) return 'Du bist nicht an der Reihe';
     if (!Rules.isCardAllowed(card, _game.topCard)) {
       return 'Du darfst diese Karte nicht legen';
     }

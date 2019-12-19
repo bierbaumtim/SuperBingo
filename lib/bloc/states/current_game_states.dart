@@ -57,10 +57,12 @@ class CurrentGameWaitingForPlayer extends CurrentGameState {
   /// Aktuelles Game Objekts
   final Game game;
 
-  CurrentGameWaitingForPlayer({this.game});
+  final Player self;
+
+  CurrentGameWaitingForPlayer({this.game, this.self});
 
   @override
-  List<Object> get props => super.props..add(game);
+  List<Object> get props => super.props..addAll([game, self]);
 }
 
 /// State der eine
