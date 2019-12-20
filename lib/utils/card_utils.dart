@@ -35,6 +35,8 @@ Color getColorByCardColor(CardColor color) {
 
 /// Gibt die Nummer/den Buchstaben zur `number` zugehörigen zurück.
 String getTextByCardNumber(CardNumber number) {
+  assert(number != null);
+
   switch (number) {
     case CardNumber.ace:
       return 'A';
