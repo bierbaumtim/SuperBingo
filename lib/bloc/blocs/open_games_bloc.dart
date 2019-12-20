@@ -20,7 +20,7 @@ class PublicGamesBloc {
   BehaviorSubject<List<Game>> _publicGamesController;
 
   Sink get _publicGamesSink => _publicGamesController.sink;
-  Stream get publicGamesStream => _publicGamesController.stream;
+  Stream<List<Game>> get publicGamesStream => _publicGamesController.stream;
 
   Future<void> getPublicGames() async {
     final dbGames = await Firestore.instance.collection('games').getDocuments();
@@ -46,7 +46,8 @@ class PublicGamesBloc {
       _publicGamesSink.add(publicGames);
     } on PlatformException catch (e) {
       if (e.message.contains('PERMISSION_DENIED')) {
-        _publicGamesSink.add(PermissionError(e.message.replaceAll('PERMISSION_DENIED:', '').trim()));
+        _publicGamesSink.add(PermissionError(
+            e.message.replaceAll('PERMISSION_DENIED:', '').trim()));
       } else {
         _publicGamesSink.add(Error());
       }

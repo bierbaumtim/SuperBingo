@@ -27,7 +27,7 @@ class _GamePageState extends State<GamePage> {
 
     return WillPopScope(
       onWillPop: () async {
-        final result = await Dialogs.showDecisionDialog(
+        final result = await Dialogs.showDecisionDialog<bool>(
           context,
           title: 'Hinweis',
           content: 'Wollen Sie wirklich das Spiel verlassen.',
@@ -56,7 +56,7 @@ class _GamePageState extends State<GamePage> {
           builder: (context, state) {
             if (state is CurrentGameLoaded ||
                 state is CurrentGameWaitingForPlayer) {
-              var title;
+              String title;
               List<GameCard> playedCards, unplayedCards;
               if (state is CurrentGameLoaded) {
                 title = state.game.name;

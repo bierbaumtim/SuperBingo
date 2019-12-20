@@ -25,7 +25,9 @@ class _PlayerPageState extends State<PlayerPage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final infoBloc = BlocProvider.of<InfoBloc>(context);
-    final username = infoBloc.state is InfosLoaded ? (infoBloc.state as InfosLoaded).playerName : '';
+    final username = infoBloc.state is InfosLoaded
+        ? (infoBloc.state as InfosLoaded).playerName
+        : '';
     if (controller.text.isEmpty) {
       controller.text = username;
       this.username = username;
@@ -82,7 +84,7 @@ class _PlayerPageState extends State<PlayerPage> {
                   Navigator.pop(context);
                 }
               } else {
-                showDialog(
+                showDialog<void>(
                   context: context,
                   builder: (context) => AlertDialog(
                     title: Text('Hinweis'),

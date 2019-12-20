@@ -64,7 +64,7 @@ class Game with EquatableMixin {
     this.cardAmount = 32,
     this.currentPlayerId,
     this.state = GameState.waitingForPlayer,
-  }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from([]);
+  }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from(<GameCard>[]);
 
   GameCard get topCard => playedCardStack.isEmpty ? null : playedCardStack.last;
 
@@ -117,12 +117,13 @@ class Game with EquatableMixin {
 
   static Map<String, dynamic> toDBData(Game game) {
     final json = jsonEncode(game);
-    return jsonDecode(json);
+    return jsonDecode(json) as Map<String, dynamic>;
   }
 
-  void shuffleCards({int times}) {
+  void shuffleCards({int times = 1}) {
+    assert(times != null);
     final cards = playedCardStack.toList();
-    for (var i = 0; i < times ?? 1; i++) {
+    for (var i = 0; i < times; i++) {
       cards.shuffle();
     }
     playedCardStack = Queue<GameCard>.from(cards);
@@ -157,13 +158,13 @@ class Game with EquatableMixin {
         .toList();
   }
 
-  List<Player> reversePlayerOrder() => players.reversed;
+  List<Player> reversePlayerOrder() => players.reversed.toList();
 
-  static List stackToJson(Queue<GameCard> stack) {
+  static List<Map<String, dynamic>> stackToJson(Queue<GameCard> stack) {
     if (stack != null) {
       return stack.toList().map((gc) => gc.toJson()).toList();
     }
-    return [];
+    return <Map<String, dynamic>>[];
   }
 
   static Queue<GameCard> stackFromJson(List list) {
@@ -176,12 +177,12 @@ class Game with EquatableMixin {
     if (player != null) {
       return player.map((p) => p.toJson()).toList();
     }
-    return [];
+    return <Map<String, dynamic>>[];
   }
 
   static List<Player> playerFromJson(List list) {
     return list
-        .map((p) => Player.fromJson(Map<String, dynamic>.from(p)))
+        .map<Player>((p) => Player.fromJson(Map<String, dynamic>.from(p)))
         .toList();
   }
 

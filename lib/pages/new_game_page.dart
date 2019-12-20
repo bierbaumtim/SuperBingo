@@ -69,7 +69,7 @@ class _NewGamePageState extends State<NewGamePage> {
           });
         } else if (state is GameCreationFailed) {
           hideGameCreationOverlay();
-          await Dialogs.showInformationDialog(
+          await Dialogs.showInformationDialog<void>(
             context,
             title: 'Fehler',
             content: state.error,

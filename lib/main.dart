@@ -45,7 +45,7 @@ void main() async {
             create: (_) => GameConfigurationBloc(Firestore.instance),
           ),
           BlocProvider<JoinGameBloc>(
-            create: (_) => JoinGameBloc(),
+            create: (_) => JoinGameBloc(Firestore.instance),
           ),
           BlocProvider<CurrentGameBloc>(
             create: (_) => CurrentGameBloc(Firestore.instance),

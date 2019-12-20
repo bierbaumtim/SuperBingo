@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/foundation.dart';
 
 import 'package:superbingo/bloc/events/join_game_events.dart';
@@ -14,15 +12,13 @@ import 'package:superbingo/service/information_storage.dart';
 import 'package:superbingo/utils/configuration_utils.dart';
 
 class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
-  Firestore db;
+  final Firestore db;
   String gameId;
   String gameLink;
   String gamePath;
   Player _self;
 
-  JoinGameBloc() {
-    db ??= Firestore.instance;
-  }
+  JoinGameBloc(this.db);
 
   @override
   JoinGameState get initialState => JoiningGame();
@@ -57,7 +53,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
             'Du kannst diesem Spiel daher nicht erneut beitreten.',
           );
         } else {
-          Queue cardStack = game.unplayedCardStack;
+          final cardStack = game.unplayedCardStack;
           _self.drawCards(cardStack);
           game.addPlayer(_self);
           var filledGame = game.copyWith(
