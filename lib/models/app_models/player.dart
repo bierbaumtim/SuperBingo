@@ -14,8 +14,8 @@ class Player with EquatableMixin {
   @override
   List<Object> get props => [id, name, cards, isHost];
 
-  @JsonKey(name: 'id', defaultValue: 0)
-  final int id;
+  @JsonKey(name: 'id', defaultValue: '')
+  final String id;
   @JsonKey(name: 'name', defaultValue: '')
   final String name;
   @JsonKey(name: 'cards', defaultValue: <GameCard>[]) //, toJson: cardsToJson
@@ -44,14 +44,13 @@ class Player with EquatableMixin {
       );
 
   factory Player.create(String username, {bool isHost = false}) => Player(
-        // id: DateTime.now().millisecondsSinceEpoch,
         id: InformationStorage.instance.playerId,
         name: username,
         isHost: isHost,
       );
 
   factory Player.fromJson(Map<String, dynamic> json) => Player(
-        id: json['id'] as int ?? 0,
+        id: json['id'] as String ?? '',
         name: json['name'] as String ?? '',
         cards: (json['cards'] as List)
                 ?.map((e) => e == null
@@ -90,7 +89,7 @@ class Player with EquatableMixin {
 
   /// Ruft den Spieler mit der `playerId` aus der `player` Liste.
   /// Ist keiner Vorhanden wird null zurückgegeben.
-  static Player getPlayerFromList(List<Player> player, int playerId) {
+  static Player getPlayerFromList(List<Player> player, String playerId) {
     if (player.isEmpty) {
       logWarning(
         '[getPlayerFromList] Player in Game are empty. Can cause problems.',

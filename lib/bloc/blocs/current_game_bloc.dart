@@ -22,7 +22,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   StreamSubscription gameSub;
   String get gameId => InformationStorage.instance.gameId;
   String get gameLink => InformationStorage.instance.gameLink;
-  int get _playerId => InformationStorage.instance.playerId;
+  String get _playerId => InformationStorage.instance.playerId;
   Game _game;
   Player _self;
 
@@ -109,14 +109,21 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     try {
       final self = Player.getPlayerFromList(event.game.players, _playerId);
       if (_game.players.length < event.game.players.length) {
-        final newPlayer = event.game.players.firstWhere(
-          (p) =>
-              _game.players.indexWhere((oldPlayer) => p.id == oldPlayer.id) ==
-              -1,
-          orElse: () => null,
+        final joinedPlayer = getDiffInPlayerLists(
+          event.game.players,
+          _game.players,
         );
-        if (newPlayer != null) {
-          yield PlayerJoined(newPlayer);
+
+        if (joinedPlayer != null) {
+          yield PlayerJoined(joinedPlayer);
+        }
+      } else if (_game.players.length > event.game.players.length) {
+        final leavedPlayer = getDiffInPlayerLists(
+          _game.players,
+          event.game.players,
+        );
+        if (leavedPlayer != null) {
+          yield PlayerLeaved(leavedPlayer);
         }
       }
       _game = event.game;
@@ -265,6 +272,15 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
 
     return null;
+  }
+
+  Player getDiffInPlayerLists(List<Player> newList, List<Player> oldList) {
+    final diffPlayer = newList.firstWhere(
+      (p) => oldList.indexWhere((oldPlayer) => p.id == oldPlayer.id) == -1,
+      orElse: () => null,
+    );
+
+    return diffPlayer;
   }
 }
 

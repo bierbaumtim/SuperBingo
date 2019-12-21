@@ -59,17 +59,13 @@ class CardStack extends StatelessWidget {
           return Transform(
             child: Transform.rotate(
               child: PlayCard(
-                // height: 215,
-                // width: 115,
                 card: c,
                 index: index,
                 elevation: elevation,
                 angle: angle,
-                isActive: type == CardStackType.playedCards,
+                isFlipped: type == CardStackType.unplayedCards,
                 onCardTap: (card) {
-                  if (type == CardStackType.playedCards) {
-                    currentGameBloc.add(events.PlayCard(card));
-                  } else {
+                  if (type == CardStackType.unplayedCards) {
                     currentGameBloc.add(events.PullCard(card));
                   }
                 },

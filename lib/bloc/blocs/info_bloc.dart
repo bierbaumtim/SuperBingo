@@ -38,8 +38,9 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
         yield FirstStart();
       } else {
         final playerName = prefs.getString('playername') ?? '';
-        final playerId = prefs.getInt('playerid') ?? -1;
+        // final playerId = prefs.getInt('playerid') ?? -1;
         await _loginUserAnonymous();
+        final playerId = await userUid;
         InformationStorage.instance.playerId = playerId;
         yield InfosLoaded(
           playerName: playerName,
@@ -64,10 +65,11 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
   Stream<InfoState> _mapSetPlayerNameToState(SetPlayerName event) async* {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('playername', event.playerName);
-    final time = await prefs.getInt('starttime');
-    final playerId = _generatePlayerId(event.playerName, time);
-    await prefs.setInt('playerid', playerId);
-    InformationStorage.instance.playerId = playerId;
+    // final time = await prefs.getInt('starttime');
+    // final playerId = _generatePlayerId(event.playerName, time);
+    // await prefs.setInt('playerid', playerId);
+    // InformationStorage.instance.playerId = playerId;
+    final playerId = await userUid;
     yield InfosLoaded(
       playerName: event.playerName,
       playerId: playerId,
@@ -87,4 +89,6 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       await auth.signInAnonymously();
     }
   }
+
+  Future<String> get userUid async => (await auth.currentUser())?.uid;
 }

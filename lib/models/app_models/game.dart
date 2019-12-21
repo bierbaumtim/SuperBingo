@@ -49,7 +49,7 @@ class Game with EquatableMixin {
   @JsonKey(name: 'id', defaultValue: '')
   final String gameID;
   @JsonKey(name: 'currentPlayerId', defaultValue: '')
-  int currentPlayerId;
+  String currentPlayerId;
   @JsonKey(name: 'state', defaultValue: GameState.waitingForPlayer)
   GameState state;
 
@@ -68,12 +68,14 @@ class Game with EquatableMixin {
 
   GameCard get topCard => playedCardStack.isEmpty ? null : playedCardStack.last;
 
+  bool get isRunning => state == GameState.active;
+
   Game copyWith({
     String name,
     String gameId,
     bool isPublic,
     int cardAmount,
-    int currentPlayerId,
+    String currentPlayerId,
     int maxPlayer,
     GameState state,
     List<Player> players,
@@ -110,7 +112,7 @@ class Game with EquatableMixin {
         maxPlayer: json['maxPlayer'] as int ?? 6,
         isPublic: json['isPublic'] as bool ?? true,
         cardAmount: json['cardAmount'] as int ?? 32,
-        currentPlayerId: json['currentPlayerId'] as int ?? 0,
+        currentPlayerId: json['currentPlayerId'] as String ?? '',
         state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
             GameState.waitingForPlayer,
       );

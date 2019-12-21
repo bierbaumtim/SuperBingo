@@ -7,13 +7,12 @@ class InformationStorage {
 
   InformationStorage._internal();
 
-  String _gameID, _gameLink;
-  int _playerId;
+  String _gameID, _gameLink, _playerId;
   Player _self;
 
   String get gameId => _gameID ?? '';
   String get gameLink => _gameLink ?? '';
-  int get playerId => _playerId ?? -1;
+  String get playerId => _playerId ?? '';
 
   set gameId(String value) {
     _gameID = value ?? '';
@@ -23,13 +22,13 @@ class InformationStorage {
     _gameLink = value ?? '';
   }
 
-  set playerId(int value) {
-    _playerId = value ?? -1;
+  set playerId(String value) {
+    _playerId = value ?? '';
   }
 
   void clearInformations() {
     _gameID = '';
     _gameLink = '';
-    _playerId = -1;
+    // _playerId = '';
   }
 }

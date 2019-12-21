@@ -20,7 +20,7 @@ class PlayCard extends StatelessWidget {
   final double rotationAngle;
   final double elevation;
   final int index;
-  final bool isActive;
+  final bool isFlipped;
   final OnCardTap onCardTap;
 
   const PlayCard({
@@ -32,7 +32,7 @@ class PlayCard extends StatelessWidget {
     this.height = 175,
     this.width = 100,
     this.elevation = 0,
-    this.isActive = true,
+    this.isFlipped = true,
     this.onCardTap,
   }) : super(key: key);
 
@@ -41,9 +41,6 @@ class PlayCard extends StatelessWidget {
     final cardWidget = GestureDetector(
       onTap: () {
         onCardTap?.call(card);
-        // if (isActive && onCardTap != null) {
-        //   onCardTap(card);
-        // }
       },
       child: Card(
         elevation: elevation,
@@ -54,7 +51,7 @@ class PlayCard extends StatelessWidget {
         child: SizedBox(
           height: height,
           width: width,
-          child: isActive ? _ActivePaint(card: card) : _InactivePaint(),
+          child: isFlipped ? _InactivePaint() : _ActivePaint(card: card),
         ),
       ),
     );

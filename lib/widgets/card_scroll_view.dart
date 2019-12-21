@@ -80,8 +80,6 @@ class CardScrollView extends StatelessWidget {
               ],
             );
           }
-        } else if (state is CurrentGameStarting) {
-          return Container();
         } else {
           return Container();
         }

@@ -48,6 +48,11 @@ class _GamePageState extends State<GamePage> {
                   Text('${state.player?.name} ist dem Spiel beigetreten.'),
                   foreground: Colors.white,
                 );
+              } else if (state is PlayerLeaved) {
+                showSimpleNotification(
+                  Text('${state.player?.name} hat das Spiel verlassen.'),
+                  foreground: Colors.white,
+                );
               }
             },
           ),
@@ -91,24 +96,24 @@ class _GamePageState extends State<GamePage> {
                   endDrawer: Drawer(
                     child: Column(
                       children: <Widget>[
-                        FutureBuilder<Stream<PingInfo>>(
-                          future: ping('google.com'),
-                          builder: (context, snapshot) {
-                            return StreamBuilder<PingInfo>(
-                              stream: snapshot.data,
-                              builder: (context, snapshot) {
-                                final ping = snapshot.hasData
-                                    ? snapshot.data.time
-                                    : Duration(seconds: 0);
+                        // FutureBuilder<Stream<PingInfo>>(
+                        //   future: ping('google.com'),
+                        //   builder: (context, snapshot) {
+                        //     return StreamBuilder<PingInfo>(
+                        //       stream: snapshot.data,
+                        //       builder: (context, snapshot) {
+                        //         final ping = snapshot.hasData
+                        //             ? snapshot.data.time
+                        //             : Duration(seconds: 0);
 
-                                return ListTile(
-                                  title: Text('Test'),
-                                  subtitle: Text('${ping.inMilliseconds} ms'),
-                                );
-                              },
-                            );
-                          },
-                        )
+                        //         return ListTile(
+                        //           title: Text('Test'),
+                        //           subtitle: Text('${ping.inMilliseconds} ms'),
+                        //         );
+                        //       },
+                        //     );
+                        //   },
+                        // ),
                       ],
                     ),
                   ),

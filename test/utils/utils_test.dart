@@ -281,7 +281,7 @@ void main() {
 
     group('configuration utils tests', () {
       test('empty string if Preference is null', () async {
-        SharedPreferences.setMockInitialValues({
+        SharedPreferences.setMockInitialValues(<String, dynamic>{
           'playername': null,
         });
 
@@ -291,7 +291,7 @@ void main() {
       });
 
       test('return "Tim"', () async {
-        SharedPreferences.setMockInitialValues({
+        SharedPreferences.setMockInitialValues(<String, dynamic>{
           'playername': 'Tim',
         });
 
@@ -301,7 +301,7 @@ void main() {
       });
 
       test('return "Timo"', () async {
-        SharedPreferences.setMockInitialValues({
+        SharedPreferences.setMockInitialValues(<String, dynamic>{
           'playername': 'Timo',
         });
 
@@ -311,7 +311,7 @@ void main() {
       });
 
       test('return "Jarred"', () async {
-        SharedPreferences.setMockInitialValues({
+        SharedPreferences.setMockInitialValues(<String, dynamic>{
           'playername': 'Jarred',
         });
 
@@ -328,7 +328,7 @@ void main() {
 
       group('even length', () {
         test('length 2', () {
-          final middle = getMiddleIndex(['test', 'test']);
+          final middle = getMiddleIndex(generateList(2));
 
           expect(middle, 0);
         });
@@ -382,4 +382,4 @@ void main() {
 }
 
 Iterable generateList(int length) =>
-    List.generate(length, (length) => 'test: $length');
+    List<String>.generate(length, (length) => 'test: $length');

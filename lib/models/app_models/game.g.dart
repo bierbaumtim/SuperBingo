@@ -19,7 +19,7 @@ Game _$GameFromJson(Map<String, dynamic> json) {
     maxPlayer: json['maxPlayer'] as int ?? 6,
     isPublic: json['isPublic'] as bool ?? true,
     cardAmount: json['cardAmount'] as int ?? 32,
-    currentPlayerId: json['currentPlayerId'] as int ?? '',
+    currentPlayerId: json['currentPlayerId'] as String ?? '',
     state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
         GameState.waitingForPlayer,
   );

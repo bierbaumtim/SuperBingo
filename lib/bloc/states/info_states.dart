@@ -13,7 +13,7 @@ class InfosLoading extends InfoState {}
 
 class InfosLoaded extends InfoState {
   final String playerName;
-  final int playerId;
+  final String playerId;
 
   const InfosLoaded({this.playerName, this.playerId});
 

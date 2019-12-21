@@ -8,7 +8,7 @@ part of 'player.dart';
 
 Player _$PlayerFromJson(Map<String, dynamic> json) {
   return Player(
-    id: json['id'] as int ?? 0,
+    id: json['id'] as String ?? '',
     name: json['name'] as String ?? '',
     cards: (json['cards'] as List)
             ?.map((e) =>
