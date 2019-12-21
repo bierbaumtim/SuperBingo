@@ -1,7 +1,5 @@
 on:
   push:
-    branches:
-      - "master"
     paths:
       - "superbingo/pubspec.yaml"
       - ".github/workflows/test.yaml"
