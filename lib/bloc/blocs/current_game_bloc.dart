@@ -36,7 +36,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Stream<CurrentGameState> mapEventToState(CurrentGameEvent event) async* {
     if (event is StartGame) {
       yield* _mapStartGameToState(event);
-    } else if (event is StartGameWaitingLobby) {
+    } else if (event is OpenGameWaitingLobby) {
       yield* _mapStartGameWaitingLobbyToState(event);
     } else if (event is LeaveGame) {
       yield* _mapLeaveGameToState(event);
@@ -85,7 +85,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   Stream<CurrentGameState> _mapStartGameWaitingLobbyToState(
-      StartGameWaitingLobby event) async* {
+      OpenGameWaitingLobby event) async* {
     yield CurrentGameStarting();
     try {
       _self = event.self;

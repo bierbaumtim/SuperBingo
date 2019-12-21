@@ -21,11 +21,12 @@ class StartGame extends CurrentGameEvent {
   List<Object> get props => super.props..addAll([gameId, self]);
 }
 
-class StartGameWaitingLobby extends CurrentGameEvent {
+/// Event, um zur Lobby des Spiels zu gelangen. 
+class OpenGameWaitingLobby extends CurrentGameEvent {
   final String gameId;
   final Player self;
 
-  const StartGameWaitingLobby({
+  const OpenGameWaitingLobby({
     this.gameId,
     this.self,
   });

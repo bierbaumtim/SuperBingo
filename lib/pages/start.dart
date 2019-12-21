@@ -41,7 +41,7 @@ class _StartPageState extends State<StartPage> {
         BlocListener<GameConfigurationBloc, GameConfigurationState>(
           listener: (context, state) {
             if (state is GameCreated) {
-              currentGameBloc.add(StartGameWaitingLobby(
+              currentGameBloc.add(OpenGameWaitingLobby(
                 gameId: state.gameId,
                 self: state.self,
               ));

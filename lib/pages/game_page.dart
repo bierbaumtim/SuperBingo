@@ -174,7 +174,7 @@ class _GamePageState extends State<GamePage> {
                             ),
                           if (!state.self.isHost)
                             Positioned(
-                              bottom: 2,
+                              bottom: 8,
                               left: 8,
                               right: 8,
                               child: Center(
