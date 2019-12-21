@@ -1,8 +1,4 @@
-on:
-  push:
-    paths:
-      - "superbingo/pubspec.yaml"
-      - ".github/workflows/test.yaml"
+on: push
 name: Run Unit Tests
 jobs:
   lint-and-test:
