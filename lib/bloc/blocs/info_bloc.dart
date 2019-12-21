@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:superbingo/bloc/events/info_events.dart';
 import 'package:superbingo/bloc/states/info_states.dart';
 
@@ -9,6 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:superbingo/service/information_storage.dart';
 
 class InfoBloc extends Bloc<InfoEvent, InfoState> {
+  final FirebaseAuth auth;
+
+  InfoBloc(this.auth);
+
   @override
   InfoState get initialState => InfosEmpty();
 
@@ -34,6 +39,7 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       } else {
         final playerName = prefs.getString('playername') ?? '';
         final playerId = prefs.getInt('playerid') ?? -1;
+        await _loginUserAnonymous();
         InformationStorage.instance.playerId = playerId;
         yield InfosLoaded(
           playerName: playerName,
@@ -51,6 +57,7 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       CompleteFirstStartConfiguration event) async* {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('firststart', false);
+    await _loginUserAnonymous();
     add(SetPlayerName(event.playerName));
   }
 
@@ -72,5 +79,12 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
     hash = hash & time.hashCode;
     hash = hash ^ playerName.hashCode;
     return hash;
+  }
+
+  Future<void> _loginUserAnonymous() async {
+    final currentUser = await auth.currentUser();
+    if (currentUser == null) {
+      await auth.signInAnonymously();
+    }
   }
 }

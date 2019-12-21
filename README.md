@@ -1,5 +1,4 @@
 [![style: effective dart](https://img.shields.io/badge/style-effective_dart-40c4ff.svg)](https://github.com/tenhobi/effective_dart)
-
 [![codecov](https://codecov.io/gh/tb2761/SuperBingo/branch/master/graph/badge.svg)](https://codecov.io/gh/tb2761/SuperBingo)
 
 # superbingo

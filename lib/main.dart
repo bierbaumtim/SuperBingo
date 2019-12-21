@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorize_lumberdash/colorize_lumberdash.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_lumberdash/firebase_lumberdash.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,7 +52,7 @@ void main() async {
             create: (_) => CurrentGameBloc(Firestore.instance),
           ),
           BlocProvider<InfoBloc>(
-            create: (_) => InfoBloc()..add(LoadInfos()),
+            create: (_) => InfoBloc(FirebaseAuth.instance)..add(LoadInfos()),
           ),
         ],
         child: SuperBingo(),
