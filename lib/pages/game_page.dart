@@ -1,17 +1,17 @@
-import 'package:dart_ping/dart_ping.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:overlay_support/overlay_support.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
+
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 import 'package:superbingo/bloc/events/current_game_events.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/dialogs.dart';
 import 'package:superbingo/widgets/card_scroll_view.dart';
-
 import 'package:superbingo/widgets/card_stack.dart';
 import 'package:superbingo/widgets/avatars/player_avatars.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:overlay_support/overlay_support.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class GamePage extends StatefulWidget {
   @override
@@ -27,12 +27,9 @@ class _GamePageState extends State<GamePage> {
 
     return WillPopScope(
       onWillPop: () async {
-        final result = await Dialogs.showDecisionDialog<bool>(
+        final result = await Dialogs.showDecisionDialog(
           context,
-          title: 'Hinweis',
           content: 'Wollen Sie wirklich das Spiel verlassen.',
-          noText: 'Nein',
-          yesText: 'Ja',
         );
         if (result) {
           currentGameBloc.add(LeaveGame());
@@ -42,6 +39,7 @@ class _GamePageState extends State<GamePage> {
       child: MultiBlocListener(
         listeners: [
           BlocListener<CurrentGameBloc, CurrentGameState>(
+            bloc: currentGameBloc,
             listener: (context, state) {
               if (state is PlayerJoined) {
                 showSimpleNotification(
@@ -58,6 +56,7 @@ class _GamePageState extends State<GamePage> {
           ),
         ],
         child: BlocBuilder<CurrentGameBloc, CurrentGameState>(
+          bloc: currentGameBloc,
           builder: (context, state) {
             if (state is CurrentGameLoaded ||
                 state is CurrentGameWaitingForPlayer) {
@@ -142,6 +141,7 @@ class _GamePageState extends State<GamePage> {
                                     // cards: defaultCardDeck,
                                   ),
                                 ),
+                                SizedBox(width: 20),
                                 Expanded(
                                   child: CardStack(
                                     type: CardStackType.playedCards,
@@ -172,7 +172,12 @@ class _GamePageState extends State<GamePage> {
                               right: 8,
                               child: Center(
                                 child: RaisedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    currentGameBloc.add(StartGame(
+                                      gameId: state.game.gameID,
+                                      self: state.self,
+                                    ));
+                                  },
                                   child: Text('Spiel starten'),
                                 ),
                               ),

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:superbingo/bloc/events/current_game_events.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
+import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
@@ -60,21 +61,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     yield CurrentGameStarting();
     try {
       _self = event.self;
-      final success = await _startGame(event.gameId);
+      final success = await _setupBlocAndSubscription(event.gameId);
       if (success) {
-        if (_game.state == GameState.waitingForPlayer) {
-          yield CurrentGameWaitingForPlayer(
-            game: _game,
-            self: _self,
-          );
-        } else {
-          yield CurrentGameLoaded(
-            game: _game,
-            handCards: _self.cards,
-            playedCards: _game.playedCardStack.toList(),
-            unplayedCards: _game.unplayedCardStack.toList(),
-          );
-        }
+        _game.state = GameState.active;
+        _game.currentPlayerId = _game.players.first.id;
+        await _updateGameData(_game);
       } else {
         yield CurrentGameStartingFailed();
       }
@@ -89,12 +80,12 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     yield CurrentGameStarting();
     try {
       _self = event.self;
-      final success = await _startGame(event.gameId);
+      final success = await _setupBlocAndSubscription(event.gameId);
       if (success) {
-        var game = await _getGameSnapshot(event.gameId);
-        game = game.copyWith(state: GameState.waitingForPlayer);
-        await _updateGameData(game);
-        yield CurrentGameWaitingForPlayer(game: game, self: _self);
+        // var game = await _getGameSnapshot(event.gameId);
+        _game = _game.copyWith(state: GameState.waitingForPlayer);
+        await _updateGameData(_game);
+        yield CurrentGameWaitingForPlayer(game: _game, self: _self);
       } else {
         yield CurrentGameStartingFailed();
       }
@@ -137,7 +128,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           game: event.game,
           handCards: self.cards,
           playedCards: event.game.playedCardStack.toList(),
-          unplayedCards: event.game.playedCardStack.toList(),
+          unplayedCards: event.game.unplayedCardStack.toList(),
         );
       }
     } on dynamic catch (e, s) {
@@ -168,7 +159,13 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
       if (message == null) {
         _self.cards.removeWhere((c) => c == event.card);
-        final nextPlayer = _self.getNextPlayer(_game.players);
+        if (event.card.rule == SpecialRule.reverse) {
+          _game.players = _game.players.reversed;
+        }
+        final nextPlayer = _self.getNextPlayer(
+          _game.players,
+          skipNextPlayer: event.card.rule == SpecialRule.skip,
+        );
         _game.updatePlayer(_self);
         var filledGame = _game.copyWith(
           playedCardStack: _game.playedCardStack..add(event.card),
@@ -191,14 +188,16 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   Stream<CurrentGameState> _mapPullCardToState(PullCard event) async* {
-    final game = await _getGameSnapshot(gameId);
-    final card = game.unplayedCardStack.removeFirst();
-    _self = Player.getPlayerFromList(game.players, _self.id);
-    _self.cards.add(card);
-    game.players = game.players
-        .map((player) => player.id == _self.id ? _self : player)
-        .toList();
-    await _updateGameData(game);
+    // final game = await _getGameSnapshot(gameId);
+    if (_game.isRunning) {
+      final card = _game.unplayedCardStack.removeFirst();
+      _self = Player.getPlayerFromList(_game.players, _self.id);
+      _self.cards.add(card);
+      _game.players = _game.players
+          .map((player) => player.id == _self.id ? _self : player)
+          .toList();
+      await _updateGameData(_game);
+    }
   }
 
   /// Ruft das Spiel, welches gestartet werden soll ab und setzt alle Variablen im Bloc.
@@ -206,7 +205,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   ///
   /// Gab es beim Ausführen der Methode keine Fehler wird die Funktion mit `true` beendet,
   /// tritt ein Fehler auf mit `false`.
-  Future<bool> _startGame(String gameId) async {
+  Future<bool> _setupBlocAndSubscription(String gameId) async {
     if (gameId != null) {
       try {
         final snapshot = await db.collection('games').document(gameId).get();
@@ -228,12 +227,12 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
   Future<void> _leaveGame() async {
     try {
-      var game = await _getGameSnapshot(gameId);
-      game.removePlayer(_self);
+      // var game = await _getGameSnapshot(gameId);
+      _game.removePlayer(_self);
       await gameSub.cancel();
       if (_self.isHost) {
-        if (game.players.isNotEmpty) {
-          game.players[0] = game.players[0].copyWith(isHost: true);
+        if (_game.players.isNotEmpty) {
+          _game.players[0] = _game.players[0].copyWith(isHost: true);
         } else {
           await db.collection('games').document(gameId).delete();
           return;
@@ -241,11 +240,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       }
 
       final gameDBData =
-          await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
+          await compute<Game, Map<String, dynamic>>(Game.toDBData, _game);
       await db.collection('games').document(gameId).updateData(gameDBData);
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
-      throw GameLeaveException(gameSub == null);
+      throw GameLeaveException(subscriptionCanceled: gameSub == null);
     }
   }
 
@@ -287,5 +286,5 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 class GameLeaveException implements Exception {
   final bool subscriptionCanceled;
 
-  GameLeaveException(this.subscriptionCanceled);
+  GameLeaveException({this.subscriptionCanceled});
 }
