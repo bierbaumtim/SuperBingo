@@ -53,7 +53,7 @@ class DialogInformationService {
   }) {
     showSimpleNotification(
       Text(content),
-      subtitle: Text(subtitle),
+      subtitle: subtitle != null ? Text(subtitle) : null,
       background: background,
       foreground: foreground,
       contentPadding: padding,

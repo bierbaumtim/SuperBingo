@@ -11,6 +11,9 @@ import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/utils/dialogs.dart';
 
+/// [JoinGamePage] zeigt alle öffentlichen Spiele an.
+///
+/// Von hier aus kann der Spieler einem Spiel beitreten.
 class JoinGamePage extends StatefulWidget {
   @override
   _JoinGamePageState createState() => _JoinGamePageState();

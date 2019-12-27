@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:superbingo/bloc/events/info_events.dart';
 import 'package:superbingo/bloc/states/info_states.dart';
 
 import 'package:bloc/bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:superbingo/service/information_storage.dart';
@@ -38,7 +38,6 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
         yield FirstStart();
       } else {
         final playerName = prefs.getString('playername') ?? '';
-        // final playerId = prefs.getInt('playerid') ?? -1;
         await _loginUserAnonymous();
         final playerId = await userUid;
         InformationStorage.instance.playerId = playerId;
@@ -65,22 +64,11 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
   Stream<InfoState> _mapSetPlayerNameToState(SetPlayerName event) async* {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('playername', event.playerName);
-    // final time = await prefs.getInt('starttime');
-    // final playerId = _generatePlayerId(event.playerName, time);
-    // await prefs.setInt('playerid', playerId);
-    // InformationStorage.instance.playerId = playerId;
     final playerId = await userUid;
     yield InfosLoaded(
       playerName: event.playerName,
       playerId: playerId,
     );
-  }
-
-  int _generatePlayerId(String playerName, int time) {
-    var hash = playerName.hashCode;
-    hash = hash & time.hashCode;
-    hash = hash ^ playerName.hashCode;
-    return hash;
   }
 
   Future<void> _loginUserAnonymous() async {

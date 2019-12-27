@@ -45,31 +45,31 @@ class _PlayerPageState extends State<PlayerPage> {
       ),
     );
 
-    return BlocBuilder<InfoBloc, InfoState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Neuer Spieler'),
-          ),
-          body: ListView(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: controller,
-                  decoration: InputDecoration(
-                    border: border,
-                    enabledBorder: border,
-                    focusedBorder: border,
-                    labelText: 'Name',
-                  ),
-                  onChanged: (text) => username = text,
-                  onSubmitted: (text) => setState(() => username = text),
-                ),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Neuer Spieler'),
+      ),
+      body: ListView(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                border: border,
+                enabledBorder: border,
+                focusedBorder: border,
+                labelText: 'Name',
               ),
-            ],
+              onChanged: (text) => username = text,
+              onSubmitted: (text) => setState(() => username = text),
+            ),
           ),
-          floatingActionButton: FloatingActionButton.extended(
+        ],
+      ),
+      floatingActionButton: BlocBuilder<InfoBloc, InfoState>(
+        builder: (context, state) {
+          return FloatingActionButton.extended(
             backgroundColor: Colors.deepOrange,
             label: Text(
               state is InfosLoaded ? 'Name ändern' : 'Spieler erstellen',
@@ -105,9 +105,9 @@ class _PlayerPageState extends State<PlayerPage> {
                 );
               }
             },
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
