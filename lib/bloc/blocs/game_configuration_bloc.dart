@@ -16,8 +16,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
-
-enum GameBlocState { empty, created, waitingForPlayer }
+import 'package:uuid/uuid.dart';
 
 class GameConfigurationBloc
     extends Bloc<GameConfigurationEvent, GameConfigurationState> {
@@ -33,7 +32,7 @@ class GameConfigurationBloc
 
   @override
   Future<void> close() async {
-    _gameLinkController.close();
+    await _gameLinkController?.close();
     super.close();
   }
 
@@ -46,7 +45,9 @@ class GameConfigurationBloc
     if (event is CreateGame) {
       yield* _mapCreateGameToState(event);
     } else if (event is ResetGameConfiguration) {
-      yield* _mapResetGameConfigurationToState();
+      yield* _mapResetGameConfigurationToState(event);
+    } else if (event is DeleteConfiguredGame) {
+      yield* _mapDeleteConfiguredGameToState(event);
     }
   }
 
@@ -99,13 +100,21 @@ class GameConfigurationBloc
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
       yield GameCreationFailed(
-          'Beim erstellen des Spiels ist ein Fehler aufgetreten.');
+        'Beim erstellen des Spiels ist ein Fehler aufgetreten.',
+      );
       yield WaitingGameConfigInput();
     }
   }
 
-  Stream<GameConfigurationState> _mapResetGameConfigurationToState() async* {
+  Stream<GameConfigurationState> _mapResetGameConfigurationToState(
+      ResetGameConfiguration event) async* {
     _self = null;
+    yield WaitingGameConfigInput();
+  }
+
+  Stream<GameConfigurationState> _mapDeleteConfiguredGameToState(
+      DeleteConfiguredGame event) async* {
+    await endGame();
     yield WaitingGameConfigInput();
   }
 
@@ -124,7 +133,7 @@ class GameConfigurationBloc
     var filledGame = Game(
       unplayedCardStack: cardStack,
       playedCardStack: Queue<GameCard>(),
-      players: [
+      players: <Player>[
         _self,
       ],
       isPublic: isPublic,
@@ -142,17 +151,15 @@ class GameConfigurationBloc
   }
 
   Queue<GameCard> _generateCardStack(int amount) {
+    final uuid = Uuid();
     var decks = (amount / 32).truncate() - 1;
     var cardDecks = defaultCardDeck;
     for (var i = 0; i < decks; i++) {
       cardDecks += defaultCardDeck;
     }
     cardDecks.shuffle();
-    cardDecks = cardDecks.map((c) {
-      final index = cardDecks.indexOf(c);
-      return c.setId(index);
-    }).toList();
+    cardDecks = cardDecks.map((c) => c.setId(uuid.v4())).toList();
 
-    return Queue.from(cardDecks);
+    return Queue<GameCard>.from(cardDecks);
   }
 }
