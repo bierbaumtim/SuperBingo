@@ -1,5 +1,7 @@
+import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/card.dart';
 
+/// Ein komplettes Kartendeck, bestehend aus `heartCardDeck`,`spadeCardDeck`,`cloverCardDeck`,`diamondCardDeck`
 final List<GameCard> defaultCardDeck =
     heartCardDeck + spadeCardDeck + cloverCardDeck + diamondCardDeck;
 

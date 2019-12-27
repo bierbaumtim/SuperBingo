@@ -8,7 +8,7 @@ part of 'card.dart';
 
 GameCard _$GameCardFromJson(Map<String, dynamic> json) {
   return GameCard(
-    id: json['id'] as int,
+    id: json['id'] as String,
     color: _$enumDecodeNullable(_$CardColorEnumMap, json['color']),
     number: _$enumDecodeNullable(_$CardNumberEnumMap, json['number']),
   );

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
-import 'package:superbingo/models/app_models/card.dart';
+import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/widgets/horizontal_card_listview.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';

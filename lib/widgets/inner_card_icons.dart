@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/models/app_models/card.dart';
+import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/utils/card_utils.dart';
 
 class InnerCardIcons extends StatelessWidget {
+  /// Farbe der Spielkarte
   final CardColor color;
+  /// Konfiguration, ob die Icons klein oder groß dargestellt werden sollen
   final bool isSmall;
 
   const InnerCardIcons({

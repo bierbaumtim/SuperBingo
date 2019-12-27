@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:superbingo/models/app_models/card.dart';
+import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/utils/card_utils.dart';
 import 'package:superbingo/utils/configuration_utils.dart';
 import 'package:superbingo/utils/list_utils.dart';
 import 'package:superbingo/utils/ui_utils.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 
 void main() {

@@ -1,3 +1,8 @@
+/// Berechnet die Coordinaten eines `PlayerAvatar` auf Basis des `index`, `length` und `playerAvatarBottomPosition`
+///
+/// `index` - Index des Spielers in der Liste aller Spieler des Spiels
+/// `length` - Menge aller Spieler des Spiels
+/// `playerAvatarBottomPosition` - maximale Punkt, vom oberen Rand gesehen, an dem ein `PlayerAvatar` positioniert werden kann
 Map<String, double> getPositionCoordinates(
   int index,
   int length,

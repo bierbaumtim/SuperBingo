@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
+
 import 'package:superbingo/models/app_models/player.dart';
 
+/// {@template playeravatar}
+/// Avatarähnliches Widget mit großem Anfangsbuchstaben des Namen des Spielers in der Mitte und der Anzahl der Karten des Spielers.
+/// {@endtemplate}
 class PlayerAvatar extends StatelessWidget {
+  /// {@macro playeravatar}
   const PlayerAvatar({
     Key key,
     @required this.postitionCoordinates,
     @required this.player,
   }) : super(key: key);
 
-  final Map<String, double> postitionCoordinates;
+  /// Spieler zu dem der Avatar dargestellt werden soll
   final Player player;
+
+  /// Position des Avatars
+  final Map<String, double> postitionCoordinates;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +47,7 @@ class PlayerAvatar extends StatelessWidget {
                   ),
                   child: CircleAvatar(
                     child: Text(
-                      getPlayerFirstLetter(player.name),
+                      _getPlayerFirstLetter(player.name),
                       style: theme.textTheme.body1.copyWith(fontSize: 17),
                     ),
                     backgroundColor: Colors.green,
@@ -81,7 +89,8 @@ class PlayerAvatar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(25),
                   color: Colors.black,
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 2.5, horizontal: 6),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 2.5, horizontal: 6),
                 child: ClipRRect(
                   child: Material(
                     elevation: 14,
@@ -106,7 +115,8 @@ class PlayerAvatar extends StatelessWidget {
     );
   }
 
-  String getPlayerFirstLetter(String name) {
+  /// Gibt des ersten Buchstaben des Spielernames als Großbuchstaben zurück
+  String _getPlayerFirstLetter(String name) {
     if (name.isEmpty) {
       return 'S';
     } else {

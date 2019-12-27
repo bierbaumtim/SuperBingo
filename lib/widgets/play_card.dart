@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:superbingo/constants/typedefs.dart';
 
+import 'package:superbingo/constants/typedefs.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/card_utils.dart';
 import 'package:superbingo/widgets/card_back_custom_painter.dart';
@@ -13,27 +13,49 @@ import 'package:superbingo/widgets/inner_card_image.dart';
 import 'package:vector_math/vector_math.dart' show radians;
 
 class PlayCard extends StatelessWidget {
+  /// [GameCard]-Object wozu die graphische Spielkarte erstellt werden soll
   final GameCard card;
+
+  /// Konfiguration, Höhe der Spielkarte
+  ///
+  /// Default: 175
   final double height;
+
+  /// Konfiguration, Breite der Spielkarte
+  ///
+  /// Default: 100
   final double width;
   final double angle;
   final double rotationAngle;
+
+  /// Schatten
+  ///
+  /// Default: 0
   final double elevation;
   final int index;
+
+  /// Konfiguration, ob die Karte aufgedeckt liegt
+  ///
+  /// `true`: Karte ist verdeckt
+  /// `false`: Karte ist aufgedeckt
+  ///
+  /// Default: `true`
   final bool isFlipped;
+
+  /// Callback, wenn auf die Spielkarte gedrückt wird
   final OnCardTap onCardTap;
 
   const PlayCard({
     Key key,
     @required this.card,
-    @required this.angle,
+    this.angle,
     this.index,
     this.rotationAngle,
     this.height = 175,
     this.width = 100,
     this.elevation = 0,
     this.isFlipped = true,
-    this.onCardTap,
+    @required this.onCardTap,
   }) : super(key: key);
 
   @override

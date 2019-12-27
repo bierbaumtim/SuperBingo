@@ -11,6 +11,10 @@ import 'package:superbingo/bloc/states/join_game_states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
 
+/// Startseite
+/// 
+/// Hier landet der Spieler nachdem er die App startet
+/// Vor hier aus kann zur Spielerstellung, Spielsuche und Spielerkofiguration navigiert werden.
 class StartPage extends StatefulWidget {
   @override
   _StartPageState createState() => _StartPageState();

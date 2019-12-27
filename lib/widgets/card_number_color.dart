@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:superbingo/constants/enums.dart';
 
-import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/card_utils.dart';
 
 import 'package:vector_math/vector_math.dart' show radians;
@@ -14,9 +14,13 @@ class CardNumberColor extends StatelessWidget {
     this.isSmall = false,
   }) : super(key: key);
 
+  /// Farbe der Spielkarte
   final CardColor color;
+  /// Nummer der Spielkarte
   final CardNumber number;
+  /// Konfiguration, ob das Symbol um 180° gedreht werden soll
   final bool flip;
+  /// Konfiguration, ob Symbol klein oder groß dargestellt werden soll
   final bool isSmall;
 
   @override
