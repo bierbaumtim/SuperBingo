@@ -4,12 +4,12 @@ import 'package:superbingo/bloc/events/join_game_events.dart';
 import 'package:superbingo/bloc/states/join_game_states.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
+import 'package:superbingo/service/information_storage.dart';
+import 'package:superbingo/utils/configuration_utils.dart';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:superbingo/service/information_storage.dart';
-import 'package:superbingo/utils/configuration_utils.dart';
 
 class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   final Firestore db;
@@ -47,7 +47,12 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
         _self = Player.create(username);
         final snapshot = await db.collection('games').document(gameId).get();
         final game = Game.fromJson(snapshot.data);
-        if (game.players.indexWhere((p) => p.id == _self.id) >= 0) {
+        if (game.players.length + 1 > game.maxPlayer) {
+          yield JoinGameFailed(
+            'Die maximale Spieleranzahl für dieses Spiel ist erreicht. '
+            'Du kannst diesem Spiel daher nicht mehr beitreten.',
+          );
+        } else if (game.players.indexWhere((p) => p.id == _self.id) >= 0) {
           yield JoinGameFailed(
             'Beim Verlassen des Spiels ist ein Fehler aufgetreten. '
             'Du kannst diesem Spiel daher nicht erneut beitreten.',

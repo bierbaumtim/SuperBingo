@@ -40,11 +40,6 @@ class _JoinGamePageState extends State<JoinGamePage> {
           showJoiningOverlay(context);
         } else if (state is JoinGameFailed) {
           hideJoiningOverlay();
-          Dialogs.showInformationDialog<void>(
-            context,
-            title: 'Fehler',
-            content: state.error,
-          );
         } else {
           hideJoiningOverlay();
         }
