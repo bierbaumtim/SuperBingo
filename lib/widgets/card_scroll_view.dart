@@ -10,17 +10,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CardScrollView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
-
     return BlocBuilder<CurrentGameBloc, CurrentGameState>(
-      bloc: currentGameBloc,
       builder: (context, state) {
+        Widget child;
+
         if (state is CurrentGameLoaded) {
           if (state.handCards.isEmpty) {
-            return Center(
+            child = Center(
               child: Padding(
                 padding: const EdgeInsets.all(12),
-                child: Text('You´ve finished'),
+                child: Material(
+                  child: Text('You´ve finished'),
+                ),
               ),
             );
           } else {
@@ -34,55 +35,55 @@ class CardScrollView extends StatelessWidget {
             final spade =
                 cards.where((c) => c.color == CardColor.spade).toList();
 
-            return Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 12.0,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+            child = Expanded(
+              child: SingleChildScrollView(
+                child: Column(
                   children: <Widget>[
-                    Container(
-                      width: 30,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(12.0),
-                        ),
-                      ),
+                    HorizontalCardList(
+                      cards: clover,
+                    ),
+                    HorizontalCardList(
+                      cards: spade,
+                    ),
+                    HorizontalCardList(
+                      cards: diamond,
+                    ),
+                    HorizontalCardList(
+                      cards: heart,
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 18.0,
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: <Widget>[
-                        HorizontalCardList(
-                          cards: clover,
-                        ),
-                        HorizontalCardList(
-                          cards: spade,
-                        ),
-                        HorizontalCardList(
-                          cards: diamond,
-                        ),
-                        HorizontalCardList(
-                          cards: heart,
-                        ),
-                      ],
+              ),
+            );
+          }
+        }
+
+        return Column(
+          children: <Widget>[
+            SizedBox(
+              height: 12.0,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  width: 30,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(12.0),
                     ),
                   ),
                 ),
               ],
-            );
-          }
-        } else {
-          return Container();
-        }
+            ),
+            SizedBox(
+              height: 18.0,
+            ),
+            child ?? Container(),
+          ],
+        );
       },
     );
   }
