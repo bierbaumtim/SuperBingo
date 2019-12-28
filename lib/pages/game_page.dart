@@ -94,26 +94,7 @@ class _GamePageState extends State<GamePage> {
                   backgroundColor: Colors.deepOrangeAccent,
                   endDrawer: Drawer(
                     child: Column(
-                      children: <Widget>[
-                        // FutureBuilder<Stream<PingInfo>>(
-                        //   future: ping('google.com'),
-                        //   builder: (context, snapshot) {
-                        //     return StreamBuilder<PingInfo>(
-                        //       stream: snapshot.data,
-                        //       builder: (context, snapshot) {
-                        //         final ping = snapshot.hasData
-                        //             ? snapshot.data.time
-                        //             : Duration(seconds: 0);
-
-                        //         return ListTile(
-                        //           title: Text('Test'),
-                        //           subtitle: Text('${ping.inMilliseconds} ms'),
-                        //         );
-                        //       },
-                        //     );
-                        //   },
-                        // ),
-                      ],
+                      children: <Widget>[],
                     ),
                   ),
                   appBar: AppBar(

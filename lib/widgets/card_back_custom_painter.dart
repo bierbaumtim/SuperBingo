@@ -6,7 +6,7 @@ class CardBackPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     const lineHeight = 20.0;
     final paint = Paint();
-    final customSize = size * 2.5;
+    final customSize = Size.square(size.height * 1.2);
 
     paint.color = Colors.deepOrange;
 
@@ -67,5 +67,6 @@ class CardBackPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  //  oldDelegate != this
 }

@@ -42,6 +42,10 @@ class PlayCard extends StatelessWidget {
   /// Default: `true`
   final bool isFlipped;
 
+  /// Konfiguration, ob die Karte graphisch dargestellt werden soll
+  /// oder nur eine weiße Karte gezeigt werden soll
+  final bool shouldPaint;
+
   /// Callback, wenn auf die Spielkarte gedrückt wird
   final OnCardTap onCardTap;
 
@@ -55,11 +59,25 @@ class PlayCard extends StatelessWidget {
     this.width = 100,
     this.elevation = 0,
     this.isFlipped = true,
+    this.shouldPaint = true,
     @required this.onCardTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Widget paint;
+    if (shouldPaint) {
+      if (isFlipped) {
+        paint = _InactivePaint();
+      } else {
+        paint = _ActivePaint(
+          card: card,
+        );
+      }
+    } else {
+      paint = Container();
+    }
+
     final cardWidget = GestureDetector(
       onTap: () {
         onCardTap?.call(card);
@@ -73,7 +91,7 @@ class PlayCard extends StatelessWidget {
         child: SizedBox(
           height: height,
           width: width,
-          child: isFlipped ? _InactivePaint() : _ActivePaint(card: card),
+          child: paint,
         ),
       ),
     );

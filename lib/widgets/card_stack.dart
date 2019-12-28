@@ -58,14 +58,6 @@ class _CardStackState extends State<CardStack> {
   }
 
   @override
-  void didUpdateWidget(CardStack oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.cards.length != widget.cards.length) {
-      buildVisualEffects();
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
 
@@ -78,21 +70,22 @@ class _CardStackState extends State<CardStack> {
                 child: Transform.rotate(
                   child: PlayCard(
                     card: c['card'],
-                    index: c['index'],
-                    elevation: c['elevation'],
+                    index: c['index'] as int,
+                    elevation: c['elevation'] as double,
                     isFlipped: widget.type == CardStackType.unplayedCards,
                     onCardTap: (card) {
                       if (widget.type == CardStackType.unplayedCards) {
                         currentGameBloc.add(events.PullCard(card));
                       }
                     },
+                    shouldPaint: c['index'] as int >= cards.length - 3,
                   ),
-                  angle: c['angle'],
+                  angle: c['angle'] as double,
                 ),
                 transform: Matrix4.identity()
                   ..translate(
-                    c['translationX'],
-                    c['translationY'],
+                    c['translationX'] as double,
+                    c['translationY'] as double,
                   ),
               ),
             )
