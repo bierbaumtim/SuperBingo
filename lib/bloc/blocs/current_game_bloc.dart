@@ -38,10 +38,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     if (event is StartGame) {
       yield* _mapStartGameToState(event);
     } else if (event is OpenGameWaitingLobby) {
-      yield* _mapStartGameWaitingLobbyToState(event);
+      yield* _mapOpenGameWaitingLobbyToState(event);
     } else if (event is LeaveGame) {
       yield* _mapLeaveGameToState(event);
     } else if (event is EndGame) {
+      yield* _mapEndGameToState(event);
     } else if (event is UpdateCurrentGame) {
       yield* _mapUpdateCurrentGameToState(event);
     } else if (event is PlayCard) {
@@ -62,10 +63,14 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     try {
       _self = event.self;
       final success = await _setupBlocAndSubscription(event.gameId);
-      if (success) {
-        _game.state = GameState.active;
-        _game.currentPlayerId = _game.players.first.id;
-        await _updateGameData(_game);
+      if (success && _self.isHost) {
+        await _updateGameData(
+          <String, dynamic>{
+            "state": "active",
+            "currentPlayerId": _game.players.first.id,
+          },
+          _game.gameID,
+        );
       } else {
         yield CurrentGameStartingFailed();
       }
@@ -75,16 +80,21 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
   }
 
-  Stream<CurrentGameState> _mapStartGameWaitingLobbyToState(
+  Stream<CurrentGameState> _mapOpenGameWaitingLobbyToState(
       OpenGameWaitingLobby event) async* {
     yield CurrentGameStarting();
     try {
       _self = event.self;
       final success = await _setupBlocAndSubscription(event.gameId);
-      if (success) {
+      if (success && _self.isHost) {
         // var game = await _getGameSnapshot(event.gameId);
         _game = _game.copyWith(state: GameState.waitingForPlayer);
-        await _updateGameData(_game);
+        await _updateGameData(
+          <String, dynamic>{
+            "state": "waitingForPlayer",
+          },
+          _game.gameID,
+        );
         yield CurrentGameWaitingForPlayer(game: _game, self: _self);
       } else {
         yield CurrentGameStartingFailed();
@@ -118,6 +128,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         }
       }
       _game = event.game;
+      if (_game.state == GameState.finished) {
+        add(EndGame());
+        return;
+      }
       if (_game.state == GameState.waitingForPlayer) {
         yield CurrentGameWaitingForPlayer(
           game: _game,
@@ -151,6 +165,27 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
             .listen(_handleNetworkDataChange);
       }
     }
+  }
+
+  Stream<CurrentGameState> _mapEndGameToState(EndGame event) async* {
+    await gameSub.cancel();
+    if (_self.isHost) {
+      await _updateGameData(
+        <String, dynamic>{
+          "state": "finished",
+        },
+        _game.gameID,
+      );
+
+      await Future.delayed(
+        Duration(seconds: 2),
+        () async =>
+            await db.collection('games').document(_game.gameID).delete(),
+      );
+    }
+    _self = null;
+    InformationStorage.instance.clearInformations();
+    yield CurrentGameFinished();
   }
 
   Stream<CurrentGameState> _mapPlayCardToState(PlayCard event) async* {
@@ -228,8 +263,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Future<void> _leaveGame() async {
     try {
       // var game = await _getGameSnapshot(gameId);
-      _game.removePlayer(_self);
       await gameSub.cancel();
+      _game.removePlayer(_self);
       if (_self.isHost) {
         if (_game.players.isNotEmpty) {
           _game.players[0] = _game.players[0].copyWith(isHost: true);
@@ -253,10 +288,14 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     return Game.fromJson(snapshot.data);
   }
 
-  Future<void> _updateGameData(Game game) async {
-    final dbGame =
-        await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
-    await db.collection('games').document(game.gameID).updateData(dbGame);
+  Future<void> _updateGameData(dynamic data, [String gameID]) async {
+    if (data is Game) {
+      final dbGame =
+          await compute<Game, Map<String, dynamic>>(Game.toDBData, data);
+      await db.collection('games').document(data.gameID).updateData(dbGame);
+    } else if (data is Map<String, dynamic>) {
+      await db.collection('games').document(gameID).updateData(data);
+    }
   }
 
   void _handleNetworkDataChange(DocumentSnapshot snapshot) async {

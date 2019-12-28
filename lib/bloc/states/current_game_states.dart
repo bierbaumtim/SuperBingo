@@ -75,6 +75,10 @@ class CurrentGameStarting extends CurrentGameState {}
 /// Der Start des Spiels ist fehlgeschlagen.
 class CurrentGameStartingFailed extends CurrentGameState {}
 
+/// Das Spiel wurde komplett beendet. Triggert, dass die 
+/// Spieleseite geschlossen wird.
+class CurrentGameFinished extends CurrentGameState {}
+
 /// State, um den Beitritt eines Spielers zu einem Spiel darzustellen
 class PlayerJoined extends CurrentGameState {
   final Player player;

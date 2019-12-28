@@ -74,4 +74,5 @@ const _$GameStateEnumMap = {
   GameState.waitingForPlayer: 'waitingForPlayer',
   GameState.active: 'active',
   GameState.gameCompleted: 'gameCompleted',
+  GameState.finished: 'finished',
 };

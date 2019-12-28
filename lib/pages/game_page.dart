@@ -63,6 +63,8 @@ class _GamePageState extends State<GamePage> {
                 );
               } else if (state is CurrentGameStarting && mounted) {
                 showStartingOverlay(context);
+              } else if (state is CurrentGameFinished) {
+                Navigator.of(context).pop();
               } else if (mounted) {
                 hideStartingOverlay();
               }

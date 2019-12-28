@@ -10,12 +10,12 @@ Player _$PlayerFromJson(Map<String, dynamic> json) {
   return Player(
     id: json['id'] as String ?? '',
     name: json['name'] as String ?? '',
+    isHost: json['isHost'] as bool ?? false,
     cards: (json['cards'] as List)
             ?.map((e) =>
                 e == null ? null : GameCard.fromJson(e as Map<String, dynamic>))
             ?.toList() ??
         [],
-    isHost: json['isHost'] as bool ?? false,
   );
 }
 

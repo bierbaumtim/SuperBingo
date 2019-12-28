@@ -160,7 +160,7 @@ class Game with EquatableMixin {
     return jsonDecode(json) as Map<String, dynamic>;
   }
 
-  /// Mischt die Karten. Wie haeufig gemischt wird, wird mit `times` übergeben
+  /// Mischt die Karten. Wie häufig gemischt wird, wird mit `times` übergeben
   void shuffleCards({int times = 1}) {
     assert(times != null);
     final cards = playedCardStack
@@ -254,4 +254,7 @@ enum GameState {
 
   /// Das Spiel ist abgeschlossen. Es kann nun komplett beendet und neugestartet werden.
   gameCompleted,
+
+  /// Das Spiel wurde vom Host beendet.
+  finished,
 }
