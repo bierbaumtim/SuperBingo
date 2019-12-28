@@ -160,7 +160,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       if (message == null) {
         _self.cards.removeWhere((c) => c == event.card);
         if (event.card.rule == SpecialRule.reverse) {
-          _game.players = _game.players.reversed;
+          _game.players = _game.players.reversed.toList();
         }
         final nextPlayer = _self.getNextPlayer(
           _game.players,
