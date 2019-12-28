@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 /// Erstellt das Karo-Muster auf der Rückseiter jeder Spielkarte
 class CardBackPainter extends CustomPainter {
+  const CardBackPainter({Listenable repaint}) : super(repaint: repaint);
+
   @override
   void paint(Canvas canvas, Size size) {
     const lineHeight = 20.0;

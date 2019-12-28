@@ -70,7 +70,6 @@ class _CardStackState extends State<CardStack> {
                 child: Transform.rotate(
                   child: PlayCard(
                     card: c['card'],
-                    index: c['index'] as int,
                     elevation: c['elevation'] as double,
                     isFlipped: widget.type == CardStackType.unplayedCards,
                     onCardTap: (card) {
@@ -78,7 +77,7 @@ class _CardStackState extends State<CardStack> {
                         currentGameBloc.add(events.PullCard(card));
                       }
                     },
-                    shouldPaint: c['index'] as int >= cards.length - 3,
+                    shouldPaint: c['index'] as int >= cards.length - 5,
                   ),
                   angle: c['angle'] as double,
                 ),

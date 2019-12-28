@@ -32,7 +32,6 @@ class PlayCard extends StatelessWidget {
   ///
   /// Default: 0
   final double elevation;
-  final int index;
 
   /// Konfiguration, ob die Karte aufgedeckt liegt
   ///
@@ -53,7 +52,6 @@ class PlayCard extends StatelessWidget {
     Key key,
     @required this.card,
     this.angle,
-    this.index,
     this.rotationAngle,
     this.height = 175,
     this.width = 100,
@@ -219,7 +217,7 @@ class _InactivePaint extends StatelessWidget {
         child: FractionalTranslation(
           translation: Offset(-.5, -.25),
           child: Transform.rotate(
-            child: CustomPaint(
+            child: const CustomPaint(
               painter: CardBackPainter(),
             ),
             angle: radians(45),
