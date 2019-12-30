@@ -25,20 +25,25 @@ class CreateGame extends GameConfigurationEvent {
   /// Konfiguration, wie viele Spieler maximal mitspielen können
   final int maxPlayer;
 
-  /// Konfiguration, mit wie vielen Karten gespielt werden soll
-  final int cardAmount;
+  /// Konfiguration, mit wie vielen Kartendecks gespielt werden soll
+  final int decksAmount;
 
   /// {@macro gameevents.creategame}
   const CreateGame({
     this.name,
     this.isPublic,
     this.maxPlayer,
-    this.cardAmount,
+    this.decksAmount,
   });
 
   @override
-  List<Object> get props =>
-      super.props..addAll(<Object>[name, cardAmount, maxPlayer, isPublic]);
+  List<Object> get props => super.props
+    ..addAll(<Object>[
+      name,
+      decksAmount,
+      maxPlayer,
+      isPublic,
+    ]);
 }
 
 /// Event um das Bloc wieder in den Wartezustand zuversetzen

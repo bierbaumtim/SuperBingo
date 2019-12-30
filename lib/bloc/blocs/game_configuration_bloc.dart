@@ -56,7 +56,8 @@ class GameConfigurationBloc
   Stream<String> get gameLinkStream => _gameLinkController.stream;
 
   Stream<GameConfigurationState> _mapCreateGameToState(
-      CreateGame event) async* {
+    CreateGame event,
+  ) async* {
     yield GameCreating();
     try {
       if (!Connection.instance.hasConnection) {
@@ -70,7 +71,7 @@ class GameConfigurationBloc
         name: event.name,
         isPublic: event.isPublic,
         maxPlayer: event.maxPlayer,
-        cardAmount: event.cardAmount,
+        decksAmount: event.decksAmount,
       );
 
       var gameDBData =
@@ -107,28 +108,29 @@ class GameConfigurationBloc
   }
 
   Stream<GameConfigurationState> _mapResetGameConfigurationToState(
-      ResetGameConfiguration event) async* {
+    ResetGameConfiguration event,
+  ) async* {
     _self = null;
     yield WaitingGameConfigInput();
   }
 
   Stream<GameConfigurationState> _mapDeleteConfiguredGameToState(
-      DeleteConfiguredGame event) async* {
+    DeleteConfiguredGame event,
+  ) async* {
     await endGame();
     yield WaitingGameConfigInput();
   }
 
   Future<Game> _createGame({
     String name,
-    int cardAmount,
+    int decksAmount,
     int maxPlayer,
     bool isPublic,
   }) async {
     final username = await getUsername();
     _self = Player.create(username, isHost: true);
 
-    var cardStack = _generateCardStack(cardAmount);
-    _self.drawCards(cardStack);
+    var cardStack = _generateCardStack(decksAmount);
 
     var filledGame = Game(
       unplayedCardStack: cardStack,
@@ -137,11 +139,13 @@ class GameConfigurationBloc
         _self,
       ],
       isPublic: isPublic,
-      cardAmount: cardAmount,
+      cardAmount: decksAmount * defaultCardDeck.length,
       maxPlayer: maxPlayer,
       name: name,
-      state: GameState.waitingForPlayer,
+      state: GameState.created,
     );
+
+    filledGame.shuffleCards(times: 5);
 
     return filledGame;
   }
@@ -150,14 +154,12 @@ class GameConfigurationBloc
     await db.collection('games').document(gameId).delete();
   }
 
-  Queue<GameCard> _generateCardStack(int amount) {
+  Queue<GameCard> _generateCardStack(int decks) {
     final uuid = Uuid();
-    var decks = (amount / 32).truncate() - 1;
-    var cardDecks = defaultCardDeck;
-    for (var i = 0; i < decks; i++) {
-      cardDecks += defaultCardDeck;
+    var cardDecks = List<GameCard>.from(defaultCardDeck);
+    for (var i = 0; i < decks - 1; i++) {
+      cardDecks.addAll(defaultCardDeck);
     }
-    cardDecks.shuffle();
     cardDecks = cardDecks.map((c) => c.setId(uuid.v4())).toList();
 
     return Queue<GameCard>.from(cardDecks);
