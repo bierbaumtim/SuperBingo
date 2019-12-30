@@ -20,6 +20,10 @@ Game _$GameFromJson(Map<String, dynamic> json) {
     isPublic: json['isPublic'] as bool ?? true,
     cardAmount: json['cardAmount'] as int ?? 32,
     currentPlayerId: json['currentPlayerId'] as String ?? '',
+    cardDrawAmount: json['cardDrawAmount'] as int ?? 1,
+    allowedCardColor:
+        _$enumDecodeNullable(_$CardColorEnumMap, json['allowedCardColor']),
+    isJokerOrJackAllowed: json['isJokerOrJackAllowed'] as bool ?? true,
     state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
         GameState.waitingForPlayer,
   );
@@ -32,10 +36,13 @@ Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
       'isPublic': instance.isPublic,
       'maxPlayer': instance.maxPlayer,
       'cardAmount': instance.cardAmount,
+      'cardDrawAmount': instance.cardDrawAmount,
       'name': instance.name,
       'id': instance.gameID,
       'currentPlayerId': instance.currentPlayerId,
       'state': _$GameStateEnumMap[instance.state],
+      'allowedCardColor': _$CardColorEnumMap[instance.allowedCardColor],
+      'isJokerOrJackAllowed': instance.isJokerOrJackAllowed,
     };
 
 T _$enumDecode<T>(
@@ -70,7 +77,15 @@ T _$enumDecodeNullable<T>(
   return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
 }
 
+const _$CardColorEnumMap = {
+  CardColor.heart: 'heart',
+  CardColor.diamond: 'diamond',
+  CardColor.spade: 'spade',
+  CardColor.clover: 'clover',
+};
+
 const _$GameStateEnumMap = {
+  GameState.created: 'created',
   GameState.waitingForPlayer: 'waitingForPlayer',
   GameState.active: 'active',
   GameState.gameCompleted: 'gameCompleted',

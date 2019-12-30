@@ -2,11 +2,13 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
 
-import 'package:equatable/equatable.dart';
+import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/player.dart';
 
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:supercharged/supercharged.dart';
 
 part 'game.g.dart';
 
@@ -70,6 +72,12 @@ class Game with EquatableMixin {
   @JsonKey(name: 'cardAmount', defaultValue: 32)
   int cardAmount;
 
+  /// Menge der Karten die gezogen werden muss.
+  ///
+  /// Default: 1
+  @JsonKey(name: 'cardDrawAmount', defaultValue: 1)
+  int cardDrawAmount;
+
   /// Konfiguration, unter welchem Namen das Spiel sichtbar sein soll. Kann auch zur Suche eines Spiels genutzt werden.
   @JsonKey(name: 'name', defaultValue: 'SuperBingo')
   String name;
@@ -86,6 +94,15 @@ class Game with EquatableMixin {
   @JsonKey(name: 'state', defaultValue: GameState.waitingForPlayer)
   GameState state;
 
+  /// Erlaubt Kartenfarbe. Wird gesetzt wenn man einen Buben oder Joker genutzt hat.
+  @JsonKey(name: 'allowedCardColor')
+  CardColor allowedCardColor;
+
+  /// Parameter ob ein Bube oder Joker gelegt werden darf.
+  /// Wird gesetzt wenn ein Bube oder Joker genutzt wurde.
+  @JsonKey(name: 'isJokerOrJackAllowed', defaultValue: true)
+  bool isJokerOrJackAllowed;
+
   /// {@macro game}
   Game({
     this.gameID = "",
@@ -97,11 +114,14 @@ class Game with EquatableMixin {
     this.isPublic = true,
     this.cardAmount = 32,
     this.currentPlayerId,
+    this.cardDrawAmount,
+    this.allowedCardColor,
+    this.isJokerOrJackAllowed,
     this.state = GameState.waitingForPlayer,
   }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from(<GameCard>[]);
 
   /// Oberste Karte des Stapels der gespielten Karten
-  GameCard get topCard => playedCardStack.isEmpty ? null : playedCardStack.last;
+  GameCard get topCard => playedCardStack.lastOrNull();
 
   /// Spiel wird aktuell gespielt
   bool get isRunning => state == GameState.active;
@@ -111,10 +131,13 @@ class Game with EquatableMixin {
     String name,
     String gameId,
     bool isPublic,
+    bool isJokerOrJackAllowed,
     int cardAmount,
-    String currentPlayerId,
+    int cardDrawAmount,
     int maxPlayer,
+    String currentPlayerId,
     GameState state,
+    CardColor allowedCardColor,
     List<Player> players,
     Queue<GameCard> playedCardStack,
     Queue<GameCard> unplayedCardStack,
@@ -122,6 +145,7 @@ class Game with EquatableMixin {
       Game(
         name: name ?? this.name,
         cardAmount: cardAmount ?? this.cardAmount,
+        cardDrawAmount: cardDrawAmount ?? this.cardDrawAmount,
         isPublic: isPublic ?? this.isPublic,
         gameID: _fillGameId(gameId),
         maxPlayer: maxPlayer ?? this.maxPlayer,
@@ -130,6 +154,8 @@ class Game with EquatableMixin {
         unplayedCardStack: unplayedCardStack ?? this.unplayedCardStack,
         currentPlayerId: currentPlayerId ?? this.currentPlayerId,
         state: state ?? this.state,
+        isJokerOrJackAllowed: isJokerOrJackAllowed ?? this.isJokerOrJackAllowed,
+        allowedCardColor: allowedCardColor ?? this.allowedCardColor,
       );
 
   /// Wandelt ein [Game]-Object in eine Datenbank-kompatible Map um
@@ -150,8 +176,12 @@ class Game with EquatableMixin {
         isPublic: json['isPublic'] as bool ?? true,
         cardAmount: json['cardAmount'] as int ?? 32,
         currentPlayerId: json['currentPlayerId'] as String ?? '',
+        cardDrawAmount: json['cardDrawAmount'] as int ?? 1,
         state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
             GameState.waitingForPlayer,
+        allowedCardColor:
+            _$enumDecodeNullable(_$CardColorEnumMap, json['allowedCardColor']),
+        isJokerOrJackAllowed: json['isJokerOrJackAllowed'] as bool ?? true,
       );
 
   /// [Game] Object wird in eine Datenbank-kompatible Map umgewandelt
@@ -160,20 +190,26 @@ class Game with EquatableMixin {
     return jsonDecode(json) as Map<String, dynamic>;
   }
 
+  void start() {
+    dealCards(6);
+    state = GameState.active;
+    currentPlayerId = players.first.id;
+  }
+
   /// Mischt die Karten. Wie häufig gemischt wird, wird mit `times` übergeben
   void shuffleCards({int times = 1}) {
     assert(times != null);
-    final cards = playedCardStack
-        .toList(); // TODO überprüfen ob hier der richtige Stapel gemischt wird
+    final cards = unplayedCardStack.toList();
     for (var i = 0; i < times; i++) {
       cards.shuffle();
     }
-    playedCardStack = Queue<GameCard>.from(cards);
+    unplayedCardStack = Queue<GameCard>.from(cards);
   }
 
   /// Fügt den neuen `player` zur Liste `players` der Spieler hinzu
   void addPlayer(Player player) {
-    if (state == GameState.waitingForPlayer && !players.contains(player)) {
+    if ([GameState.waitingForPlayer, GameState.created].contains(state) &&
+        !players.contains(player)) {
       players.add(player);
     }
   }
@@ -183,8 +219,7 @@ class Game with EquatableMixin {
     players.removeWhere((p) => p.id == player.id);
     if (!players.contains(player)) {
       final playerCards = player.cards..shuffle();
-      final unplayedCards = unplayedCardStack;
-      unplayedCards.addAll(playerCards);
+      unplayedCardStack.addAll(playerCards);
     }
   }
 
@@ -193,7 +228,7 @@ class Game with EquatableMixin {
   void dealCards(int amount) {
     for (var i = 0; i < amount - 1; i++) {
       for (var k = 0; k < players.length - 1; k++) {
-        players[k].drawCard(playedCardStack.removeFirst());
+        players[k].drawCard(unplayedCardStack.removeFirst());
       }
     }
   }
@@ -246,6 +281,9 @@ class Game with EquatableMixin {
 }
 
 enum GameState {
+  /// Das Spiel wurde erstellt, aber es können noch keine Spieler dem Spiel beitreten.
+  created,
+
   /// Lobby des Spiels, es wird auf weitere Spieler gewartet, damit das Spiel gestartet werden kann.
   waitingForPlayer,
 
