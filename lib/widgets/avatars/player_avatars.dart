@@ -27,10 +27,13 @@ class PlayerAvatars extends StatelessWidget {
       bloc: currentGameBloc,
       builder: (context, state) {
         var player = <Player>[];
+        var currentPlayerId = '';
         if (state is CurrentGameLoaded) {
           player = state.game.players;
+          currentPlayerId = state.game.currentPlayerId;
         } else if (state is CurrentGameWaitingForPlayer) {
           player = state.game.players;
+          currentPlayerId = state.game.currentPlayerId;
         }
         if (player.isNotEmpty) {
           return Positioned(
@@ -51,6 +54,7 @@ class PlayerAvatars extends StatelessWidget {
                 return PlayerAvatar(
                   postitionCoordinates: postitionCoordinates,
                   player: p,
+                  isCurrentPlayer: p.id == currentPlayerId,
                 );
               }).toList(),
             ),

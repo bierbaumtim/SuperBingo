@@ -5,12 +5,14 @@ import 'package:superbingo/models/app_models/player.dart';
 /// {@template playeravatar}
 /// Avatarähnliches Widget mit großem Anfangsbuchstaben des Namen des Spielers in der Mitte und der Anzahl der Karten des Spielers.
 /// {@endtemplate}
+
 class PlayerAvatar extends StatelessWidget {
   /// {@macro playeravatar}
   const PlayerAvatar({
     Key key,
     @required this.postitionCoordinates,
     @required this.player,
+    this.isCurrentPlayer = false,
   }) : super(key: key);
 
   /// Spieler zu dem der Avatar dargestellt werden soll
@@ -18,6 +20,8 @@ class PlayerAvatar extends StatelessWidget {
 
   /// Position des Avatars
   final Map<String, double> postitionCoordinates;
+
+  final bool isCurrentPlayer;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +38,42 @@ class PlayerAvatar extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
+            if (isCurrentPlayer)
+              Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox(
+                  width: 50,
+                  height: 50,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: Colors.greenAccent[700],
+                          blurRadius: 2,
+                          spreadRadius: 1,
+                        ),
+                        BoxShadow(
+                          color: Colors.greenAccent[400],
+                          blurRadius: 4,
+                          spreadRadius: 2,
+                        ),
+                        BoxShadow(
+                          color: Colors.greenAccent[100],
+                          blurRadius: 8,
+                          spreadRadius: 3,
+                        ),
+                        BoxShadow(
+                          color: Colors.greenAccent,
+                          blurRadius: 12,
+                          spreadRadius: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             Align(
               alignment: Alignment.topCenter,
               child: SizedBox(
@@ -41,7 +81,6 @@ class PlayerAvatar extends StatelessWidget {
                 height: 50,
                 child: Material(
                   elevation: 12,
-                  color: Colors.deepOrangeAccent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
                   ),
@@ -51,7 +90,8 @@ class PlayerAvatar extends StatelessWidget {
                       style: theme.textTheme.body1.copyWith(fontSize: 17),
                     ),
                     backgroundColor: Colors.green,
-                    minRadius: 25,
+                    minRadius: 20,
+                    maxRadius: 20,
                   ),
                 ),
               ),
