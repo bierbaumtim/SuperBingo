@@ -51,14 +51,48 @@ class DialogInformationService {
     EdgeInsets padding,
     Widget leading,
   }) {
-    showSimpleNotification(
-      Text(content),
-      subtitle: subtitle != null ? Text(subtitle) : null,
-      background: background,
-      foreground: foreground,
-      contentPadding: padding,
-      leading: leading,
+    showOverlayNotification(
+      (context) => SlideDismissible(
+        key: ValueKey(content),
+        child: SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Material(
+              color: background ?? Theme.of(context)?.accentColor,
+              elevation: 16,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: ListTileTheme(
+                textColor: foreground ??
+                    Theme.of(context)?.accentTextTheme?.title?.color,
+                iconColor: foreground ??
+                    Theme.of(context)?.accentTextTheme?.title?.color,
+                child: ListTile(
+                  dense: true,
+                  leading: leading,
+                  title: Text(content),
+                  subtitle: subtitle != null ? Text(subtitle) : null,
+                  // trailing: trailing,
+                  contentPadding: padding,
+                ),
+              ),
+            ),
+          ),
+        ),
+        enable: true,
+      ),
+      duration: Duration(seconds: 4),
     );
+    // showSimpleNotification(
+    //   Text(content),
+    //   subtitle: subtitle != null ? Text(subtitle) : null,
+    //   background: background,
+    //   foreground: foreground,
+    //   contentPadding: padding,
+    //   leading: leading,
+    // );
   }
 }
 
