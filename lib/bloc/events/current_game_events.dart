@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
@@ -74,22 +75,25 @@ class PlayCard extends CurrentGameEvent {
   /// Karte die gelegt werden soll
   final GameCard card;
 
+  /// gewünschte Kartenfarbe, wenn ein Bube/Joker gelegt wird
+  final CardColor allowedCardColor;
+
   /// {@macro currentgameevents.playcard}
-  const PlayCard(this.card);
+  const PlayCard(this.card, [this.allowedCardColor]);
 
   @override
-  List<Object> get props => super.props..add(card);
+  List<Object> get props => super.props..addAll([card, allowedCardColor]);
 }
 
 /// {@template currentgameevents.pullcard}
 /// Event um eine Karte zu ziehen
 /// {@endtemplate}
-class PullCard extends CurrentGameEvent {
+class DrawCard extends CurrentGameEvent {
   /// Karte die gezogen wird
   final GameCard card;
 
   /// {@macro currentgameevents.pullcard}
-  const PullCard(this.card);
+  const DrawCard(this.card);
 
   @override
   List<Object> get props => super.props..add(card);

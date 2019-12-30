@@ -9,6 +9,7 @@ import 'package:superbingo/utils/dialogs.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share/share.dart';
+import 'package:supercharged/supercharged.dart';
 
 class NewGamePage extends StatefulWidget {
   @override
@@ -147,7 +148,7 @@ class _NewGamePageState extends State<NewGamePage> {
                           hintText: 'Gib eine Zahl zwischen 4-8 an',
                         ),
                         validator: (text) {
-                          final parsedAmount = int.tryParse(text) ?? 0;
+                          final parsedAmount = text.toInt() ?? 0;
                           if (text.isEmpty || parsedAmount > 2) {
                             return null;
                           } else if (parsedAmount < 2 || parsedAmount > 6) {
@@ -156,7 +157,7 @@ class _NewGamePageState extends State<NewGamePage> {
                             return 'Es sind nur Zahlen erlaubt';
                           }
                         },
-                        onSaved: (text) => maxPlayer = int.tryParse(text) ?? 6,
+                        onSaved: (text) => maxPlayer = text.toInt() ?? 6,
                         onEditingComplete: _node.nextFocus,
                         enabled: !isDisabled,
                       ),
@@ -170,7 +171,7 @@ class _NewGamePageState extends State<NewGamePage> {
                           labelText: 'Anzahl der Kartendecks',
                         ),
                         validator: (text) {
-                          final parsedAmount = int.tryParse(text) ?? 0;
+                          final parsedAmount = text.toInt() ?? 0;
                           if (text.isEmpty || parsedAmount > 0) {
                             return null;
                           } else {
@@ -178,8 +179,7 @@ class _NewGamePageState extends State<NewGamePage> {
                           }
                         },
                         onEditingComplete: _node.unfocus,
-                        onSaved: (text) =>
-                            cardAmount = calculateCardAmount(text),
+                        onSaved: (text) => cardAmount = text.toInt() ?? 1,
                         enabled: !isDisabled,
                       ),
                       SizedBox(height: 8),
@@ -204,7 +204,7 @@ class _NewGamePageState extends State<NewGamePage> {
                                 isPublic: isPublic,
                                 maxPlayer: maxPlayer,
                                 name: name,
-                                cardAmount: cardAmount,
+                                decksAmount: cardAmount,
                               ));
                             },
                           ),
@@ -254,11 +254,6 @@ class _NewGamePageState extends State<NewGamePage> {
         ),
       ),
     );
-  }
-
-  int calculateCardAmount(String amountString) {
-    final decks = int.tryParse(amountString) ?? 1;
-    return decks * 32;
   }
 
   void showGameCreationOverlay(BuildContext context) {

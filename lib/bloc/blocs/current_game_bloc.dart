@@ -47,14 +47,14 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       yield* _mapUpdateCurrentGameToState(event);
     } else if (event is PlayCard) {
       yield* _mapPlayCardToState(event);
-    } else if (event is PullCard) {
-      yield* _mapPullCardToState(event);
+    } else if (event is DrawCard) {
+      yield* _mapDrawCardToState(event);
     }
   }
 
   @override
   Future<void> close() async {
-    gameSub?.cancel();
+    await gameSub?.cancel();
     super.close();
   }
 
@@ -63,14 +63,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     try {
       _self = event.self;
       final success = await _setupBlocAndSubscription(event.gameId);
+      _game.start();
+      _self = Player.getPlayerFromList(_game.players, _self.id);
       if (success && _self.isHost) {
-        await _updateGameData(
-          <String, dynamic>{
-            "state": "active",
-            "currentPlayerId": _game.players.first.id,
-          },
-          _game.gameID,
-        );
+        await _updateGameData(_game);
       } else {
         yield CurrentGameStartingFailed();
       }
@@ -81,13 +77,13 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   Stream<CurrentGameState> _mapOpenGameWaitingLobbyToState(
-      OpenGameWaitingLobby event) async* {
+    OpenGameWaitingLobby event,
+  ) async* {
     yield CurrentGameStarting();
     try {
       _self = event.self;
       final success = await _setupBlocAndSubscription(event.gameId);
       if (success && _self.isHost) {
-        // var game = await _getGameSnapshot(event.gameId);
         _game = _game.copyWith(state: GameState.waitingForPlayer);
         await _updateGameData(
           <String, dynamic>{
@@ -106,9 +102,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   Stream<CurrentGameState> _mapUpdateCurrentGameToState(
-      UpdateCurrentGame event) async* {
+    UpdateCurrentGame event,
+  ) async* {
     try {
-      final self = Player.getPlayerFromList(event.game.players, _playerId);
+      _self = Player.getPlayerFromList(event.game.players, _playerId);
       if (_game.players.length < event.game.players.length) {
         final joinedPlayer = getDiffInPlayerLists(
           event.game.players,
@@ -140,13 +137,14 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       } else {
         yield CurrentGameLoaded(
           game: event.game,
-          handCards: self.cards,
+          handCards: _self.cards,
           playedCards: event.game.playedCardStack.toList(),
           unplayedCards: event.game.unplayedCardStack.toList(),
         );
       }
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
+      _game = event.game;
     }
   }
 
@@ -197,6 +195,14 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         if (event.card.rule == SpecialRule.reverse) {
           _game.players = _game.players.reversed.toList();
         }
+        if (event.card.rule == SpecialRule.plusTwo) {
+          _game.cardDrawAmount =
+              _game.cardDrawAmount == 1 ? 2 : _game.cardDrawAmount + 2;
+        }
+        if (event.card.rule == SpecialRule.joker) {
+          _game.isJokerOrJackAllowed = false;
+          _game.allowedCardColor = event.allowedCardColor;
+        }
         final nextPlayer = _self.getNextPlayer(
           _game.players,
           skipNextPlayer: event.card.rule == SpecialRule.skip,
@@ -222,16 +228,25 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
   }
 
-  Stream<CurrentGameState> _mapPullCardToState(PullCard event) async* {
-    // final game = await _getGameSnapshot(gameId);
+  Stream<CurrentGameState> _mapDrawCardToState(DrawCard event) async* {
     if (_game.isRunning) {
-      final card = _game.unplayedCardStack.removeFirst();
-      _self = Player.getPlayerFromList(_game.players, _self.id);
-      _self.cards.add(card);
-      _game.players = _game.players
-          .map((player) => player.id == _self.id ? _self : player)
-          .toList();
-      await _updateGameData(_game);
+      if (_game.currentPlayerId == _self.id) {
+        _self = Player.getPlayerFromList(_game.players, _self.id);
+        for (var i = 0; i < _game.cardDrawAmount - 1; i++) {
+          final card = _game.unplayedCardStack.removeFirst();
+          _self.cards.add(card);
+        }
+        _game.cardDrawAmount = 1;
+        _game.updatePlayer(_self);
+        await _updateGameData(_game);
+      } else {
+        DialogInformationService.instance.showNotification(
+          NotificationType.error,
+          config: NotificationConfiguration(
+            content: 'Du bist nicht an der Reihe',
+          ),
+        );
+      }
     }
   }
 
@@ -262,7 +277,6 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
   Future<void> _leaveGame() async {
     try {
-      // var game = await _getGameSnapshot(gameId);
       await gameSub.cancel();
       _game.removePlayer(_self);
       if (_self.isHost) {
@@ -304,7 +318,16 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   String _checkRules(GameCard card) {
-    if (_game.currentPlayerId != _playerId) return 'Du bist nicht an der Reihe';
+    if (_game.currentPlayerId != _playerId) {
+      return 'Du bist nicht an der Reihe';
+    }
+    if (!_game.isJokerOrJackAllowed && card.rule == SpecialRule.joker) {
+      return 'Du darfst keine zwei Joker/Buben aufeinander legen.';
+    }
+    if (_game.allowedCardColor != null &&
+        _game.allowedCardColor != card.color) {
+      return 'Der letzte Spieler hat sich eine andere Farbe gewünscht. Du darfst diese Karte daher nicht legen';
+    }
     if (!Rules.isCardAllowed(card, _game.topCard)) {
       return 'Du darfst diese Karte nicht legen';
     }
