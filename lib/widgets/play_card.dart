@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:superbingo/constants/typedefs.dart';
+import 'package:superbingo/constants/ui_constants.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/card_utils.dart';
 import 'package:superbingo/widgets/card_back_custom_painter.dart';
@@ -127,12 +128,12 @@ class _ActivePaint extends StatelessWidget {
         if (!isNumberCard(card.number))
           Positioned(
             top: 10,
-            right: 14,
-            left: 14,
+            right: 12,
+            left: 12,
             bottom: 10,
             child: Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: Colors.black),
               ),
             ),
@@ -167,24 +168,24 @@ class _ActivePaint extends StatelessWidget {
             child: InnerCardImage(),
           ),
         Positioned(
-          top: 16,
-          left: 4,
+          top: kCardNumberColorVerticalPadding,
+          left: kCardNumberColorHorizontalPadding,
           child: CardNumberColor(
             color: card.color,
             number: card.number,
           ),
         ),
         Positioned(
-          top: 16,
-          right: 4,
+          top: kCardNumberColorVerticalPadding,
+          right: kCardNumberColorHorizontalPadding,
           child: CardNumberColor(
             color: card.color,
             number: card.number,
           ),
         ),
         Positioned(
-          bottom: 16,
-          left: 4,
+          bottom: kCardNumberColorVerticalPadding,
+          left: kCardNumberColorHorizontalPadding,
           child: CardNumberColor(
             color: card.color,
             number: card.number,
@@ -192,8 +193,8 @@ class _ActivePaint extends StatelessWidget {
           ),
         ),
         Positioned(
-          bottom: 16,
-          right: 4,
+          bottom: kCardNumberColorVerticalPadding,
+          right: kCardNumberColorHorizontalPadding,
           child: CardNumberColor(
             color: card.color,
             number: card.number,

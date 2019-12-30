@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:superbingo/constants/typedefs.dart';
+import 'package:superbingo/constants/ui_constants.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/card_utils.dart';
 import 'package:superbingo/widgets/card_number_color.dart';
@@ -36,7 +37,8 @@ class SmallPlayCard extends StatelessWidget {
       height: 175,
       width: 100,
       child: Card(
-        elevation: (index + 1).toDouble(),
+        // elevation: (index + 1).toDouble(),
+        elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -49,12 +51,12 @@ class SmallPlayCard extends StatelessWidget {
               if (!isNumberCard(card.number))
                 Positioned(
                   top: 10,
-                  right: 14,
-                  left: 14,
+                  right: 12,
+                  left: 12,
                   bottom: 10,
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
+                      borderRadius: BorderRadius.circular(10),
                       border: Border.all(color: Colors.black),
                     ),
                   ),
@@ -91,8 +93,8 @@ class SmallPlayCard extends StatelessWidget {
                   child: InnerCardImage(),
                 ),
               Positioned(
-                top: 16,
-                left: 10,
+                top: kCardNumberColorVerticalPadding,
+                left: 6,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,
@@ -100,8 +102,8 @@ class SmallPlayCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                top: 16,
-                right: 10,
+                top: kCardNumberColorVerticalPadding,
+                right: 6,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,
@@ -109,8 +111,8 @@ class SmallPlayCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: 16,
-                left: 10,
+                bottom: kCardNumberColorVerticalPadding,
+                left: 6,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,
@@ -119,8 +121,8 @@ class SmallPlayCard extends StatelessWidget {
                 ),
               ),
               Positioned(
-                bottom: 16,
-                right: 10,
+                bottom: kCardNumberColorVerticalPadding,
+                right: 6,
                 child: CardNumberColor(
                   color: card.color,
                   number: card.number,
