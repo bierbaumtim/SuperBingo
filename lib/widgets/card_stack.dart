@@ -52,6 +52,14 @@ class _CardStackState extends State<CardStack> {
   }
 
   @override
+  void didUpdateWidget(CardStack oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.cards != widget.cards) {
+      buildVisualEffects();
+    }
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     buildVisualEffects();
@@ -74,7 +82,7 @@ class _CardStackState extends State<CardStack> {
                     isFlipped: widget.type == CardStackType.unplayedCards,
                     onCardTap: (card) {
                       if (widget.type == CardStackType.unplayedCards) {
-                        currentGameBloc.add(events.PullCard(card));
+                        currentGameBloc.add(events.DrawCard(card));
                       }
                     },
                     shouldPaint: c['index'] as int >= cards.length - 5,
