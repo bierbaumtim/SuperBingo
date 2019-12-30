@@ -1,3 +1,4 @@
+import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/card.dart';
 
 /// {@template rules}
@@ -19,6 +20,8 @@ class Rules {
     if (topCard == null) {
       return true;
     } else if ((card.color == topCard.color || card.number == topCard.number)) {
+      return true;
+    } else if (topCard.rule == SpecialRule.joker) {
       return true;
     } else {
       return false;
