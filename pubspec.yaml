@@ -57,6 +57,7 @@ dependencies:
 
   #Json Serialization
   json_annotation: ^3.0.1
+  copy_with_annotation: ^0.1.0
 
   dart_ping: ^1.0.0
 
@@ -70,6 +71,7 @@ dev_dependencies:
     sdk: flutter
   build_runner: ^1.7.2
   json_serializable: ^3.2.5
+  copy_with: ^0.1.0
   flutter_native_splash: ^0.1.9
   effective_dart: ^1.1.2
 

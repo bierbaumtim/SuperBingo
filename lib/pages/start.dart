@@ -12,7 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 /// Startseite
-/// 
+///
 /// Hier landet der Spieler nachdem er die App startet
 /// Vor hier aus kann zur Spielerstellung, Spielsuche und Spielerkofiguration navigiert werden.
 class StartPage extends StatefulWidget {
@@ -38,6 +38,8 @@ class _StartPageState extends State<StartPage> {
             } else if (state is JoinGameFailed) {
               showSimpleNotification(
                 Text(state.error),
+                foreground: Colors.white,
+                slideDismiss: true,
               );
             }
           },
@@ -93,7 +95,8 @@ class _StartPageState extends State<StartPage> {
                       RaisedButton(
                         onPressed: () async {
                           await Navigator.of(context).pushNamed('/new_game');
-                          BlocProvider.of<GameConfigurationBloc>(context).add(ResetGameConfiguration());
+                          BlocProvider.of<GameConfigurationBloc>(context)
+                              .add(ResetGameConfiguration());
                         },
                         child: const Text('Neues Spiel'),
                         shape: RoundedRectangleBorder(
@@ -108,7 +111,8 @@ class _StartPageState extends State<StartPage> {
                         elevation: 6.0,
                       ),
                       RaisedButton(
-                        onPressed: () => Navigator.of(context).pushNamed('/join_game'),
+                        onPressed: () =>
+                            Navigator.of(context).pushNamed('/join_game'),
                         child: const Text('Spiel beitreten'),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),

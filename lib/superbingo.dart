@@ -24,7 +24,7 @@ class _SuperBingoState extends State<SuperBingo> {
       child: MaterialApp(
         themeMode: ThemeMode.light,
         theme: lightTheme,
-        showPerformanceOverlay: true,
+        // showPerformanceOverlay: true,
         home: BlocBuilder<InfoBloc, InfoState>(
           builder: (context, state) {
             if (state is InfosLoaded) {

@@ -9,7 +9,6 @@ import 'package:superbingo/bloc/events/join_game_events.dart';
 import 'package:superbingo/bloc/states/join_game_states.dart';
 import 'package:superbingo/constants/enums.dart';
 import 'package:superbingo/models/app_models/game.dart';
-import 'package:superbingo/utils/dialogs.dart';
 
 /// [JoinGamePage] zeigt alle öffentlichen Spiele an.
 ///
