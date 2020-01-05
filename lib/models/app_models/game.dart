@@ -226,9 +226,9 @@ class Game with EquatableMixin {
   /// Die Karten werden an die Spieler verteilt.
   /// Die Menge pro Spieler wird mit `amount` übergeben.
   void dealCards(int amount) {
-    for (var i = 0; i < amount - 1; i++) {
-      for (var k = 0; k < players.length - 1; k++) {
-        players[k].drawCard(unplayedCardStack.removeFirst());
+    for (var i = 0; i < amount; i++) {
+      for (var player in players) {
+        player.drawCard(unplayedCardStack.removeFirst());
       }
     }
   }
