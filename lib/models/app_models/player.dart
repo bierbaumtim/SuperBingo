@@ -6,6 +6,7 @@ import 'package:superbingo/service/information_storage.dart';
 import 'package:equatable/equatable.dart';
 import 'package:lumberdash/lumberdash.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:supercharged/supercharged.dart';
 
 part 'player.g.dart';
 
@@ -40,11 +41,15 @@ class Player with EquatableMixin {
   @JsonKey(name: 'isHost', defaultValue: false)
   final bool isHost;
 
+  @JsonKey(name: 'finishPosition', defaultValue: 0)
+  final int finishPosition;
+
   /// {@macro player}
   Player({
     this.id,
     this.name,
     this.isHost = false,
+    this.finishPosition = 0,
     List<GameCard> cards,
   }) : cards = cards ?? <GameCard>[];
 
@@ -52,6 +57,7 @@ class Player with EquatableMixin {
   Player copyWith({
     String name,
     int cardAmount,
+    int finishPosition,
     List<GameCard> cards,
     bool isHost,
   }) =>
@@ -60,6 +66,7 @@ class Player with EquatableMixin {
         name: name ?? this.name,
         cards: cards ?? this.cards,
         isHost: isHost ?? this.isHost,
+        finishPosition: finishPosition ?? this.finishPosition,
       );
 
   /// Factory, um ein neues [Player]-Object zu erstellen, ohne das die `id` übergeben werden muss
@@ -67,6 +74,7 @@ class Player with EquatableMixin {
         id: InformationStorage.instance.playerId,
         name: username,
         isHost: isHost,
+        finishPosition: 0,
       );
 
   /// Factory um einen Datenbanksatz in ein `Player`-Object umzuwandeln
@@ -80,6 +88,7 @@ class Player with EquatableMixin {
                 ?.toList() ??
             [],
         isHost: json['isHost'] as bool ?? false,
+        finishPosition: json['finishPosition'] as int ?? 0,
       );
 
   /// Wandelt ein `Player`-Object in eine Datenbank-kompatible Map um
@@ -90,7 +99,7 @@ class Player with EquatableMixin {
 
   /// Fügt die durch `amount` vorgebene Anzahl an Karten vom Kartenstapel `cardStack` der Kartenhand `cards` hinzu
   void drawCards(Queue<GameCard> cardStack, {int amount = 6}) {
-    for (var i = 0; i < amount - 1; i++) {
+    for (var i = 0; i < amount; i++) {
       drawCard(cardStack.removeFirst());
     }
   }
@@ -108,12 +117,14 @@ class Player with EquatableMixin {
     final id = playerId ?? this.id;
     assert(player != null);
     assert(id != null);
-    var index = player.indexWhere((p) => p.id == id) ?? -1;
+    final activePlayer =
+        player.filter((player) => player.finishPosition == 0).toList();
+    var index = activePlayer.indexWhere((p) => p.id == id) ?? -1;
     index = skipNextPlayer ? index + 2 : index + 1;
-    if (index > player.length - 1) {
+    if (index > activePlayer.length - 1) {
       index = 0;
     }
-    return player.elementAt(index);
+    return activePlayer.elementAt(index);
   }
 
   /// Ruft den Spieler mit der `playerId` aus der `player` Liste.

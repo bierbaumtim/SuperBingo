@@ -75,7 +75,7 @@ class CurrentGameStarting extends CurrentGameState {}
 /// Der Start des Spiels ist fehlgeschlagen.
 class CurrentGameStartingFailed extends CurrentGameState {}
 
-/// Das Spiel wurde komplett beendet. Triggert, dass die 
+/// Das Spiel wurde komplett beendet. Triggert, dass die
 /// Spieleseite geschlossen wird.
 class CurrentGameFinished extends CurrentGameState {}
 
@@ -97,4 +97,14 @@ class PlayerLeaved extends CurrentGameState {
 
   @override
   List<Object> get props => super.props..add(player);
+}
+
+/// State, um Countdown für Bingo/SuperBingo Call zu starten.
+class WaitForBingoCall extends CurrentGameState {
+  final bool isSuperBingo;
+
+  const WaitForBingoCall({this.isSuperBingo});
+
+  @override
+  List get props => super.props..add(isSuperBingo);
 }

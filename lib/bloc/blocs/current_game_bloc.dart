@@ -9,26 +9,27 @@ import 'package:superbingo/models/app_models/player.dart';
 import 'package:superbingo/models/app_models/rules.dart';
 import 'package:superbingo/service/dialog_information_service.dart';
 import 'package:superbingo/service/information_storage.dart';
+import 'package:superbingo/services/network_service.dart';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart';
 
 /// {@template currentgamebloc}
 ///
 /// {@endtemplate}
 class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
-  final Firestore db;
+  final INetworkService networkService;
   StreamSubscription gameSub;
   String get gameId => InformationStorage.instance.gameId;
   String get gameLink => InformationStorage.instance.gameLink;
   String get _playerId => InformationStorage.instance.playerId;
-  Game _game;
   Player _self;
 
+  Game get _currentGame => networkService.currentGame;
+  Game get _previousGame => networkService.previousGame;
+
   /// {@macro currentgamebloc}
-  CurrentGameBloc(this.db);
+  CurrentGameBloc(this.networkService);
 
   @override
   CurrentGameState get initialState => CurrentGameEmpty();
@@ -60,15 +61,19 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
   Stream<CurrentGameState> _mapStartGameToState(StartGame event) async* {
     yield CurrentGameStarting();
+
     try {
       _self = event.self;
       final success = await _setupBlocAndSubscription(event.gameId);
-      _game.start();
-      _self = Player.getPlayerFromList(_game.players, _self.id);
-      if (success && _self.isHost) {
-        await _updateGameData(_game);
-      } else {
-        yield CurrentGameStartingFailed();
+      final game = networkService.currentGame;
+      if (_self.isHost) {
+        game.start();
+        _self = Player.getPlayerFromList(game.players, _self.id);
+        if (success) {
+          await networkService.updateGameData(game);
+        } else {
+          yield CurrentGameStartingFailed();
+        }
       }
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
@@ -84,14 +89,14 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       _self = event.self;
       final success = await _setupBlocAndSubscription(event.gameId);
       if (success && _self.isHost) {
-        _game = _game.copyWith(state: GameState.waitingForPlayer);
-        await _updateGameData(
+        var game = _currentGame;
+        game = game.copyWith(state: GameState.waitingForPlayer);
+        await networkService.updateGameData(
           <String, dynamic>{
             "state": "waitingForPlayer",
           },
-          _game.gameID,
         );
-        yield CurrentGameWaitingForPlayer(game: _game, self: _self);
+        yield CurrentGameWaitingForPlayer(game: game, self: _self);
       } else {
         yield CurrentGameStartingFailed();
       }
@@ -106,32 +111,31 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   ) async* {
     try {
       _self = Player.getPlayerFromList(event.game.players, _playerId);
-      if (_game.players.length < event.game.players.length) {
+      if (_previousGame.players.length < event.game.players.length) {
         final joinedPlayer = getDiffInPlayerLists(
           event.game.players,
-          _game.players,
+          _previousGame.players,
         );
 
         if (joinedPlayer != null) {
           yield PlayerJoined(joinedPlayer);
         }
-      } else if (_game.players.length > event.game.players.length) {
+      } else if (_previousGame.players.length > event.game.players.length) {
         final leavedPlayer = getDiffInPlayerLists(
-          _game.players,
+          _previousGame.players,
           event.game.players,
         );
         if (leavedPlayer != null) {
           yield PlayerLeaved(leavedPlayer);
         }
       }
-      _game = event.game;
-      if (_game.state == GameState.finished) {
+      if (event.game.state == GameState.finished) {
         add(EndGame());
         return;
       }
-      if (_game.state == GameState.waitingForPlayer) {
+      if (event.game.state == GameState.waitingForPlayer) {
         yield CurrentGameWaitingForPlayer(
-          game: _game,
+          game: event.game,
           self: _self,
         );
       } else {
@@ -144,7 +148,6 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       }
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
-      _game = event.game;
     }
   }
 
@@ -156,11 +159,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       yield CurrentGameEmpty();
     } on GameLeaveException catch (e) {
       if (e.subscriptionCanceled) {
-        gameSub = db
-            .collection('games')
-            .document(gameId)
-            .snapshots()
-            .listen(_handleNetworkDataChange);
+        gameSub = networkService.gameChangedStream
+            .listen((game) => add(UpdateCurrentGame(game)));
       }
     }
   }
@@ -168,17 +168,15 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Stream<CurrentGameState> _mapEndGameToState(EndGame event) async* {
     await gameSub.cancel();
     if (_self.isHost) {
-      await _updateGameData(
+      await networkService.updateGameData(
         <String, dynamic>{
           "state": "finished",
         },
-        _game.gameID,
       );
 
       await Future.delayed(
         Duration(seconds: 2),
-        () async =>
-            await db.collection('games').document(_game.gameID).delete(),
+        () async => await networkService.deleteGame(_currentGame.gameID),
       );
     }
     _self = null;
@@ -188,33 +186,42 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
   Stream<CurrentGameState> _mapPlayCardToState(PlayCard event) async* {
     try {
+      final currentState = state;
       final message = _checkRules(event.card);
 
       if (message == null) {
+        if (_self.cards.length - 1 <= 1) {
+          yield WaitForBingoCall(isSuperBingo: _self.cards.length - 1 == 0);
+          yield currentState;
+        }
         _self.cards.removeWhere((c) => c == event.card);
+        final game = _currentGame;
         if (event.card.rule == SpecialRule.reverse) {
-          _game.players = _game.players.reversed.toList();
+          game.players = game.reversePlayerOrder();
         }
         if (event.card.rule == SpecialRule.plusTwo) {
-          _game.cardDrawAmount =
-              _game.cardDrawAmount == 1 ? 2 : _game.cardDrawAmount + 2;
+          game.cardDrawAmount =
+              game.cardDrawAmount == 1 ? 2 : game.cardDrawAmount + 2;
         }
         if (event.card.rule == SpecialRule.joker) {
-          _game.isJokerOrJackAllowed = false;
-          _game.allowedCardColor = event.allowedCardColor;
+          game.isJokerOrJackAllowed = false;
+          game.allowedCardColor = event.allowedCardColor;
+        } else {
+          game.isJokerOrJackAllowed = true;
+          game.allowedCardColor = null;
         }
         final nextPlayer = _self.getNextPlayer(
-          _game.players,
+          game.players,
           skipNextPlayer: event.card.rule == SpecialRule.skip,
         );
-        _game.updatePlayer(_self);
-        var filledGame = _game.copyWith(
-          playedCardStack: _game.playedCardStack..add(event.card),
+        game.updatePlayer(_self);
+        var filledGame = game.copyWith(
+          playedCardStack: game.playedCardStack..add(event.card),
           currentPlayerId: nextPlayer.id,
-          players: _game.players,
+          players: game.players,
         );
 
-        await _updateGameData(filledGame);
+        await networkService.updateGameData(filledGame);
       } else {
         DialogInformationService.instance.showNotification(
           NotificationType.error,
@@ -229,16 +236,19 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   Stream<CurrentGameState> _mapDrawCardToState(DrawCard event) async* {
-    if (_game.isRunning) {
-      if (_game.currentPlayerId == _self.id) {
-        _self = Player.getPlayerFromList(_game.players, _self.id);
-        for (var i = 0; i < _game.cardDrawAmount - 1; i++) {
-          final card = _game.unplayedCardStack.removeFirst();
+    final game = _currentGame;
+    if (game.isRunning) {
+      if (game.currentPlayerId == _self.id) {
+        game.isJokerOrJackAllowed = true;
+        game.allowedCardColor = null;
+        _self = Player.getPlayerFromList(game.players, _self.id);
+        for (var i = 0; i < game.cardDrawAmount; i++) {
+          final card = game.unplayedCardStack.removeFirst();
           _self.cards.add(card);
         }
-        _game.cardDrawAmount = 1;
-        _game.updatePlayer(_self);
-        await _updateGameData(_game);
+        game.cardDrawAmount = 1;
+        game.updatePlayer(_self);
+        await networkService.updateGameData(game);
       } else {
         DialogInformationService.instance.showNotification(
           NotificationType.error,
@@ -258,13 +268,9 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Future<bool> _setupBlocAndSubscription(String gameId) async {
     if (gameId != null) {
       try {
-        final snapshot = await db.collection('games').document(gameId).get();
-        _game = Game.fromJson(snapshot.data);
-        gameSub = db
-            .collection('games')
-            .document(gameId)
-            .snapshots()
-            .listen(_handleNetworkDataChange);
+        await networkService.setupSubscription(gameId);
+        gameSub = networkService.gameChangedStream
+            .listen((game) => add(UpdateCurrentGame(game)));
         return true;
       } on dynamic catch (e, s) {
         await Crashlytics.instance.recordError(e, s);
@@ -277,59 +283,40 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
   Future<void> _leaveGame() async {
     try {
+      final game = _currentGame;
       await gameSub.cancel();
-      _game.removePlayer(_self);
+      game.removePlayer(_self);
       if (_self.isHost) {
-        if (_game.players.isNotEmpty) {
-          _game.players[0] = _game.players[0].copyWith(isHost: true);
+        if (game.players.isNotEmpty) {
+          game.players[0] = game.players[0].copyWith(isHost: true);
+          await networkService.updateGameData(game);
         } else {
-          await db.collection('games').document(gameId).delete();
+          await networkService.deleteGame(gameId);
           return;
         }
       }
-
-      final gameDBData =
-          await compute<Game, Map<String, dynamic>>(Game.toDBData, _game);
-      await db.collection('games').document(gameId).updateData(gameDBData);
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
       throw GameLeaveException(subscriptionCanceled: gameSub == null);
     }
   }
 
-  Future<Game> _getGameSnapshot(String gameId) async {
-    final snapshot = await db.collection('games').document(gameId).get();
-    return Game.fromJson(snapshot.data);
-  }
-
-  Future<void> _updateGameData(dynamic data, [String gameID]) async {
-    if (data is Game) {
-      final dbGame =
-          await compute<Game, Map<String, dynamic>>(Game.toDBData, data);
-      await db.collection('games').document(data.gameID).updateData(dbGame);
-    } else if (data is Map<String, dynamic>) {
-      await db.collection('games').document(gameID).updateData(data);
-    }
-  }
-
-  void _handleNetworkDataChange(DocumentSnapshot snapshot) async {
-    final game = Game.fromJson(snapshot.data);
-    add(UpdateCurrentGame(game));
-  }
-
   String _checkRules(GameCard card) {
-    if (_game.currentPlayerId != _playerId) {
-      return 'Du bist nicht an der Reihe';
+    final game = _currentGame;
+    if (game.currentPlayerId != _playerId) {
+      return 'Du bist nicht an der Reihe!';
     }
-    if (!_game.isJokerOrJackAllowed && card.rule == SpecialRule.joker) {
-      return 'Du darfst keine zwei Joker/Buben aufeinander legen.';
+    if (!game.isJokerOrJackAllowed && card.rule == SpecialRule.joker) {
+      return 'Du darfst keine zwei Joker/Buben aufeinander legen!';
     }
-    if (_game.allowedCardColor != null &&
-        _game.allowedCardColor != card.color) {
-      return 'Der letzte Spieler hat sich eine andere Farbe gewünscht. Du darfst diese Karte daher nicht legen';
+    if (game.allowedCardColor != null && game.allowedCardColor != card.color) {
+      return 'Der letzte Spieler hat sich eine andere Farbe gewünscht. Du darfst diese Karte daher nicht legen!';
     }
-    if (!Rules.isCardAllowed(card, _game.topCard)) {
-      return 'Du darfst diese Karte nicht legen';
+    if (game.cardDrawAmount > 1 && card.number != CardNumber.seven) {
+      return 'Du musst ${game.cardDrawAmount} Karten ziehen!';
+    }
+    if (!Rules.isCardAllowed(card, game.topCard)) {
+      return 'Du darfst diese Karte nicht legen!';
     }
 
     return null;
