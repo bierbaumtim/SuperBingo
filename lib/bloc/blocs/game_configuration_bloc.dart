@@ -8,25 +8,25 @@ import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
 import 'package:superbingo/service/information_storage.dart';
+import 'package:superbingo/services/network_service.dart';
 import 'package:superbingo/utils/configuration_utils.dart';
 import 'package:superbingo/utils/connection.dart';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 class GameConfigurationBloc
     extends Bloc<GameConfigurationEvent, GameConfigurationState> {
-  final Firestore db;
+  final INetworkService networkService;
+
   String gameId;
   String gameLink;
   String gamePath;
   Player _self;
 
-  GameConfigurationBloc(this.db) {
+  GameConfigurationBloc(this.networkService) {
     _gameLinkController = BehaviorSubject<String>();
   }
 
@@ -74,20 +74,20 @@ class GameConfigurationBloc
         decksAmount: event.decksAmount,
       );
 
-      var gameDBData =
-          await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
-
-      final gameDoc = await db.collection('games').add(gameDBData);
+      final gameDoc = await networkService.addGame(game);
       gameId = gameDoc.documentID;
       gamePath = gameDoc.path;
       gameLink = 'superbingo://id:$gameId|name:${game.name}';
       _gameLinkSink.add(gameLink);
 
       game = game.copyWith(gameId: gameId);
-      gameDBData =
-          await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
 
-      await db.collection('games').document(gameId).updateData(gameDBData);
+      await networkService.updateGameData(
+        <String, dynamic>{
+          'id': gameId,
+        },
+        gameId,
+      );
 
       InformationStorage.instance.playerId = _self.id;
       InformationStorage.instance.gameId = gameId;
@@ -150,9 +150,7 @@ class GameConfigurationBloc
     return filledGame;
   }
 
-  Future<void> endGame() async {
-    await db.collection('games').document(gameId).delete();
-  }
+  Future<void> endGame() => networkService.deleteGame(gameId);
 
   Queue<GameCard> _generateCardStack(int decks) {
     final uuid = Uuid();

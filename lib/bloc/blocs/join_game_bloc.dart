@@ -1,24 +1,22 @@
-import 'package:flutter/foundation.dart';
-
 import 'package:superbingo/bloc/events/join_game_events.dart';
 import 'package:superbingo/bloc/states/join_game_states.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
 import 'package:superbingo/service/information_storage.dart';
+import 'package:superbingo/services/network_service.dart';
 import 'package:superbingo/utils/configuration_utils.dart';
 
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
-  final Firestore db;
+  final INetworkService networkService;
   String gameId;
   String gameLink;
   String gamePath;
   Player _self;
 
-  JoinGameBloc(this.db);
+  JoinGameBloc(this.networkService);
 
   @override
   JoinGameState get initialState => JoiningGame();
@@ -45,7 +43,8 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
       try {
         final username = await getUsername();
         _self = Player.create(username);
-        final snapshot = await db.collection('games').document(gameId).get();
+        final snapshot =
+            await networkService.db.collection('games').document(gameId).get();
         final game = Game.fromJson(snapshot.data);
         if (game.players.length + 1 > game.maxPlayer) {
           yield JoinGameFailed(
@@ -64,12 +63,8 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
           var filledGame = game.copyWith(
             unplayedCardStack: cardStack,
           );
-          final gameDBData = await compute<Game, Map<String, dynamic>>(
-            Game.toDBData,
-            filledGame,
-          );
 
-          await db.collection('games').document(gameId).updateData(gameDBData);
+          await networkService.updateGameData(filledGame);
 
           InformationStorage.instance.gameId = filledGame.gameID;
           InformationStorage.instance.playerId = _self.id;
