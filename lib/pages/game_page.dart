@@ -3,7 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
+import 'package:superbingo/bloc/blocs/interaction_bloc.dart';
 import 'package:superbingo/bloc/events/current_game_events.dart';
+import 'package:superbingo/bloc/events/interaction_events.dart';
 import 'package:superbingo/bloc/states/current_game_states.dart';
 import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/utils/dialogs.dart';
@@ -22,6 +24,16 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   OverlayEntry startingOverlay;
+  bool showCallBingoButton, isSuperBingo;
+  PanelController panelController;
+
+  @override
+  void initState() {
+    super.initState();
+    showCallBingoButton = false;
+    isSuperBingo = false;
+    panelController = PanelController();
+  }
 
   @override
   void dispose() {
@@ -32,11 +44,14 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
+    final interactionBloc = BlocProvider.of<InteractionBloc>(context);
+
     final height = MediaQuery.of(context).size.height;
     final playerAvatarBottomPosition = (height - kToolbarHeight) / 2.1;
 
     return WillPopScope(
       onWillPop: () async {
+        hideStartingOverlay();
         final result = await Dialogs.showDecisionDialog(
           context,
           content: 'Wollen Sie wirklich das Spiel verlassen.',
@@ -47,10 +62,10 @@ class _GamePageState extends State<GamePage> {
         return Future(() => result);
       },
       child: MultiBlocListener(
-        listeners: [
+        listeners: <BlocListener>[
           BlocListener<CurrentGameBloc, CurrentGameState>(
             bloc: currentGameBloc,
-            listener: (context, state) {
+            listener: (context, state) async {
               if (state is PlayerJoined && mounted) {
                 showSimpleNotification(
                   Text('${state.player?.name} ist dem Spiel beigetreten.'),
@@ -65,6 +80,18 @@ class _GamePageState extends State<GamePage> {
                 showStartingOverlay(context);
               } else if (state is CurrentGameFinished) {
                 Navigator.of(context).pop();
+              } else if (state is WaitForBingoCall) {
+                panelController.close();
+                setState(() {
+                  showCallBingoButton = true;
+                  isSuperBingo = state.isSuperBingo;
+                });
+                await Future.delayed(Duration(seconds: 4), () {
+                  if (showCallBingoButton) {
+                    setState(() => showCallBingoButton = false);
+                    currentGameBloc.add(DrawCard());
+                  }
+                });
               } else if (mounted) {
                 hideStartingOverlay();
               }
@@ -91,6 +118,7 @@ class _GamePageState extends State<GamePage> {
             }
 
             return SlidingUpPanel(
+              controller: panelController,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(18.0),
                 topRight: Radius.circular(18.0),
@@ -104,6 +132,7 @@ class _GamePageState extends State<GamePage> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               isDraggable: state is CurrentGameLoaded,
               // isDraggable: true,
+              panelSnapping: false,
               body: Scaffold(
                 backgroundColor: Colors.deepOrangeAccent,
                 endDrawer: Drawer(
@@ -187,6 +216,27 @@ class _GamePageState extends State<GamePage> {
                             ),
                           ),
                       ],
+                      if (showCallBingoButton)
+                        Positioned(
+                          top: playerAvatarBottomPosition,
+                          left: 0,
+                          right: 0,
+                          child: Center(
+                            child: RaisedButton(
+                              child: Text(
+                                'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  showCallBingoButton = false;
+                                });
+                                interactionBloc.add(
+                                  isSuperBingo ? CallBingo() : CallSuperBingo(),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -207,17 +257,15 @@ class _GamePageState extends State<GamePage> {
           child: Card(
             child: Padding(
               padding: const EdgeInsets.all(8),
-              child: Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    CircularProgressIndicator(),
-                    SizedBox(height: 8),
-                    Text('Das Spiel wird gestartet'),
-                  ],
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  CircularProgressIndicator(),
+                  SizedBox(height: 8),
+                  Text('Das Spiel wird gestartet'),
+                ],
               ),
             ),
           ),

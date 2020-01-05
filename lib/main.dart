@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/single_child_widget.dart';
+import 'package:superbingo/bloc/blocs/interaction_bloc.dart';
 import 'package:superbingo/services/network_service.dart';
 
 import 'package:superbingo/superbingo.dart';
@@ -13,7 +14,6 @@ import 'package:superbingo/bloc/blocs/open_games_bloc.dart';
 import 'package:superbingo/bloc/events/info_events.dart';
 import 'package:superbingo/utils/connection.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:colorize_lumberdash/colorize_lumberdash.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -61,6 +61,9 @@ void main() async {
             ),
             BlocProvider<CurrentGameBloc>(
               create: (context) => CurrentGameBloc(networkService),
+            ),
+            BlocProvider<InteractionBloc>(
+              create: (_) => InteractionBloc(networkService),
             ),
             BlocProvider<InfoBloc>(
               create: (_) => InfoBloc(FirebaseAuth.instance)..add(LoadInfos()),
