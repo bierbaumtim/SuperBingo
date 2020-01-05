@@ -26,58 +26,61 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
   Widget build(BuildContext context) {
     final selectedColor = Colors.deepOrangeAccent;
 
-    return Center(
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                title: Text('Welche Farbe wünschst du dir ?'),
-              ),
-              RadioListTile(
-                controlAffinity: ListTileControlAffinity.trailing,
-                value: CardColor.clover,
-                groupValue: color,
-                title: Text('Kreuz'),
-                secondary: Icon(CommunityMaterialIcons.cards_club),
-                onChanged: (value) => setState(() => color = value),
-                activeColor: selectedColor,
-              ),
-              RadioListTile(
-                controlAffinity: ListTileControlAffinity.trailing,
-                value: CardColor.spade,
-                groupValue: color,
-                title: Text('Pik'),
-                secondary: Icon(CommunityMaterialIcons.cards_spade),
-                onChanged: (value) => setState(() => color = value),
-                activeColor: selectedColor,
-              ),
-              RadioListTile(
-                controlAffinity: ListTileControlAffinity.trailing,
-                value: CardColor.heart,
-                groupValue: color,
-                title: Text('Herz'),
-                secondary: Icon(CommunityMaterialIcons.cards_heart),
-                onChanged: (value) => setState(() => color = value),
-                activeColor: selectedColor,
-              ),
-              RadioListTile(
-                controlAffinity: ListTileControlAffinity.trailing,
-                value: CardColor.diamond,
-                groupValue: color,
-                title: Text('Karo'),
-                secondary: Icon(CommunityMaterialIcons.cards_diamond),
-                onChanged: (value) => setState(() => color = value),
-                activeColor: selectedColor,
-              ),
-              SizedBox(height: 24),
-              RaisedButton(
-                child: Text('Wünschen'),
-                onPressed: () => Navigator.of(context).pop(color),
-              ),
-            ],
+    return SafeArea(
+      child: Align(
+        alignment: Alignment.topCenter,
+        child: Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                ListTile(
+                  title: Text('Welche Farbe wünschst du dir ?'),
+                ),
+                RadioListTile(
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  value: CardColor.clover,
+                  groupValue: color,
+                  title: Text('Kreuz'),
+                  secondary: Icon(CommunityMaterialIcons.cards_club),
+                  onChanged: (value) => setState(() => color = value),
+                  activeColor: selectedColor,
+                ),
+                RadioListTile(
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  value: CardColor.spade,
+                  groupValue: color,
+                  title: Text('Pik'),
+                  secondary: Icon(CommunityMaterialIcons.cards_spade),
+                  onChanged: (value) => setState(() => color = value),
+                  activeColor: selectedColor,
+                ),
+                RadioListTile(
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  value: CardColor.heart,
+                  groupValue: color,
+                  title: Text('Herz'),
+                  secondary: Icon(CommunityMaterialIcons.cards_heart),
+                  onChanged: (value) => setState(() => color = value),
+                  activeColor: selectedColor,
+                ),
+                RadioListTile(
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  value: CardColor.diamond,
+                  groupValue: color,
+                  title: Text('Karo'),
+                  secondary: Icon(CommunityMaterialIcons.cards_diamond),
+                  onChanged: (value) => setState(() => color = value),
+                  activeColor: selectedColor,
+                ),
+                SizedBox(height: 24),
+                RaisedButton(
+                  child: Text('Wünschen'),
+                  onPressed: () => Navigator.of(context).pop(color),
+                ),
+              ],
+            ),
           ),
         ),
       ),
