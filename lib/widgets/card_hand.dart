@@ -46,6 +46,7 @@ class CardHand extends StatelessWidget {
                     rotationAngle = 0;
                   }
 
+                  /// ignore: missing_required_param
                   return SmallPlayCard(
                     card: c,
                     angle: angle,

@@ -16,6 +16,7 @@ class CardScrollView extends StatelessWidget {
 
         if (state is CurrentGameLoaded) {
           if (state.handCards.isEmpty) {
+            // TODO Prüfung auf finishPosition einbauen. Spieler ist erst fertig wenn die finishPosition > 0 ist
             child = Center(
               child: Padding(
                 padding: const EdgeInsets.all(12),
