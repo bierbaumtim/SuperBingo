@@ -50,6 +50,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       yield* _mapPlayCardToState(event);
     } else if (event is DrawCard) {
       yield* _mapDrawCardToState(event);
+    } else if (event is DrawPenaltyCard) {
+      yield* _mapDrawPenaltyCardToState(event);
     }
   }
 
@@ -188,11 +190,12 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     try {
       final currentState = state;
       final message = _checkRules(event.card);
+      var shouldYieldWaitForBingo = false, isSuperBingo = false;
 
       if (message == null) {
         if (_self.cards.length - 1 <= 1) {
-          yield WaitForBingoCall(isSuperBingo: _self.cards.length - 1 == 0);
-          yield currentState;
+          shouldYieldWaitForBingo = true;
+          isSuperBingo = _self.cards.length - 1 == 0;
         }
         _self.cards.removeWhere((c) => c == event.card);
         final game = _currentGame;
@@ -222,6 +225,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         );
 
         await networkService.updateGameData(filledGame);
+        if (shouldYieldWaitForBingo) {
+          yield WaitForBingoCall(isSuperBingo: isSuperBingo);
+          yield currentState;
+        }
       } else {
         DialogInformationService.instance.showNotification(
           NotificationType.error,
@@ -258,6 +265,12 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         );
       }
     }
+  }
+
+  Stream<CurrentGameState> _mapDrawPenaltyCardToState(
+    DrawPenaltyCard event,
+  ) async* {
+    yield* _mapDrawCardToState(DrawCard());
   }
 
   /// Ruft das Spiel, welches gestartet werden soll ab und setzt alle Variablen im Bloc.

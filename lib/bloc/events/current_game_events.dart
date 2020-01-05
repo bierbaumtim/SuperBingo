@@ -89,12 +89,14 @@ class PlayCard extends CurrentGameEvent {
 /// Event um eine Karte zu ziehen
 /// {@endtemplate}
 class DrawCard extends CurrentGameEvent {
-  /// Karte die gezogen wird
-  final GameCard card;
+  // /// Karte die gezogen wird
+  // final GameCard card;
 
   /// {@macro currentgameevents.pullcard}
-  const DrawCard(this.card);
+  const DrawCard();
 
-  @override
-  List<Object> get props => super.props..add(card);
+  // @override
+  // List<Object> get props => super.props..add(card);
 }
+
+class DrawPenaltyCard extends CurrentGameEvent {}

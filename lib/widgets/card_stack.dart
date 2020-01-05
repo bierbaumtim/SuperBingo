@@ -82,7 +82,7 @@ class _CardStackState extends State<CardStack> {
                     isFlipped: widget.type == CardStackType.unplayedCards,
                     onCardTap: (card) {
                       if (widget.type == CardStackType.unplayedCards) {
-                        currentGameBloc.add(events.DrawCard(card));
+                        currentGameBloc.add(events.DrawCard());
                       }
                     },
                     shouldPaint: c['index'] as int >= cards.length - 5,
