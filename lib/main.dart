@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
+import 'package:provider/single_child_widget.dart';
+import 'package:superbingo/services/network_service.dart';
 
 import 'package:superbingo/superbingo.dart';
 import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
@@ -35,28 +36,40 @@ void main() async {
   ]);
   await Connection.instance.initConnection();
 
+  final networkService = NetworkService();
+
   runZoned(
     () => runApp(
       MultiProvider(
-        providers: [
+        providers: <SingleChildWidget>[
           Provider<PublicGamesBloc>(
             create: (_) => PublicGamesBloc(),
             dispose: (_, bloc) => bloc.dispose(),
           ),
-          BlocProvider<GameConfigurationBloc>(
-            create: (_) => GameConfigurationBloc(Firestore.instance),
-          ),
-          BlocProvider<JoinGameBloc>(
-            create: (_) => JoinGameBloc(Firestore.instance),
-          ),
-          BlocProvider<CurrentGameBloc>(
-            create: (_) => CurrentGameBloc(Firestore.instance),
-          ),
-          BlocProvider<InfoBloc>(
-            create: (_) => InfoBloc(FirebaseAuth.instance)..add(LoadInfos()),
+          Provider<NetworkService>(
+            create: (context) => networkService,
+            dispose: (_, service) => service.dispose(),
           ),
         ],
-        child: SuperBingo(),
+        child: MultiBlocProvider(
+          providers: <BlocProvider>[
+            BlocProvider<GameConfigurationBloc>(
+              create: (context) => GameConfigurationBloc(networkService),
+            ),
+            BlocProvider<JoinGameBloc>(
+              create: (context) => JoinGameBloc(networkService),
+            ),
+            BlocProvider<CurrentGameBloc>(
+              create: (context) => CurrentGameBloc(networkService),
+            ),
+            BlocProvider<InfoBloc>(
+              create: (_) => InfoBloc(FirebaseAuth.instance)..add(LoadInfos()),
+            ),
+          ],
+          child: Builder(
+            builder: (context) => SuperBingo(),
+          ),
+        ),
       ),
     ),
     onError: Crashlytics.instance.recordError,
