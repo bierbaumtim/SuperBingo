@@ -124,7 +124,7 @@ class Player with EquatableMixin {
     if (index > activePlayer.length - 1) {
       index = 0;
     }
-    return activePlayer.elementAt(index);
+    return activePlayer.elementAtOrNull(index);
   }
 
   /// Ruft den Spieler mit der `playerId` aus der `player` Liste.
