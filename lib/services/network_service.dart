@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:superbingo/models/app_models/card.dart';
 
 import 'package:superbingo/models/app_models/game.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:superbingo/models/app_models/player.dart';
 
 abstract class INetworkService {
   Firestore get db;
@@ -23,6 +25,8 @@ abstract class INetworkService {
   Future<void> updateGameData(dynamic data, [String gameId]);
 
   Future<void> cancelSubscription();
+
+  Future<void> restoreHandCards(String playerId);
 
   Future<void> dispose();
 }
@@ -90,6 +94,24 @@ class NetworkService implements INetworkService {
           .collection('games')
           .document(gameId ?? _currentGame.gameID)
           .updateData(data);
+    }
+  }
+
+  Future<void> restoreHandCards(String playerId) async {
+    try {
+      final player = Player.getPlayerFromList(previousGame.players, playerId);
+      final cards = player?.cards;
+      var currentPlayer =
+          Player.getPlayerFromList(currentGame.players, playerId);
+      currentPlayer = currentPlayer.copyWith(
+        cards: cards,
+      );
+      final game = currentGame;
+      game.updatePlayer(currentPlayer);
+      return updateGameData(game);
+    } on dynamic catch (e, s) {
+      await Crashlytics.instance.recordError(e, s);
+      return null;
     }
   }
 
