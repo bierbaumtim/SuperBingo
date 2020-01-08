@@ -105,12 +105,12 @@ class _GamePageState extends State<GamePage> {
             List<GameCard> playedCards, unplayedCards;
             if (state is CurrentGameLoaded) {
               title = state.game.name;
-              playedCards = state.playedCards;
-              unplayedCards = state.unplayedCards;
+              playedCards = state.game.playedCards;
+              unplayedCards = state.game.unplayedCards;
             } else if (state is CurrentGameWaitingForPlayer) {
               title = state.game.name;
-              playedCards = state.game.playedCardStack.toList();
-              unplayedCards = state.game.unplayedCardStack.toList();
+              playedCards = state.game.playedCards;
+              unplayedCards = state.game.unplayedCards;
             } else {
               title = 'Aktuelles Spiel';
               playedCards = [];

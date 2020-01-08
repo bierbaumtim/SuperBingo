@@ -143,9 +143,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       } else {
         yield CurrentGameLoaded(
           game: event.game,
-          handCards: _self.cards,
-          playedCards: event.game.playedCardStack.toList(),
-          unplayedCards: event.game.unplayedCardStack.toList(),
+          self: _self,
         );
       }
     } on dynamic catch (e, s) {

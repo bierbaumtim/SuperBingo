@@ -26,8 +26,8 @@ class CardHand extends StatelessWidget {
         bloc: currentGameBloc,
         builder: (context, state) {
           if (state is CurrentGameLoaded) {
-            if (state.handCards.isNotEmpty) {
-              final cards = state.handCards;
+            if (state.self.cards.isNotEmpty) {
+              final cards = state.self.cards;
               return Stack(
                 alignment: Alignment.center,
                 children: cards.map<Widget>((c) {

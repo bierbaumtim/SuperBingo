@@ -2,7 +2,6 @@ import 'package:meta/meta.dart';
 
 import 'package:equatable/equatable.dart';
 
-import 'package:superbingo/models/app_models/card.dart';
 import 'package:superbingo/models/app_models/game.dart';
 import 'package:superbingo/models/app_models/player.dart';
 
@@ -26,30 +25,20 @@ class CurrentGameLoaded extends CurrentGameState {
   /// Aktuelles Game Objekt
   final Game game;
 
-  /// Handkarten des Spielers
-  final List<GameCard> handCards;
-
-  /// Karten die schon gespielt wurden
-  final List<GameCard> playedCards;
-
-  /// Karten die auf dem Nachziehstapel liegen
-  final List<GameCard> unplayedCards;
+  /// Client-abhängiges Player Object
+  final Player self;
 
   /// {@macro currentgameloaded}
   const CurrentGameLoaded({
     @required this.game,
-    @required this.handCards,
-    @required this.playedCards,
-    @required this.unplayedCards,
+    @required this.self,
   });
 
   @override
   List<Object> get props => super.props
     ..addAll([
       game,
-      handCards,
-      playedCards,
-      unplayedCards,
+      self,
     ]);
 }
 

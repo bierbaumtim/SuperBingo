@@ -15,18 +15,45 @@ class CardScrollView extends StatelessWidget {
         Widget child;
 
         if (state is CurrentGameLoaded) {
-          if (state.handCards.isEmpty) {
-            // TODO Prüfung auf finishPosition einbauen. Spieler ist erst fertig wenn die finishPosition > 0 ist
-            child = Center(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Material(
-                  child: Text('You´ve finished'),
+          if (state.self.cards.isEmpty) {
+            if (state.self.finishPosition == 0) {
+              child = Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Material(
+                    child: Column(
+                      children: <Widget>[
+                        const Text(
+                          'Nur weil du deine Karten versteckst hast du das Spiel nicht gewonnen.',
+                        ),
+                        const SizedBox(height: 8),
+                        RaisedButton(
+                          child: const Text(
+                            'Karten suchen...',
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          onPressed: null,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            );
+              );
+            } else {
+              // TODO Prüfung auf finishPosition einbauen. Spieler ist erst fertig wenn die finishPosition > 0 ist
+              child = Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Material(
+                    child: Text('You´ve finished'),
+                  ),
+                ),
+              );
+            }
           } else {
-            final cards = state.handCards;
+            final cards = state.self.cards;
             final heart =
                 cards.where((c) => c.color == CardColor.heart).toList();
             final clover =
