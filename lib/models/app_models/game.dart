@@ -123,6 +123,10 @@ class Game with EquatableMixin {
   /// Oberste Karte des Stapels der gespielten Karten
   GameCard get topCard => playedCardStack.lastOrNull();
 
+  List<GameCard> get playedCards => playedCardStack.toList();
+
+  List<GameCard> get unplayedCards => unplayedCardStack.toList();
+
   /// Spiel wird aktuell gespielt
   bool get isRunning => state == GameState.active;
 
