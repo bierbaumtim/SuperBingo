@@ -217,11 +217,13 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           game.players,
           skipNextPlayer: event.card.rule == SpecialRule.skip,
         );
+
         game.updatePlayer(_self);
         var filledGame = game.copyWith(
           playedCardStack: game.playedCardStack..add(event.card),
-          currentPlayerId: nextPlayer.id,
+          currentPlayerId: nextPlayer?.id,
           players: game.players,
+          state: nextPlayer == null ? GameState.gameCompleted : game.state,
         );
 
         await networkService.updateGameData(filledGame);
