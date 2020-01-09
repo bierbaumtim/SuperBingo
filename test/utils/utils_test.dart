@@ -277,6 +277,18 @@ void main() {
           expect(text, '5');
         });
       });
+
+      group('isNumberCard', () {
+        test('number card', () {
+          final isNumber = isNumberCard(CardNumber.eight);
+          expect(isNumber, true);
+        });
+
+        test('not number card', () {
+          final isNumber = isNumberCard(CardNumber.ace);
+          expect(isNumber, false);
+        });
+      });
     });
 
     group('configuration utils tests', () {
