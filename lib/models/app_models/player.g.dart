@@ -11,7 +11,7 @@ Player _$PlayerFromJson(Map<String, dynamic> json) {
     id: json['id'] as String ?? '',
     name: json['name'] as String ?? '',
     isHost: json['isHost'] as bool ?? false,
-    finishPosition: json['finishPosition'] as int ?? -1,
+    finishPosition: json['finishPosition'] as int ?? 0,
     cards: (json['cards'] as List)
             ?.map((e) =>
                 e == null ? null : GameCard.fromJson(e as Map<String, dynamic>))

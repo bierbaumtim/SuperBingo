@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:superbingo/models/app_models/player.dart';
+
+import '../../models/app_models/player.dart';
 
 abstract class JoinGameState extends Equatable {
   const JoinGameState();

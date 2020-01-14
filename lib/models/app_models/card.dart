@@ -1,7 +1,7 @@
-import 'package:superbingo/constants/enums.dart';
-
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../../constants/enums.dart';
 
 part 'card.g.dart';
 
@@ -67,4 +67,12 @@ class GameCard extends Equatable {
 
   @override
   List<Object> get props => <Object>[rule, color, number, id];
+
+  @override
+  String toString() => 'GameCard{ '
+      'id: $id, '
+      'color: $color, '
+      'number: $number, '
+      'rule: $rule'
+      ' }';
 }

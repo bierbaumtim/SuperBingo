@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:superbingo/models/app_models/card.dart';
-
-import 'package:superbingo/models/app_models/game.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:superbingo/models/app_models/player.dart';
+
+import '../models/app_models/game.dart';
+import '../models/app_models/player.dart';
 
 abstract class INetworkService {
   Firestore get db;

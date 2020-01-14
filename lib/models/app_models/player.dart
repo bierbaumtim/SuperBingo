@@ -1,12 +1,12 @@
 import 'dart:collection';
 
-import 'package:superbingo/models/app_models/card.dart';
-import 'package:superbingo/service/information_storage.dart';
-
 import 'package:equatable/equatable.dart';
 import 'package:lumberdash/lumberdash.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:supercharged/supercharged.dart';
+
+import '../../service/information_storage.dart';
+import 'card.dart';
 
 part 'player.g.dart';
 

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/constants/enums.dart';
-
 import 'package:community_material_icon/community_material_icon.dart';
+
+import '../constants/enums.dart';
 
 class CardColorDecisionCard extends StatefulWidget {
   const CardColorDecisionCard({

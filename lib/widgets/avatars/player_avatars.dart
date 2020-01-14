@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
-import 'package:superbingo/bloc/states/current_game_states.dart';
-import 'package:superbingo/models/app_models/player.dart';
-import 'package:superbingo/utils/ui_utils.dart';
-import 'package:superbingo/widgets/avatars/player_avatar.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../bloc/blocs/current_game_bloc.dart';
+import '../../bloc/states/current_game_states.dart';
+import '../../models/app_models/player.dart';
+import '../../utils/ui_utils.dart';
+import 'player_avatar.dart';
 
 /// {@template playeravatars}
 /// Ordnet die Avatare der Spieler anhängig von der Anzahl um den

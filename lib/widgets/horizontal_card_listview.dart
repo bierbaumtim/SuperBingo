@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
-import 'package:superbingo/bloc/events/current_game_events.dart';
-import 'package:superbingo/constants/enums.dart';
-import 'package:superbingo/models/app_models/card.dart';
-import 'package:superbingo/routes/blur_overlay_route.dart';
-import 'package:superbingo/widgets/card_color_decision_card.dart';
-import 'package:superbingo/widgets/small_play_card.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/blocs/current_game_bloc.dart';
+import '../bloc/events/current_game_events.dart';
+import '../constants/enums.dart';
+import '../models/app_models/card.dart';
+import '../routes/blur_overlay_route.dart';
+import 'card_color_decision_card.dart';
+import 'small_play_card.dart';
 
 ///{@template horizontalcardlist}
 /// Erzeugt ein ListView, mit der `scrollDirection` `Axis.horizontal` und den `cards`.

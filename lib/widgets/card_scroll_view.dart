@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
-import 'package:superbingo/bloc/states/current_game_states.dart';
-import 'package:superbingo/constants/enums.dart';
-import 'package:superbingo/widgets/horizontal_card_listview.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/blocs/current_game_bloc.dart';
+import '../bloc/states/current_game_states.dart';
+import '../constants/enums.dart';
+import 'horizontal_card_listview.dart';
 
 class CardScrollView extends StatelessWidget {
   @override
@@ -16,7 +16,7 @@ class CardScrollView extends StatelessWidget {
 
         if (state is CurrentGameLoaded) {
           if (state.self.cards.isEmpty) {
-            if (state.self.finishPosition == 0) {
+            if (state.self.finishPosition <= 0) {
               child = Center(
                 child: Padding(
                   padding: const EdgeInsets.all(12),
@@ -42,7 +42,6 @@ class CardScrollView extends StatelessWidget {
                 ),
               );
             } else {
-              // TODO Prüfung auf finishPosition einbauen. Spieler ist erst fertig wenn die finishPosition > 0 ist
               child = Center(
                 child: Padding(
                   padding: const EdgeInsets.all(12),

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
-import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
-import 'package:superbingo/bloc/blocs/join_game_bloc.dart';
-import 'package:superbingo/bloc/events/current_game_events.dart';
-import 'package:superbingo/bloc/events/game_events.dart';
-import 'package:superbingo/bloc/states/game_states.dart';
-import 'package:superbingo/bloc/states/join_game_states.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
+
+import '../bloc/blocs/current_game_bloc.dart';
+import '../bloc/blocs/game_configuration_bloc.dart';
+import '../bloc/blocs/join_game_bloc.dart';
+import '../bloc/events/current_game_events.dart';
+import '../bloc/events/game_events.dart';
+import '../bloc/states/game_states.dart';
+import '../bloc/states/join_game_states.dart';
 
 /// Startseite
 ///

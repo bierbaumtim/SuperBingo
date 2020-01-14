@@ -2,14 +2,14 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/bloc/events/game_events.dart';
-import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
-import 'package:superbingo/bloc/states/game_states.dart';
-import 'package:superbingo/utils/dialogs.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share/share.dart';
 import 'package:supercharged/supercharged.dart';
+
+import '../bloc/blocs/game_configuration_bloc.dart';
+import '../bloc/events/game_events.dart';
+import '../bloc/states/game_states.dart';
+import '../utils/dialogs.dart';
 
 class NewGamePage extends StatefulWidget {
   @override

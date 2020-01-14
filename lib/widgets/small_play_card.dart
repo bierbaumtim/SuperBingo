@@ -2,15 +2,15 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/constants/typedefs.dart';
-import 'package:superbingo/constants/ui_constants.dart';
-import 'package:superbingo/models/app_models/card.dart';
-import 'package:superbingo/utils/card_utils.dart';
-import 'package:superbingo/widgets/card_number_color.dart';
-import 'package:superbingo/widgets/inner_card_icons.dart';
-import 'package:superbingo/widgets/inner_card_image.dart';
-
 import 'package:vector_math/vector_math.dart' show radians;
+
+import '../constants/typedefs.dart';
+import '../constants/ui_constants.dart';
+import '../models/app_models/card.dart';
+import '../utils/card_utils.dart';
+import 'card_number_color.dart';
+import 'inner_card_icons.dart';
+import 'inner_card_image.dart';
 
 class SmallPlayCard extends StatelessWidget {
   final GameCard card;

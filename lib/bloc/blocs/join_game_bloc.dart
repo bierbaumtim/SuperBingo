@@ -1,13 +1,14 @@
-import 'package:superbingo/bloc/events/join_game_events.dart';
-import 'package:superbingo/bloc/states/join_game_states.dart';
-import 'package:superbingo/models/app_models/game.dart';
-import 'package:superbingo/models/app_models/player.dart';
-import 'package:superbingo/service/information_storage.dart';
-import 'package:superbingo/services/network_service.dart';
-import 'package:superbingo/utils/configuration_utils.dart';
-
 import 'package:bloc/bloc.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+
+import '../../models/app_models/game.dart';
+import '../../models/app_models/player.dart';
+import '../../service/information_storage.dart';
+import '../../services/network_service.dart';
+import '../../utils/configuration_utils.dart';
+import '../events/join_game_events.dart';
+import '../states/join_game_states.dart';
+
 
 class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   final INetworkService networkService;

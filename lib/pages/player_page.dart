@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:superbingo/bloc/blocs/info_bloc.dart';
-import 'package:superbingo/bloc/events/info_events.dart';
-import 'package:superbingo/bloc/states/info_states.dart';
+
+import '../bloc/blocs/info_bloc.dart';
+import '../bloc/events/info_events.dart';
+import '../bloc/states/info_states.dart';
 
 class PlayerPage extends StatefulWidget {
   @override

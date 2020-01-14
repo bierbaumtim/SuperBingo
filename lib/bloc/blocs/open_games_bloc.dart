@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import 'package:superbingo/models/app_models/game.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:lumberdash/lumberdash.dart';
 import 'package:rxdart/subjects.dart';
+
+import '../../models/app_models/game.dart';
 
 class PublicGamesBloc {
   StreamSubscription _gamesSub;

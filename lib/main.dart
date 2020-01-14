@@ -1,19 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
 import 'package:provider/single_child_widget.dart';
-import 'package:superbingo/bloc/blocs/interaction_bloc.dart';
-import 'package:superbingo/services/network_service.dart';
-
-import 'package:superbingo/superbingo.dart';
-import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
-import 'package:superbingo/bloc/blocs/game_configuration_bloc.dart';
-import 'package:superbingo/bloc/blocs/info_bloc.dart';
-import 'package:superbingo/bloc/blocs/join_game_bloc.dart';
-import 'package:superbingo/bloc/blocs/open_games_bloc.dart';
-import 'package:superbingo/bloc/events/info_events.dart';
-import 'package:superbingo/utils/connection.dart';
-
 import 'package:colorize_lumberdash/colorize_lumberdash.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,6 +11,17 @@ import 'package:firebase_lumberdash/firebase_lumberdash.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lumberdash/lumberdash.dart';
 import 'package:provider/provider.dart';
+
+import 'bloc/blocs/current_game_bloc.dart';
+import 'bloc/blocs/game_configuration_bloc.dart';
+import 'bloc/blocs/info_bloc.dart';
+import 'bloc/blocs/interaction_bloc.dart';
+import 'bloc/blocs/join_game_bloc.dart';
+import 'bloc/blocs/open_games_bloc.dart';
+import 'bloc/events/info_events.dart';
+import 'services/network_service.dart';
+import 'superbingo.dart';
+import 'utils/connection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

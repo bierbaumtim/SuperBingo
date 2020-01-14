@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/models/app_models/player.dart';
+import '../../models/app_models/player.dart';
 
 /// {@template playeravatar}
 /// Avatarähnliches Widget mit großem Anfangsbuchstaben des Namen des Spielers in der Mitte und der Anzahl der Karten des Spielers.

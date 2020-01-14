@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/constants/enums.dart';
-
 import 'package:community_material_icon/community_material_icon.dart';
+
+import '../constants/enums.dart';
 
 /// Gibt das zur `color` gehörende Icon zurück.
 IconData getIconByCardColor(CardColor color) {

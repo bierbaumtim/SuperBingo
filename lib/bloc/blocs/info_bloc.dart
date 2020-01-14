@@ -1,13 +1,13 @@
 import 'dart:async';
 
-import 'package:superbingo/bloc/events/info_events.dart';
-import 'package:superbingo/bloc/states/info_states.dart';
-
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:superbingo/service/information_storage.dart';
+
+import '../../service/information_storage.dart';
+import '../events/info_events.dart';
+import '../states/info_states.dart';
 
 class InfoBloc extends Bloc<InfoEvent, InfoState> {
   final FirebaseAuth auth;

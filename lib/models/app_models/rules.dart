@@ -1,5 +1,5 @@
-import 'package:superbingo/constants/enums.dart';
-import 'package:superbingo/models/app_models/card.dart';
+import '../../constants/enums.dart';
+import 'card.dart';
 
 /// {@template rules}
 /// Singleton

@@ -2,8 +2,8 @@ import 'package:meta/meta.dart';
 
 import 'package:equatable/equatable.dart';
 
-import 'package:superbingo/models/app_models/game.dart';
-import 'package:superbingo/models/app_models/player.dart';
+import '../../models/app_models/game.dart';
+import '../../models/app_models/player.dart';
 
 /// {@template currentgamestate}
 /// Stellt die verschiedenen States des CurrentGameBloc dar und

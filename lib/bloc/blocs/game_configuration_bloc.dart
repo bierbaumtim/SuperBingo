@@ -1,21 +1,21 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:superbingo/bloc/events/game_events.dart';
-import 'package:superbingo/bloc/states/game_states.dart';
-import 'package:superbingo/constants/card_deck.dart';
-import 'package:superbingo/models/app_models/card.dart';
-import 'package:superbingo/models/app_models/game.dart';
-import 'package:superbingo/models/app_models/player.dart';
-import 'package:superbingo/service/information_storage.dart';
-import 'package:superbingo/services/network_service.dart';
-import 'package:superbingo/utils/configuration_utils.dart';
-import 'package:superbingo/utils/connection.dart';
-
 import 'package:bloc/bloc.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
+
+import '../../constants/card_deck.dart';
+import '../../models/app_models/card.dart';
+import '../../models/app_models/game.dart';
+import '../../models/app_models/player.dart';
+import '../../service/information_storage.dart';
+import '../../services/network_service.dart';
+import '../../utils/configuration_utils.dart';
+import '../../utils/connection.dart';
+import '../events/game_events.dart';
+import '../states/game_states.dart';
 
 class GameConfigurationBloc
     extends Bloc<GameConfigurationEvent, GameConfigurationState> {

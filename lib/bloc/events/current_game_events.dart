@@ -1,8 +1,9 @@
 import 'package:equatable/equatable.dart';
-import 'package:superbingo/constants/enums.dart';
-import 'package:superbingo/models/app_models/card.dart';
-import 'package:superbingo/models/app_models/game.dart';
-import 'package:superbingo/models/app_models/player.dart';
+
+import '../../constants/enums.dart';
+import '../../models/app_models/card.dart';
+import '../../models/app_models/game.dart';
+import '../../models/app_models/player.dart';
 
 abstract class CurrentGameEvent extends Equatable {
   const CurrentGameEvent();

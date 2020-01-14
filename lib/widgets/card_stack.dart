@@ -2,13 +2,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'package:superbingo/bloc/blocs/current_game_bloc.dart';
-import 'package:superbingo/bloc/events/current_game_events.dart' as events;
-import 'package:superbingo/models/app_models/card.dart';
-import 'package:superbingo/widgets/play_card.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vector_math/vector_math.dart' show radians;
+
+import '../bloc/blocs/current_game_bloc.dart';
+import '../bloc/events/current_game_events.dart' as events;
+import '../models/app_models/card.dart';
+import 'play_card.dart';
 
 enum CardStackType {
   /// Stapel der gespielten Karten
