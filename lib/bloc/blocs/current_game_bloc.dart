@@ -1,18 +1,18 @@
 import 'dart:async';
 
-import 'package:superbingo/bloc/events/current_game_events.dart';
-import 'package:superbingo/bloc/states/current_game_states.dart';
-import 'package:superbingo/constants/enums.dart';
-import 'package:superbingo/models/app_models/card.dart';
-import 'package:superbingo/models/app_models/game.dart';
-import 'package:superbingo/models/app_models/player.dart';
-import 'package:superbingo/models/app_models/rules.dart';
-import 'package:superbingo/service/dialog_information_service.dart';
-import 'package:superbingo/service/information_storage.dart';
-import 'package:superbingo/services/network_service.dart';
-
 import 'package:bloc/bloc.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+
+import '../../constants/enums.dart';
+import '../../models/app_models/card.dart';
+import '../../models/app_models/game.dart';
+import '../../models/app_models/player.dart';
+import '../../models/app_models/rules.dart';
+import '../../service/dialog_information_service.dart';
+import '../../service/information_storage.dart';
+import '../../services/network_service.dart';
+import '../events/current_game_events.dart';
+import '../states/current_game_states.dart';
 
 /// {@template currentgamebloc}
 ///
@@ -216,12 +216,14 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           skipNextPlayer: event.card.rule == SpecialRule.skip,
         );
 
+        game.playedCardStack.add(event.card);
         game.updatePlayer(_self);
+        if (game.playedCardStack.length >= 15 && _self.isHost) {
+          game.cleanUpCardStacks();
+        }
         var filledGame = game.copyWith(
-          playedCardStack: game.playedCardStack..add(event.card),
           currentPlayerId: nextPlayer?.id,
           players: game.players,
-          state: nextPlayer == null ? GameState.gameCompleted : game.state,
         );
 
         await networkService.updateGameData(filledGame);
