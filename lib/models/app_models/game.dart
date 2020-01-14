@@ -2,19 +2,21 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
 
-import 'package:superbingo/constants/enums.dart';
-import 'package:superbingo/models/app_models/card.dart';
-import 'package:superbingo/models/app_models/player.dart';
-
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:supercharged/supercharged.dart';
+import 'package:to_string/to_string.dart';
+
+import '../../constants/enums.dart';
+import 'card.dart';
+import 'player.dart';
 
 part 'game.g.dart';
 
 /// {@template game}
 /// Datenhaltungsklasse für ein Spiel.
 /// {@endtemplate}
+@ToString()
 @JsonSerializable()
 class Game with EquatableMixin {
   @override
@@ -49,12 +51,14 @@ class Game with EquatableMixin {
   @JsonKey(name: 'players')
   List<Player> players;
 
-  /// Konfiguration, ob das Spiel öffentlich sichtbar sein soll und jeder diesem Spiel beitreten kann.
+  /// Konfiguration, ob das Spiel öffentlich sichtbar sein soll
+  /// und jeder diesem Spiel beitreten kann.
   ///
-  /// Bei `true`, ist das Spiel öffentlich sichtbar und jeder Spieler kann diesem Spiel beitreten, solange die maximal Spieleranzahl
-  /// nicht erreicht ist
+  /// Bei `true`, ist das Spiel öffentlich sichtbar und jeder Spieler kann diesem Spiel beitreten,
+  /// solange die maximal Spieleranzahl nicht erreicht ist
   ///
-  /// Bei `false`, ist das Spiel nicht öffentlich sichbar und ein Spieler kann nur mit dem zum Spiel gehörenden Link joinen.
+  /// Bei `false`, ist das Spiel nicht öffentlich sichbar
+  /// und ein Spieler kann nur mit dem zum Spiel gehörenden Link joinen.
   ///
   /// Default: true
   @JsonKey(name: 'isPublic', defaultValue: true)
@@ -94,7 +98,8 @@ class Game with EquatableMixin {
   @JsonKey(name: 'state', defaultValue: GameState.waitingForPlayer)
   GameState state;
 
-  /// Erlaubt Kartenfarbe. Wird gesetzt wenn man einen Buben oder Joker genutzt hat.
+  /// Erlaubte Kartenfarbe.
+  /// Wird gesetzt wenn man einen Buben oder Joker genutzt hat.
   @JsonKey(name: 'allowedCardColor')
   CardColor allowedCardColor;
 
@@ -102,6 +107,9 @@ class Game with EquatableMixin {
   /// Wird gesetzt wenn ein Bube oder Joker genutzt wurde.
   @JsonKey(name: 'isJokerOrJackAllowed', defaultValue: true)
   bool isJokerOrJackAllowed;
+
+  @JsonKey(name: 'message', defaultValue: '')
+  String message;
 
   /// {@macro game}
   Game({
@@ -118,6 +126,7 @@ class Game with EquatableMixin {
     this.allowedCardColor,
     this.isJokerOrJackAllowed,
     this.state = GameState.waitingForPlayer,
+    this.message,
   }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from(<GameCard>[]);
 
   /// Oberste Karte des Stapels der gespielten Karten
@@ -186,6 +195,7 @@ class Game with EquatableMixin {
         allowedCardColor:
             _$enumDecodeNullable(_$CardColorEnumMap, json['allowedCardColor']),
         isJokerOrJackAllowed: json['isJokerOrJackAllowed'] as bool ?? true,
+        message: json['message'] as String ?? '',
       );
 
   /// [Game] Object wird in eine Datenbank-kompatible Map umgewandelt
@@ -247,6 +257,22 @@ class Game with EquatableMixin {
   /// dreht die Spielrichtung um
   List<Player> reversePlayerOrder() => players.reversed.toList();
 
+  void cleanUpCardStacks() {
+    // final debugFirst5 = playedCardStack.take(5);
+    var cards = playedCardStack.toList().sublist(5);
+    print(cards);
+    playedCardStack = Queue<GameCard>.from(
+      playedCardStack.take(5),
+    );
+    // print(playedCardStack);
+    // print(debugFirst5);
+    // print(playedCardStack == Queue<GameCard>.from(debugFirst5));
+    for (var i = 0; i < 5; i++) {
+      cards.shuffle();
+    }
+    unplayedCardStack.addAll(cards);
+  }
+
   /// Wandelt cardStacks in Datenbank-kompatible Listen von [GameCard] Map Repräsentationen um
   static List<Map<String, dynamic>> stackToJson(Queue<GameCard> stack) {
     if (stack != null) {
@@ -282,6 +308,9 @@ class Game with EquatableMixin {
     if (gameID.isEmpty) return nGameId;
     return gameID;
   }
+
+  @override
+  String toString() => _$GameToString(this);
 }
 
 enum GameState {

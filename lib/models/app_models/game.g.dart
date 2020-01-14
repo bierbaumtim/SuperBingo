@@ -26,6 +26,7 @@ Game _$GameFromJson(Map<String, dynamic> json) {
     isJokerOrJackAllowed: json['isJokerOrJackAllowed'] as bool ?? true,
     state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
         GameState.waitingForPlayer,
+    message: json['message'] as String ?? '',
   );
 }
 
@@ -43,6 +44,7 @@ Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
       'state': _$GameStateEnumMap[instance.state],
       'allowedCardColor': _$CardColorEnumMap[instance.allowedCardColor],
       'isJokerOrJackAllowed': instance.isJokerOrJackAllowed,
+      'message': instance.message,
     };
 
 T _$enumDecode<T>(
@@ -91,3 +93,11 @@ const _$GameStateEnumMap = {
   GameState.gameCompleted: 'gameCompleted',
   GameState.finished: 'finished',
 };
+
+// **************************************************************************
+// ToStringGenerator
+// **************************************************************************
+
+String _$GameToString(Game o) {
+  return """Game{playedCardStack: ${o.playedCardStack}, unplayedCardStack: ${o.unplayedCardStack}, players: ${o.players}, isPublic: ${o.isPublic}, maxPlayer: ${o.maxPlayer}, cardAmount: ${o.cardAmount}, cardDrawAmount: ${o.cardDrawAmount}, name: ${o.name}, gameID: ${o.gameID}, currentPlayerId: ${o.currentPlayerId}, state: ${o.state}, allowedCardColor: ${o.allowedCardColor}, isJokerOrJackAllowed: ${o.isJokerOrJackAllowed}, message: ${o.message}}""";
+}
