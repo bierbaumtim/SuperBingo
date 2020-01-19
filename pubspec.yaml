@@ -55,6 +55,7 @@ dependencies:
   vector_math: ^2.0.8
   uuid: ^2.0.4
   supercharged: ^1.1.0
+  dartx: ^0.3.0
 
   #Json Serialization
   json_annotation: ^3.0.1

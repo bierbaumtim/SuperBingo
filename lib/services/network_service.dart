@@ -84,6 +84,7 @@ class NetworkService implements INetworkService {
   @override
   Future<void> deleteGame(String gameId) async {
     await db.collection('games').document(gameId).delete();
+    await cancelSubscription();
     _previousGame = null;
     _currentGame = null;
   }

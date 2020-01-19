@@ -139,6 +139,8 @@ class Game with EquatableMixin {
   /// Spiel wird aktuell gespielt
   bool get isRunning => state == GameState.active;
 
+  bool get isCompleted => state == GameState.gameCompleted;
+
   /// Überschreibt aktuelles Object mit bestimmten neuen Werten
   Game copyWith({
     String name,

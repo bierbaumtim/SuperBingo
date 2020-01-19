@@ -124,13 +124,14 @@ class _GamePageState extends State<GamePage> {
                 topRight: Radius.circular(18.0),
               ),
               color: Theme.of(context).canvasColor,
-              minHeight: state is CurrentGameLoaded ? 125 : 0,
+              minHeight:
+                  state is CurrentGameLoaded && state.game.isRunning ? 125 : 0,
               // minHeight: 125,
               maxHeight:
                   MediaQuery.of(context).size.height - kToolbarHeight - 20,
               // parallaxEnabled: true,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              isDraggable: state is CurrentGameLoaded,
+              isDraggable: state is CurrentGameLoaded && state.game.isRunning,
               // isDraggable: true,
               panelSnapping: false,
               body: Scaffold(
@@ -213,6 +214,47 @@ class _GamePageState extends State<GamePage> {
                             right: 8,
                             child: Center(
                               child: Text('Warten auf weitere Spieler...'),
+                            ),
+                          ),
+                      ],
+                      if (state is CurrentGameLoaded &&
+                          state.game.isCompleted) ...[
+                        if (state.self.isHost)
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            top: MediaQuery.of(context).size.height * 0.55,
+                            bottom: 12,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  const Text('Das Spiel vorbei.'),
+                                  const SizedBox(height: 12),
+                                  RaisedButton.icon(
+                                    onPressed: () {},
+                                    label: const Text('Spiel neustarten'),
+                                    icon: Icon(Icons.refresh),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  RaisedButton.icon(
+                                    onPressed: () =>
+                                        currentGameBloc.add(EndGame()),
+                                    label: const Text('Spiel beenden'),
+                                    icon: Icon(Icons.close),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        else
+                          Positioned(
+                            top: MediaQuery.of(context).size.height * 0.55,
+                            left: 0,
+                            right: 0,
+                            bottom: 12,
+                            child: const Center(
+                              child: Text('Das Spiel vorbei.'),
                             ),
                           ),
                       ],
