@@ -67,7 +67,7 @@ class PlayCard extends StatelessWidget {
     Widget paint;
     if (shouldPaint) {
       if (isFlipped) {
-        paint = _InactivePaint();
+        paint = const _InactivePaint();
       } else {
         paint = _ActivePaint(
           card: card,
@@ -216,12 +216,12 @@ class _InactivePaint extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(15),
         child: FractionalTranslation(
-          translation: Offset(-.5, -.25),
+          translation: const Offset(-.5, -.25),
           child: Transform.rotate(
+            angle: radians(45),
             child: const CustomPaint(
               painter: CardBackPainter(),
             ),
-            angle: radians(45),
           ),
         ),
       ),

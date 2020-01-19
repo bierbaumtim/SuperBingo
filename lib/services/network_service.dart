@@ -44,12 +44,16 @@ class NetworkService implements INetworkService {
   NetworkService() {
     _gameChangedController = BehaviorSubject<Game>();
   }
-
+  @override
   Firestore get db => Firestore.instance;
+  @override
   Game get previousGame => _previousGame;
+  @override
   Game get currentGame => _currentGame;
+  @override
   Stream<Game> get gameChangedStream => _gameChangedController.stream;
 
+  @override
   Future<bool> setupSubscription(String gameId) async {
     if (gameId != null) {
       try {
@@ -69,6 +73,7 @@ class NetworkService implements INetworkService {
     return false;
   }
 
+  @override
   Future<DocumentReference> addGame(Game game) async {
     final gameDBData =
         await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
@@ -76,12 +81,14 @@ class NetworkService implements INetworkService {
     return db.collection('games').add(gameDBData);
   }
 
+  @override
   Future<void> deleteGame(String gameId) async {
     await db.collection('games').document(gameId).delete();
     _previousGame = null;
     _currentGame = null;
   }
 
+  @override
   Future<void> updateGameData(dynamic data, [String gameId]) async {
     if (data is Game) {
       final dbGame =
@@ -96,6 +103,7 @@ class NetworkService implements INetworkService {
     }
   }
 
+  @override
   Future<void> restoreHandCards(String playerId) async {
     try {
       final player = Player.getPlayerFromList(previousGame.players, playerId);
@@ -110,14 +118,15 @@ class NetworkService implements INetworkService {
       return updateGameData(game);
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
-      return null;
     }
   }
 
+  @override
   Future<void> cancelSubscription() async {
     await _gameSub.cancel();
   }
 
+  @override
   Future<void> dispose() async {
     await _gameChangedController.close();
     await cancelSubscription();

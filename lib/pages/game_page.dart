@@ -52,7 +52,7 @@ class _GamePageState extends State<GamePage> {
     return WillPopScope(
       onWillPop: () async {
         hideStartingOverlay();
-        final result = await Dialogs.showDecisionDialog(
+        final result = await Dialogs.showDecisionDialog<bool>(
           context,
           content: 'Wollen Sie wirklich das Spiel verlassen.',
         );
@@ -86,10 +86,10 @@ class _GamePageState extends State<GamePage> {
                   showCallBingoButton = true;
                   isSuperBingo = state.isSuperBingo;
                 });
-                await Future.delayed(Duration(seconds: 4), () {
+                await Future.delayed(const Duration(seconds: 4), () {
                   if (showCallBingoButton) {
                     setState(() => showCallBingoButton = false);
-                    currentGameBloc.add(DrawCard());
+                    currentGameBloc.add(const DrawCard());
                   }
                 });
               } else if (mounted) {
@@ -119,7 +119,7 @@ class _GamePageState extends State<GamePage> {
 
             return SlidingUpPanel(
               controller: panelController,
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(18.0),
                 topRight: Radius.circular(18.0),
               ),
@@ -137,7 +137,7 @@ class _GamePageState extends State<GamePage> {
                 backgroundColor: Colors.deepOrangeAccent,
                 endDrawer: Drawer(
                   child: Column(
-                    children: <Widget>[],
+                    children: const <Widget>[],
                   ),
                 ),
                 appBar: AppBar(
@@ -165,7 +165,7 @@ class _GamePageState extends State<GamePage> {
                                   // cards: defaultCardDeck,
                                 ),
                               ),
-                              SizedBox(width: 20),
+                              const SizedBox(width: 20),
                               Expanded(
                                 child: CardStack(
                                   type: CardStackType.playedCards,
@@ -184,8 +184,8 @@ class _GamePageState extends State<GamePage> {
                         right: 8,
                         child: FloatingActionButton(
                           backgroundColor: Colors.orange,
-                          child: Icon(Icons.flag),
                           onPressed: () {},
+                          child: Icon(Icons.flag),
                         ),
                       ),
                       if (state is CurrentGameWaitingForPlayer) ...[
@@ -202,12 +202,12 @@ class _GamePageState extends State<GamePage> {
                                     self: state.self,
                                   ));
                                 },
-                                child: Text('Spiel starten'),
+                                child: const Text('Spiel starten'),
                               ),
                             ),
                           )
                         else
-                          Positioned(
+                          const Positioned(
                             bottom: 8,
                             left: 8,
                             right: 8,
@@ -223,9 +223,6 @@ class _GamePageState extends State<GamePage> {
                           right: 0,
                           child: Center(
                             child: RaisedButton(
-                              child: Text(
-                                'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
-                              ),
                               onPressed: () {
                                 setState(() {
                                   showCallBingoButton = false;
@@ -234,6 +231,9 @@ class _GamePageState extends State<GamePage> {
                                   isSuperBingo ? CallBingo() : CallSuperBingo(),
                                 );
                               },
+                              child: Text(
+                                'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
+                              ),
                             ),
                           ),
                         ),
@@ -261,7 +261,7 @@ class _GamePageState extends State<GamePage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
+                children: const <Widget>[
                   CircularProgressIndicator(),
                   SizedBox(height: 8),
                   Text('Das Spiel wird gestartet'),

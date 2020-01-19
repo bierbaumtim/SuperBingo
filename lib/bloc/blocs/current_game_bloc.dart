@@ -175,8 +175,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       );
 
       await Future.delayed(
-        Duration(seconds: 2),
-        () async => await networkService.deleteGame(_currentGame.gameID),
+        const Duration(seconds: 2),
+        () async => networkService.deleteGame(_currentGame.gameID),
       );
     }
     _self = null;
@@ -221,7 +221,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         if (game.playedCardStack.length >= 15 && _self.isHost) {
           game.cleanUpCardStacks();
         }
-        var filledGame = game.copyWith(
+        final filledGame = game.copyWith(
           currentPlayerId: nextPlayer?.id,
           players: game.players,
         );
@@ -261,7 +261,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       } else {
         DialogInformationService.instance.showNotification(
           NotificationType.error,
-          config: NotificationConfiguration(
+          config: const NotificationConfiguration(
             content: 'Du bist nicht an der Reihe',
           ),
         );
@@ -272,7 +272,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Stream<CurrentGameState> _mapDrawPenaltyCardToState(
     DrawPenaltyCard event,
   ) async* {
-    yield* _mapDrawCardToState(DrawCard());
+    yield* _mapDrawCardToState(const DrawCard());
   }
 
   /// Ruft das Spiel, welches gestartet werden soll ab und setzt alle Variablen im Bloc.

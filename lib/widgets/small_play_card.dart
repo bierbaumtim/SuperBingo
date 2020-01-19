@@ -19,7 +19,7 @@ class SmallPlayCard extends StatelessWidget {
   final int index;
   final OnCardTap onCardTap;
 
-  SmallPlayCard({
+  const SmallPlayCard({
     Key key,
     @required this.card,
     this.angle,
@@ -33,7 +33,7 @@ class SmallPlayCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardWidget = Container(
-      constraints: BoxConstraints(maxHeight: 175, maxWidth: 100),
+      constraints: const BoxConstraints(maxHeight: 175, maxWidth: 100),
       height: 175,
       width: 100,
       child: Card(

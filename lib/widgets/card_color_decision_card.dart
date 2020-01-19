@@ -35,49 +35,49 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                ListTile(
+                const ListTile(
                   title: Text('Welche Farbe wünschst du dir ?'),
                 ),
-                RadioListTile(
+                RadioListTile<CardColor>(
                   controlAffinity: ListTileControlAffinity.trailing,
                   value: CardColor.clover,
                   groupValue: color,
-                  title: Text('Kreuz'),
+                  title: const Text('Kreuz'),
                   secondary: Icon(CommunityMaterialIcons.cards_club),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
-                RadioListTile(
+                RadioListTile<CardColor>(
                   controlAffinity: ListTileControlAffinity.trailing,
                   value: CardColor.spade,
                   groupValue: color,
-                  title: Text('Pik'),
+                  title: const Text('Pik'),
                   secondary: Icon(CommunityMaterialIcons.cards_spade),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
-                RadioListTile(
+                RadioListTile<CardColor>(
                   controlAffinity: ListTileControlAffinity.trailing,
                   value: CardColor.heart,
                   groupValue: color,
-                  title: Text('Herz'),
+                  title: const Text('Herz'),
                   secondary: Icon(CommunityMaterialIcons.cards_heart),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
-                RadioListTile(
+                RadioListTile<CardColor>(
                   controlAffinity: ListTileControlAffinity.trailing,
                   value: CardColor.diamond,
                   groupValue: color,
-                  title: Text('Karo'),
+                  title: const Text('Karo'),
                   secondary: Icon(CommunityMaterialIcons.cards_diamond),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 RaisedButton(
-                  child: Text('Wünschen'),
                   onPressed: () => Navigator.of(context).pop(color),
+                  child: const Text('Wünschen'),
                 ),
               ],
             ),

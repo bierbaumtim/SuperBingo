@@ -19,7 +19,7 @@ class Rules {
   static bool isCardAllowed(GameCard card, GameCard topCard) {
     if (topCard == null) {
       return true;
-    } else if ((card.color == topCard.color || card.number == topCard.number)) {
+    } else if (card.color == topCard.color || card.number == topCard.number) {
       return true;
     } else if (topCard.rule == SpecialRule.joker) {
       return true;

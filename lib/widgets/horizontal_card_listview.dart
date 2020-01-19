@@ -38,7 +38,7 @@ class HorizontalCardList extends StatelessWidget {
                   CardColor allowedCardColor;
                   if (card.rule == SpecialRule.joker) {
                     final route = BlurOverlayRoute<CardColor>(
-                      builder: (context) => CardColorDecisionCard(),
+                      builder: (context) => const CardColorDecisionCard(),
                     );
                     allowedCardColor =
                         await Navigator.of(context).push<CardColor>(route);
@@ -48,7 +48,7 @@ class HorizontalCardList extends StatelessWidget {
                 }),
             itemCount: cards.length,
             scrollDirection: Axis.horizontal,
-            physics: ClampingScrollPhysics(),
+            physics: const ClampingScrollPhysics(),
           ),
         ),
       );

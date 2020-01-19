@@ -15,7 +15,7 @@ class JoinedGame extends JoinGameState {
   final String gameId;
   final Player self;
 
-  JoinedGame({
+  const JoinedGame({
     this.gameId,
     this.self,
   });

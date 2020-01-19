@@ -50,7 +50,7 @@ class CardBackPainter extends CustomPainter {
       canvas.drawRect(rect, paint);
     }
 
-    final verticalLines = ((customSize.width - 20) ~/ lineHeight);
+    final verticalLines = (customSize.width - 20) ~/ lineHeight;
 
     // vetikale Linien
     for (var i = 0; i < verticalLines; i++) {

@@ -14,7 +14,8 @@ import '../bloc/states/join_game_states.dart';
 /// Startseite
 ///
 /// Hier landet der Spieler nachdem er die App startet
-/// Vor hier aus kann zur Spielerstellung, Spielsuche und Spielerkofiguration navigiert werden.
+/// Vor hier aus kann zur Spielerstellung, Spielsuche
+/// und Spielerkofiguration navigiert werden.
 class StartPage extends StatefulWidget {
   @override
   _StartPageState createState() => _StartPageState();
@@ -98,7 +99,6 @@ class _StartPageState extends State<StartPage> {
                           BlocProvider.of<GameConfigurationBloc>(context)
                               .add(ResetGameConfiguration());
                         },
-                        child: const Text('Neues Spiel'),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
@@ -109,11 +109,11 @@ class _StartPageState extends State<StartPage> {
                         textColor: Colors.white,
                         color: Colors.deepOrange,
                         elevation: 6.0,
+                        child: const Text('Neues Spiel'),
                       ),
                       RaisedButton(
                         onPressed: () =>
                             Navigator.of(context).pushNamed('/join_game'),
-                        child: const Text('Spiel beitreten'),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
@@ -124,6 +124,7 @@ class _StartPageState extends State<StartPage> {
                         textColor: Colors.white,
                         color: Colors.deepOrange,
                         elevation: 6.0,
+                        child: const Text('Spiel beitreten'),
                       ),
                     ],
                   ),

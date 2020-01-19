@@ -28,13 +28,13 @@ class CardScrollView extends StatelessWidget {
                         ),
                         const SizedBox(height: 8),
                         RaisedButton(
-                          child: const Text(
-                            'Karten suchen...',
-                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
                           onPressed: null,
+                          child: const Text(
+                            'Karten suchen...',
+                          ),
                         ),
                       ],
                     ),
@@ -42,9 +42,9 @@ class CardScrollView extends StatelessWidget {
                 ),
               );
             } else {
-              child = Center(
+              child = const Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(12),
+                  padding: EdgeInsets.all(12),
                   child: Material(
                     child: Text('You´ve finished'),
                   ),
@@ -87,9 +87,7 @@ class CardScrollView extends StatelessWidget {
 
         return Column(
           children: <Widget>[
-            SizedBox(
-              height: 12.0,
-            ),
+            const SizedBox(height: 12.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -98,16 +96,14 @@ class CardScrollView extends StatelessWidget {
                   height: 5,
                   decoration: BoxDecoration(
                     color: Colors.grey[300],
-                    borderRadius: BorderRadius.all(
+                    borderRadius: const BorderRadius.all(
                       Radius.circular(12.0),
                     ),
                   ),
                 ),
               ],
             ),
-            SizedBox(
-              height: 18.0,
-            ),
+            const SizedBox(height: 18.0),
             child ?? Container(),
           ],
         );

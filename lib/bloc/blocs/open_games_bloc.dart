@@ -37,8 +37,8 @@ class PublicGamesBloc {
     try {
       final docs = snapshot.documents;
       final games = docs.map<Game>((g) => Game.fromJson(g.data)).toList();
-      var publicGames = <Game>[];
-      for (var game in games) {
+      final publicGames = <Game>[];
+      for (final game in games) {
         if (game.isPublic == true && game.state == GameState.waitingForPlayer) {
           publicGames.add(game);
         }

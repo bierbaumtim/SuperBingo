@@ -69,35 +69,33 @@ class _CardStackState extends State<CardStack> {
   Widget build(BuildContext context) {
     final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
 
-    return Container(
-      child: Stack(
-        fit: StackFit.loose,
-        children: cards
-            .map<Widget>(
-              (c) => Transform(
-                child: Transform.rotate(
-                  child: PlayCard(
-                    card: c['card'],
-                    elevation: c['elevation'] as double,
-                    isFlipped: widget.type == CardStackType.unplayedCards,
-                    onCardTap: (card) {
-                      if (widget.type == CardStackType.unplayedCards) {
-                        currentGameBloc.add(events.DrawCard());
-                      }
-                    },
-                    shouldPaint: c['index'] as int >= cards.length - 5,
-                  ),
-                  angle: c['angle'] as double,
+    return Stack(
+      fit: StackFit.loose,
+      children: cards
+          .map<Widget>(
+            (c) => Transform(
+              transform: Matrix4.identity()
+                ..translate(
+                  c['translationX'] as double,
+                  c['translationY'] as double,
                 ),
-                transform: Matrix4.identity()
-                  ..translate(
-                    c['translationX'] as double,
-                    c['translationY'] as double,
-                  ),
+              child: Transform.rotate(
+                angle: c['angle'] as double,
+                child: PlayCard(
+                  card: c['card'],
+                  elevation: c['elevation'] as double,
+                  isFlipped: widget.type == CardStackType.unplayedCards,
+                  onCardTap: (card) {
+                    if (widget.type == CardStackType.unplayedCards) {
+                      currentGameBloc.add(const events.DrawCard());
+                    }
+                  },
+                  shouldPaint: c['index'] as int >= cards.length - 5,
+                ),
               ),
-            )
-            .toList(),
-      ),
+            ),
+          )
+          .toList(),
     );
   }
 

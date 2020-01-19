@@ -9,7 +9,6 @@ import '../../utils/configuration_utils.dart';
 import '../events/join_game_events.dart';
 import '../states/join_game_states.dart';
 
-
 class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   final INetworkService networkService;
   String gameId;
@@ -35,7 +34,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
     yield JoiningGame();
     gameId = event.gameId;
     if (gameId == null || gameId.isEmpty) {
-      yield JoinGameFailed(
+      yield const JoinGameFailed(
         'Dieses Spiel existiert nicht mehr oder konnte nicht gefunden werden. '
         'Bitte versuche es mit einem anderen Spiel erneut.',
       );
@@ -48,12 +47,12 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
             await networkService.db.collection('games').document(gameId).get();
         final game = Game.fromJson(snapshot.data);
         if (game.players.length + 1 > game.maxPlayer) {
-          yield JoinGameFailed(
+          yield const JoinGameFailed(
             'Die maximale Spieleranzahl für dieses Spiel ist erreicht. '
             'Du kannst diesem Spiel daher nicht mehr beitreten.',
           );
         } else if (game.players.indexWhere((p) => p.id == _self.id) >= 0) {
-          yield JoinGameFailed(
+          yield const JoinGameFailed(
             'Beim Verlassen des Spiels ist ein Fehler aufgetreten. '
             'Du kannst diesem Spiel daher nicht erneut beitreten.',
           );
@@ -61,7 +60,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
           final cardStack = game.unplayedCardStack;
           _self.drawCards(cardStack);
           game.addPlayer(_self);
-          var filledGame = game.copyWith(
+          final filledGame = game.copyWith(
             unplayedCardStack: cardStack,
           );
 
@@ -77,7 +76,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
         }
       } on dynamic catch (e, s) {
         await Crashlytics.instance.recordError(e, s);
-        yield JoinGameFailed(
+        yield const JoinGameFailed(
           'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.',
         );
         yield WaitingForAction();

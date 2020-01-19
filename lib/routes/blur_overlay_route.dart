@@ -18,7 +18,7 @@ class BlurOverlayRoute<T> extends PageRoute<T> {
         );
 
   @override
-  Color get barrierColor => Color(0x00000001);
+  Color get barrierColor => const Color(0x00000001);
 
   @override
   bool get barrierDismissible => true;
@@ -87,7 +87,7 @@ class BlurOverlayRoute<T> extends PageRoute<T> {
   }
 
   @override
-  Duration get transitionDuration => Duration(milliseconds: 355);
+  Duration get transitionDuration => const Duration(milliseconds: 355);
 }
 
 class BlurTransition extends AnimatedWidget {
@@ -96,7 +96,7 @@ class BlurTransition extends AnimatedWidget {
   final Animation<double> backgroundColorAnimation;
   final Color backgroundColor;
 
-  BlurTransition({
+  const BlurTransition({
     @required this.blurAnimation,
     @required this.child,
     this.backgroundColorAnimation,

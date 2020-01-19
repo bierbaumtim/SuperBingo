@@ -6,7 +6,8 @@ class Dialogs {
   ///
   /// `title` - Titel für den Dialog(Standard - Hinweis)
   /// `content` - Information für den Dialog
-  static Future<T> showInformationDialog<T>(BuildContext context, {String title = 'Hinweis', String content = ''}) {
+  static Future<T> showInformationDialog<T>(BuildContext context,
+      {String title = 'Hinweis', String content = ''}) {
     return showDialog<T>(
       context: context,
       builder: (context) => AlertDialog(
@@ -15,13 +16,13 @@ class Dialogs {
         actions: <Widget>[
           RaisedButton(
             color: Colors.deepOrange,
+            onPressed: () => Navigator.pop(context),
             child: Text(
               'Ok',
               style: Theme.of(context).textTheme.button.copyWith(
                     color: Colors.white,
                   ),
             ),
-            onPressed: () => Navigator.pop(context),
           ),
         ],
       ),
@@ -48,23 +49,23 @@ class Dialogs {
         content: Text(content),
         actions: <Widget>[
           FlatButton(
+            onPressed: () => Navigator.pop(context, true),
             child: Text(
               yesText ?? 'Ja',
               style: Theme.of(context).textTheme.button.copyWith(
                     color: Colors.white,
                   ),
             ),
-            onPressed: () => Navigator.pop(context, true),
           ),
           RaisedButton(
             color: Colors.deepOrange,
+            onPressed: () => Navigator.pop(context, false),
             child: Text(
               noText ?? 'Nein',
               style: Theme.of(context).textTheme.button.copyWith(
                     color: Colors.white,
                   ),
             ),
-            onPressed: () => Navigator.pop(context, false),
           ),
         ],
       ),

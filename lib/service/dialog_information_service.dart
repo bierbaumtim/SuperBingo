@@ -20,11 +20,11 @@ class DialogInformationService {
     switch (type) {
       case NotificationType.error:
         background = Colors.redAccent;
-        foreground = Color(0xFFFFFFFF);
+        foreground = const Color(0xFFFFFFFF);
         break;
       case NotificationType.success:
         background = Colors.redAccent;
-        foreground = Color(0xFFFFFFFF);
+        foreground = const Color(0xFFFFFFFF);
         break;
       case NotificationType.content:
       case NotificationType.information:
@@ -54,6 +54,7 @@ class DialogInformationService {
     showOverlayNotification(
       (context) => SlideDismissible(
         key: ValueKey(content),
+        enable: true,
         child: SafeArea(
           bottom: false,
           child: Padding(
@@ -81,9 +82,8 @@ class DialogInformationService {
             ),
           ),
         ),
-        enable: true,
       ),
-      duration: Duration(seconds: 4),
+      duration: const Duration(seconds: 4),
     );
     // showSimpleNotification(
     //   Text(content),

@@ -11,8 +11,6 @@ import 'pages/new_game_page.dart';
 import 'pages/player_page.dart';
 import 'pages/start.dart';
 
-
-
 class SuperBingo extends StatefulWidget {
   @override
   _SuperBingoState createState() => _SuperBingoState();
@@ -31,13 +29,13 @@ class _SuperBingoState extends State<SuperBingo> {
             if (state is InfosLoaded) {
               return StartPage();
             } else if (state is InfosLoading) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             } else if (state is FirstStart) {
               return PlayerPage();
             } else {
-              return Scaffold(
+              return const Scaffold(
                 body: Center(
                   child: Text('Test'),
                 ),
@@ -63,7 +61,7 @@ ThemeData get lightTheme => ThemeData.dark().copyWith(
       accentColor: Colors.deepOrange,
       primaryTextTheme: basicTextTheme,
       textTheme: basicTextTheme,
-      appBarTheme: AppBarTheme(elevation: 0),
+      appBarTheme: const AppBarTheme(elevation: 0),
       buttonTheme: ButtonThemeData(
         buttonColor: Colors.deepOrange,
         textTheme: ButtonTextTheme.normal,

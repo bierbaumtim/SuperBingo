@@ -81,7 +81,7 @@ class _NewGamePageState extends State<NewGamePage> {
       child: WillPopScope(
         onWillPop: () async {
           if (showStartGame) {
-            final result = await Dialogs.showDecisionDialog(
+            final result = await Dialogs.showDecisionDialog<bool>(
               context,
               content:
                   'Wenn du diese Seite jetzt verlässt, wird dein grade erstelltes Spiel gelöscht. '
@@ -96,7 +96,7 @@ class _NewGamePageState extends State<NewGamePage> {
         child: Scaffold(
           appBar: AppBar(
             elevation: 0,
-            title: Text('Neues Spiel'),
+            title: const Text('Neues Spiel'),
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.check),
@@ -137,7 +137,7 @@ class _NewGamePageState extends State<NewGamePage> {
                         onSaved: (text) => name = text,
                         enabled: !isDisabled,
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       TextFormField(
                         controller: _playerAmountController,
                         decoration: InputDecoration(
@@ -161,7 +161,7 @@ class _NewGamePageState extends State<NewGamePage> {
                         onEditingComplete: _node.nextFocus,
                         enabled: !isDisabled,
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       TextFormField(
                         controller: _cardDecksAmountController,
                         decoration: InputDecoration(
@@ -182,9 +182,9 @@ class _NewGamePageState extends State<NewGamePage> {
                         onSaved: (text) => cardAmount = text.toInt() ?? 1,
                         enabled: !isDisabled,
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       CheckboxListTile(
-                        title: Text('Öffentliches Spiel'),
+                        title: const Text('Öffentliches Spiel'),
                         value: isPublic,
                         onChanged: (value) => !isDisabled
                             ? setState(() => isPublic = value)
@@ -193,9 +193,8 @@ class _NewGamePageState extends State<NewGamePage> {
                       ),
                       if (isValid)
                         Padding(
-                          padding: EdgeInsets.only(top: 25),
+                          padding: const EdgeInsets.only(top: 25),
                           child: RaisedButton(
-                            child: Text('Spiel erstellen'),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(40),
                             ),
@@ -207,18 +206,19 @@ class _NewGamePageState extends State<NewGamePage> {
                                 decksAmount: cardAmount,
                               ));
                             },
+                            child: const Text('Spiel erstellen'),
                           ),
                         ),
                       if (showStartGame && !isValid) ...[
                         Padding(
-                          padding: EdgeInsets.only(top: 25),
+                          padding: const EdgeInsets.only(top: 25),
                           child: RaisedButton(
-                            child: Text('Spiel starten'),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(40),
                             ),
                             onPressed: () => Navigator.of(context)
                                 .pushReplacementNamed('/game'),
+                            child: const Text('Spiel starten'),
                           ),
                         ),
                         StreamBuilder<String>(
@@ -228,18 +228,18 @@ class _NewGamePageState extends State<NewGamePage> {
                                 snapshot.hasData && snapshot.data.isNotEmpty;
 
                             return Padding(
-                              padding: EdgeInsets.only(top: 25),
+                              padding: const EdgeInsets.only(top: 25),
                               child: RaisedButton(
-                                child: Text('Freunde einladen'),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(40),
                                 ),
                                 onPressed: canShare
-                                    ? () async => await Share.share(
+                                    ? () async => Share.share(
                                           snapshot.data,
                                           subject: 'SuperBingo Spieleinladung',
                                         )
                                     : null,
+                                child: const Text('Freunde einladen'),
                               ),
                             );
                           },
@@ -266,11 +266,11 @@ class _NewGamePageState extends State<NewGamePage> {
               color: Colors.black.withOpacity(0.25),
             ),
           ),
-          Center(
+          const Center(
             child: Card(
               elevation: 0,
               child: Padding(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(12),
                 child: CircularProgressIndicator(),
               ),
             ),

@@ -85,13 +85,13 @@ class PlayerAvatar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: CircleAvatar(
+                    backgroundColor: Colors.green,
+                    minRadius: 20,
+                    maxRadius: 20,
                     child: Text(
                       _getPlayerFirstLetter(player.name),
                       style: theme.textTheme.body1.copyWith(fontSize: 17),
                     ),
-                    backgroundColor: Colors.green,
-                    minRadius: 20,
-                    maxRadius: 20,
                   ),
                 ),
               ),
@@ -100,7 +100,7 @@ class PlayerAvatar extends StatelessWidget {
               top: 0,
               right: 0,
               child: FractionalTranslation(
-                translation: Offset(.175, -.175),
+                translation: const Offset(.175, -.175),
                 child: Container(
                   width: 18,
                   height: 18,
@@ -112,7 +112,7 @@ class PlayerAvatar extends StatelessWidget {
                   child: Text(
                     '${player.cards.length}',
                     // '30',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 10,
                     ),
                     textAlign: TextAlign.center,

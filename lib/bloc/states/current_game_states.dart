@@ -48,7 +48,7 @@ class CurrentGameWaitingForPlayer extends CurrentGameState {
 
   final Player self;
 
-  CurrentGameWaitingForPlayer({this.game, this.self});
+  const CurrentGameWaitingForPlayer({this.game, this.self});
 
   @override
   List<Object> get props => super.props..addAll([game, self]);

@@ -241,7 +241,7 @@ class Game with EquatableMixin {
   /// Die Menge pro Spieler wird mit `amount` übergeben.
   void dealCards(int amount) {
     for (var i = 0; i < amount; i++) {
-      for (var player in players) {
+      for (final player in players) {
         player.drawCard(unplayedCardStack.removeFirst());
       }
     }
@@ -259,14 +259,11 @@ class Game with EquatableMixin {
 
   void cleanUpCardStacks() {
     // final debugFirst5 = playedCardStack.take(5);
-    var cards = playedCardStack.toList().sublist(5);
+    final cards = playedCardStack.toList().sublist(5);
     print(cards);
     playedCardStack = Queue<GameCard>.from(
       playedCardStack.take(5),
     );
-    // print(playedCardStack);
-    // print(debugFirst5);
-    // print(playedCardStack == Queue<GameCard>.from(debugFirst5));
     for (var i = 0; i < 5; i++) {
       cards.shuffle();
     }

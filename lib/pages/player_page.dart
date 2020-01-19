@@ -48,7 +48,7 @@ class _PlayerPageState extends State<PlayerPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Neuer Spieler'),
+        title: const Text('Neuer Spieler'),
       ),
       body: ListView(
         children: <Widget>[
@@ -88,18 +88,19 @@ class _PlayerPageState extends State<PlayerPage> {
                 showDialog<void>(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: Text('Hinweis'),
-                    content: Text('Der Benutzername darf nicht leer sein.'),
+                    title: const Text('Hinweis'),
+                    content:
+                        const Text('Der Benutzername darf nicht leer sein.'),
                     actions: <Widget>[
                       RaisedButton(
                         color: Colors.deepOrange,
+                        onPressed: () => Navigator.pop(context),
                         child: Text(
                           'Ok',
                           style: TextStyle(
                             color: Colors.white,
                           ),
                         ),
-                        onPressed: () => Navigator.pop(context),
                       ),
                     ],
                   ),

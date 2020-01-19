@@ -23,6 +23,7 @@ import 'services/network_service.dart';
 import 'superbingo.dart';
 import 'utils/connection.dart';
 
+/// ignore: avoid_void_async
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   FlutterError.onError = Crashlytics.instance.recordFlutterError;

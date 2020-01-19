@@ -61,7 +61,7 @@ class GameConfigurationBloc
     yield GameCreating();
     try {
       if (!Connection.instance.hasConnection) {
-        yield GameCreationFailed(
+        yield const GameCreationFailed(
           'Es besteht keine Internetverbindung. Bitte versuche es erneut, wenn du wieder mit Internet verbunden bist.',
         );
         yield WaitingGameConfigInput();
@@ -100,7 +100,7 @@ class GameConfigurationBloc
       );
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
-      yield GameCreationFailed(
+      yield const GameCreationFailed(
         'Beim erstellen des Spiels ist ein Fehler aufgetreten.',
       );
       yield WaitingGameConfigInput();
@@ -130,9 +130,9 @@ class GameConfigurationBloc
     final username = await getUsername();
     _self = Player.create(username, isHost: true);
 
-    var cardStack = _generateCardStack(decksAmount);
+    final cardStack = _generateCardStack(decksAmount);
 
-    var filledGame = Game(
+    final filledGame = Game(
       unplayedCardStack: cardStack,
       playedCardStack: Queue<GameCard>(),
       players: <Player>[

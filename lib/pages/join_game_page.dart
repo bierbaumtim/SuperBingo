@@ -47,7 +47,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
       child: Scaffold(
         appBar: AppBar(
           elevation: 0,
-          title: Text('Public Games'),
+          title: const Text('Public Games'),
           actions: <Widget>[
             IconButton(
               icon: Icon(Icons.refresh),
@@ -60,11 +60,12 @@ class _JoinGamePageState extends State<JoinGamePage> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               if (snapshot.data.isEmpty) {
-                return Center(
+                return const Center(
                   child: Text('Es sind keine offenen Spiele verfügbar.'),
                 );
               } else {
                 return RefreshIndicator(
+                  onRefresh: publicGamesBloc.getPublicGames,
                   child: ListView.builder(
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
@@ -78,24 +79,23 @@ class _JoinGamePageState extends State<JoinGamePage> {
                           ),
                           trailing: RaisedButton(
                             color: Colors.deepOrangeAccent,
-                            child: Text(
-                              'join',
-                              style: Theme.of(context).textTheme.body1.copyWith(
-                                    color: Colors.white,
-                                  ),
-                            ),
                             onPressed: () {
                               joinGameBloc.add(JoinGame(game.gameID));
                             },
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
+                            child: Text(
+                              'join',
+                              style: Theme.of(context).textTheme.body1.copyWith(
+                                    color: Colors.white,
+                                  ),
+                            ),
                           ),
                         ),
                       );
                     },
                   ),
-                  onRefresh: publicGamesBloc.getPublicGames,
                 );
               }
             } else if (snapshot.hasError) {
@@ -107,7 +107,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
                 ),
               );
             } else {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
@@ -135,7 +135,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
             filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
             child: Container(
               color: Colors.black.withOpacity(0.25),
-              child: Center(
+              child: const Center(
                 child: CircularProgressIndicator(),
               ),
             ),
