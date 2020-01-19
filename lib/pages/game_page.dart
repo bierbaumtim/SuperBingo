@@ -61,232 +61,224 @@ class _GamePageState extends State<GamePage> {
         }
         return Future(() => result);
       },
-      child: MultiBlocListener(
-        listeners: <BlocListener>[
-          BlocListener<CurrentGameBloc, CurrentGameState>(
-            bloc: currentGameBloc,
-            listener: (context, state) async {
-              if (state is PlayerJoined && mounted) {
-                showSimpleNotification(
-                  Text('${state.player?.name} ist dem Spiel beigetreten.'),
-                  foreground: Colors.white,
-                );
-              } else if (state is PlayerLeaved && mounted) {
-                showSimpleNotification(
-                  Text('${state.player?.name} hat das Spiel verlassen.'),
-                  foreground: Colors.white,
-                );
-              } else if (state is CurrentGameStarting && mounted) {
-                showStartingOverlay(context);
-              } else if (state is CurrentGameFinished) {
-                Navigator.of(context).pop();
-              } else if (state is WaitForBingoCall) {
-                panelController.close();
-                setState(() {
-                  showCallBingoButton = true;
-                  isSuperBingo = state.isSuperBingo;
-                });
-                await Future.delayed(const Duration(seconds: 4), () {
-                  if (showCallBingoButton) {
-                    setState(() => showCallBingoButton = false);
-                    currentGameBloc.add(const DrawCard());
-                  }
-                });
-              } else if (mounted) {
-                hideStartingOverlay();
+      child: BlocConsumer<CurrentGameBloc, CurrentGameState>(
+        listener: (context, state) async {
+          if (state is PlayerJoined && mounted) {
+            showSimpleNotification(
+              Text('${state.player?.name} ist dem Spiel beigetreten.'),
+              foreground: Colors.white,
+            );
+          } else if (state is PlayerLeaved && mounted) {
+            showSimpleNotification(
+              Text('${state.player?.name} hat das Spiel verlassen.'),
+              foreground: Colors.white,
+            );
+          } else if (state is CurrentGameStarting && mounted) {
+            showStartingOverlay(context);
+          } else if (state is CurrentGameFinished) {
+            Navigator.of(context).pop();
+          } else if (state is WaitForBingoCall) {
+            panelController.close();
+            setState(() {
+              showCallBingoButton = true;
+              isSuperBingo = state.isSuperBingo;
+            });
+            await Future.delayed(const Duration(seconds: 4), () {
+              if (showCallBingoButton) {
+                setState(() => showCallBingoButton = false);
+                currentGameBloc.add(const DrawCard());
               }
-            },
-          ),
-        ],
-        child: BlocBuilder<CurrentGameBloc, CurrentGameState>(
-          bloc: currentGameBloc,
-          builder: (context, state) {
-            String title;
-            List<GameCard> playedCards, unplayedCards;
-            if (state is CurrentGameLoaded) {
-              title = state.game.name;
-              playedCards = state.game.playedCards;
-              unplayedCards = state.game.unplayedCards;
-            } else if (state is CurrentGameWaitingForPlayer) {
-              title = state.game.name;
-              playedCards = state.game.playedCards;
-              unplayedCards = state.game.unplayedCards;
-            } else {
-              title = 'Aktuelles Spiel';
-              playedCards = [];
-              unplayedCards = [];
-            }
+            });
+          } else if (mounted) {
+            hideStartingOverlay();
+          }
+        },
+        bloc: currentGameBloc,
+        builder: (context, state) {
+          String title;
+          List<GameCard> playedCards, unplayedCards;
+          if (state is CurrentGameLoaded) {
+            title = state.game.name;
+            playedCards = state.game.playedCards;
+            unplayedCards = state.game.unplayedCards;
+          } else if (state is CurrentGameWaitingForPlayer) {
+            title = state.game.name;
+            playedCards = state.game.playedCards;
+            unplayedCards = state.game.unplayedCards;
+          } else {
+            title = 'Aktuelles Spiel';
+            playedCards = [];
+            unplayedCards = [];
+          }
 
-            return SlidingUpPanel(
-              controller: panelController,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18.0),
-                topRight: Radius.circular(18.0),
+          return SlidingUpPanel(
+            controller: panelController,
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(18.0),
+              topRight: Radius.circular(18.0),
+            ),
+            color: Theme.of(context).canvasColor,
+            minHeight:
+                state is CurrentGameLoaded && state.game.isRunning ? 125 : 0,
+            // minHeight: 125,
+            maxHeight: MediaQuery.of(context).size.height - kToolbarHeight - 20,
+            // parallaxEnabled: true,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            isDraggable: state is CurrentGameLoaded && state.game.isRunning,
+            // isDraggable: true,
+            panelSnapping: false,
+            body: Scaffold(
+              backgroundColor: Colors.deepOrangeAccent,
+              endDrawer: Drawer(
+                child: Column(
+                  children: const <Widget>[],
+                ),
               ),
-              color: Theme.of(context).canvasColor,
-              minHeight:
-                  state is CurrentGameLoaded && state.game.isRunning ? 125 : 0,
-              // minHeight: 125,
-              maxHeight:
-                  MediaQuery.of(context).size.height - kToolbarHeight - 20,
-              // parallaxEnabled: true,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              isDraggable: state is CurrentGameLoaded && state.game.isRunning,
-              // isDraggable: true,
-              panelSnapping: false,
-              body: Scaffold(
+              appBar: AppBar(
                 backgroundColor: Colors.deepOrangeAccent,
-                endDrawer: Drawer(
-                  child: Column(
-                    children: const <Widget>[],
-                  ),
-                ),
-                appBar: AppBar(
-                  backgroundColor: Colors.deepOrangeAccent,
-                  title: Text(title),
-                ),
-                body: SafeArea(
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        top: 80,
-                        left: 76,
-                        right: 76,
-                        bottom: playerAvatarBottomPosition,
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Expanded(
-                                child: CardStack(
-                                  type: CardStackType.unplayedCards,
-                                  cards: unplayedCards,
-                                  // cards: defaultCardDeck,
-                                ),
+                title: Text(title),
+              ),
+              body: SafeArea(
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      top: 80,
+                      left: 76,
+                      right: 76,
+                      bottom: playerAvatarBottomPosition,
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Expanded(
+                              child: CardStack(
+                                type: CardStackType.unplayedCards,
+                                cards: unplayedCards,
+                                // cards: defaultCardDeck,
                               ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: CardStack(
-                                  type: CardStackType.playedCards,
-                                  cards: playedCards,
-                                  // cards: defaultCardDeck,
-                                ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: CardStack(
+                                type: CardStackType.playedCards,
+                                cards: playedCards,
+                                // cards: defaultCardDeck,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                      // const CardHand(),
-                      const PlayerAvatars(),
-                      Positioned(
-                        bottom: MediaQuery.of(context).size.height / 3,
-                        right: 8,
-                        child: FloatingActionButton(
-                          backgroundColor: Colors.orange,
-                          onPressed: () {},
-                          child: Icon(Icons.flag),
-                        ),
+                    ),
+                    // const CardHand(),
+                    const PlayerAvatars(),
+                    Positioned(
+                      bottom: MediaQuery.of(context).size.height / 3,
+                      right: 8,
+                      child: FloatingActionButton(
+                        backgroundColor: Colors.orange,
+                        onPressed: () {},
+                        child: Icon(Icons.flag),
                       ),
-                      if (state is CurrentGameWaitingForPlayer) ...[
-                        if (state.self.isHost)
-                          Positioned(
-                            bottom: 2,
-                            left: 8,
-                            right: 8,
-                            child: Center(
-                              child: RaisedButton(
-                                onPressed: () {
-                                  currentGameBloc.add(StartGame(
-                                    gameId: state.game.gameID,
-                                    self: state.self,
-                                  ));
-                                },
-                                child: const Text('Spiel starten'),
-                              ),
-                            ),
-                          )
-                        else
-                          const Positioned(
-                            bottom: 8,
-                            left: 8,
-                            right: 8,
-                            child: Center(
-                              child: Text('Warten auf weitere Spieler...'),
-                            ),
-                          ),
-                      ],
-                      if (state is CurrentGameLoaded &&
-                          state.game.isCompleted) ...[
-                        if (state.self.isHost)
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            top: MediaQuery.of(context).size.height * 0.55,
-                            bottom: 12,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  const Text('Das Spiel vorbei.'),
-                                  const SizedBox(height: 12),
-                                  RaisedButton.icon(
-                                    onPressed: () {},
-                                    label: const Text('Spiel neustarten'),
-                                    icon: Icon(Icons.refresh),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  RaisedButton.icon(
-                                    onPressed: () =>
-                                        currentGameBloc.add(EndGame()),
-                                    label: const Text('Spiel beenden'),
-                                    icon: Icon(Icons.close),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        else
-                          Positioned(
-                            top: MediaQuery.of(context).size.height * 0.55,
-                            left: 0,
-                            right: 0,
-                            bottom: 12,
-                            child: const Center(
-                              child: Text('Das Spiel vorbei.'),
-                            ),
-                          ),
-                      ],
-                      if (showCallBingoButton)
+                    ),
+                    if (state is CurrentGameWaitingForPlayer) ...[
+                      if (state.self.isHost)
                         Positioned(
-                          top: playerAvatarBottomPosition,
-                          left: 0,
-                          right: 0,
+                          bottom: 2,
+                          left: 8,
+                          right: 8,
                           child: Center(
                             child: RaisedButton(
                               onPressed: () {
-                                setState(() {
-                                  showCallBingoButton = false;
-                                });
-                                interactionBloc.add(
-                                  isSuperBingo ? CallBingo() : CallSuperBingo(),
-                                );
+                                currentGameBloc.add(StartGame(
+                                  gameId: state.game.gameID,
+                                  self: state.self,
+                                ));
                               },
-                              child: Text(
-                                'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
-                              ),
+                              child: const Text('Spiel starten'),
                             ),
+                          ),
+                        )
+                      else
+                        const Positioned(
+                          bottom: 8,
+                          left: 8,
+                          right: 8,
+                          child: Center(
+                            child: Text('Warten auf weitere Spieler...'),
                           ),
                         ),
                     ],
-                  ),
+                    if (state is CurrentGameLoaded &&
+                        state.game.isCompleted) ...[
+                      if (state.self.isHost)
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          top: MediaQuery.of(context).size.height * 0.55,
+                          bottom: 12,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                const Text('Das Spiel vorbei.'),
+                                const SizedBox(height: 12),
+                                RaisedButton.icon(
+                                  onPressed: () {},
+                                  label: const Text('Spiel neustarten'),
+                                  icon: Icon(Icons.refresh),
+                                ),
+                                const SizedBox(height: 12),
+                                RaisedButton.icon(
+                                  onPressed: () =>
+                                      currentGameBloc.add(EndGame()),
+                                  label: const Text('Spiel beenden'),
+                                  icon: Icon(Icons.close),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else
+                        Positioned(
+                          top: MediaQuery.of(context).size.height * 0.55,
+                          left: 0,
+                          right: 0,
+                          bottom: 12,
+                          child: const Center(
+                            child: Text('Das Spiel vorbei.'),
+                          ),
+                        ),
+                    ],
+                    if (showCallBingoButton)
+                      Positioned(
+                        top: playerAvatarBottomPosition,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: RaisedButton(
+                            onPressed: () {
+                              setState(() {
+                                showCallBingoButton = false;
+                              });
+                              interactionBloc.add(
+                                isSuperBingo ? CallBingo() : CallSuperBingo(),
+                              );
+                            },
+                            child: Text(
+                              'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              panel: CardScrollView(),
-            );
-          },
-        ),
+            ),
+            panel: CardScrollView(),
+          );
+        },
       ),
     );
   }
