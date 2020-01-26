@@ -260,11 +260,10 @@ class Game with EquatableMixin {
   List<Player> reversePlayerOrder() => players.reversed.toList();
 
   void cleanUpCardStacks() {
-    // final debugFirst5 = playedCardStack.take(5);
-    final cards = playedCardStack.toList().sublist(5);
-    print(cards);
+    final activeCards = playedCardStack.toList().reversed.toList();
+    final cards = activeCards.sublist(5);
     playedCardStack = Queue<GameCard>.from(
-      playedCardStack.take(5),
+      activeCards.take(5).toList().reversed,
     );
     for (var i = 0; i < 5; i++) {
       cards.shuffle();
