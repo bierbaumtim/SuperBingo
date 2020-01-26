@@ -2,10 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:supercharged/supercharged.dart';
 
 import '../../constants/enums.dart';
-import '../../models/app_models/card.dart';
 import '../../models/app_models/game.dart';
 import '../../models/app_models/player.dart';
 import '../../models/app_models/rules.dart';

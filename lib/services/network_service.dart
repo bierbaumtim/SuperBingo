@@ -10,6 +10,7 @@ import '../models/app_models/game.dart';
 import '../models/app_models/player.dart';
 
 abstract class INetworkService {
+  // ignore: unused_field
   final Firestore _db;
 
   const INetworkService(this._db);
