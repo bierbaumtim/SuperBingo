@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:supercharged/supercharged.dart';
 
 import '../../constants/enums.dart';
 import '../../models/app_models/card.dart';
@@ -131,20 +132,21 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           yield PlayerLeaved(leavedPlayer);
         }
       }
-      if (event.game.state == GameState.finished) {
-        add(EndGame());
-        return;
-      }
-      if (event.game.state == GameState.waitingForPlayer) {
-        yield CurrentGameWaitingForPlayer(
-          game: event.game,
-          self: _self,
-        );
-      } else {
-        yield CurrentGameLoaded(
-          game: event.game,
-          self: _self,
-        );
+      switch (event.game.state) {
+        case GameState.finished:
+          add(EndGame());
+          return;
+        case GameState.waitingForPlayer:
+          yield CurrentGameWaitingForPlayer(
+            game: event.game,
+            self: _self,
+          );
+          break;
+        default:
+          yield CurrentGameLoaded(
+            game: event.game,
+            self: _self,
+          );
       }
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
@@ -187,7 +189,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Stream<CurrentGameState> _mapPlayCardToState(PlayCard event) async* {
     try {
       final currentState = state;
-      final message = _checkRules(event.card);
+      final message = Rules.checkRules(_currentGame, event.card, _playerId);
       var shouldYieldWaitForBingo = false, isSuperBingo = false;
 
       if (message == null) {
@@ -197,20 +199,24 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         }
         _self.cards.removeWhere((c) => c == event.card);
         final game = _currentGame;
-        if (event.card.rule == SpecialRule.reverse) {
-          game.players = game.reversePlayerOrder();
+        switch (event.card.rule) {
+          case SpecialRule.reverse:
+            game.players = game.reversePlayerOrder();
+            break;
+          case SpecialRule.plusTwo:
+            game.cardDrawAmount =
+                game.cardDrawAmount == 1 ? 2 : game.cardDrawAmount + 2;
+            break;
+          case SpecialRule.joker:
+            game.isJokerOrJackAllowed = false;
+            game.allowedCardColor = event.allowedCardColor;
+            break;
+          default:
+            game.isJokerOrJackAllowed = true;
+            game.allowedCardColor = null;
+            break;
         }
-        if (event.card.rule == SpecialRule.plusTwo) {
-          game.cardDrawAmount =
-              game.cardDrawAmount == 1 ? 2 : game.cardDrawAmount + 2;
-        }
-        if (event.card.rule == SpecialRule.joker) {
-          game.isJokerOrJackAllowed = false;
-          game.allowedCardColor = event.allowedCardColor;
-        } else {
-          game.isJokerOrJackAllowed = true;
-          game.allowedCardColor = null;
-        }
+
         final nextPlayer = _self.getNextPlayer(
           game.players,
           skipNextPlayer: event.card.rule == SpecialRule.skip,
@@ -226,11 +232,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           players: game.players,
         );
 
-        await networkService.updateGameData(filledGame);
         if (shouldYieldWaitForBingo) {
           yield WaitForBingoCall(isSuperBingo: isSuperBingo);
           yield currentState;
         }
+        await networkService.updateGameData(filledGame);
       } else {
         DialogInformationService.instance.showNotification(
           NotificationType.error,
@@ -245,7 +251,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   Stream<CurrentGameState> _mapDrawCardToState(DrawCard event) async* {
-    final game = _currentGame;
+    var game = _currentGame;
     if (game.isRunning) {
       if (game.currentPlayerId == _self.id) {
         game.isJokerOrJackAllowed = true;
@@ -254,6 +260,12 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         for (var i = 0; i < game.cardDrawAmount; i++) {
           final card = game.unplayedCardStack.removeFirst();
           _self.cards.add(card);
+        }
+        if (game.cardDrawAmount <= 2) {
+          final nextPlayer = _self.getNextPlayer(game.players);
+          if (nextPlayer != null) {
+            game = game.copyWith(currentPlayerId: nextPlayer.id);
+          }
         }
         game.cardDrawAmount = 1;
         game.updatePlayer(_self);
@@ -304,37 +316,16 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       if (_self.isHost) {
         if (game.players.isNotEmpty) {
           game.players[0] = game.players[0].copyWith(isHost: true);
-          await networkService.updateGameData(game);
         } else {
           await networkService.deleteGame(gameId);
           return;
         }
       }
+      await networkService.updateGameData(game);
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
       throw GameLeaveException(subscriptionCanceled: gameSub == null);
     }
-  }
-
-  String _checkRules(GameCard card) {
-    final game = _currentGame;
-    if (game.currentPlayerId != _playerId) {
-      return 'Du bist nicht an der Reihe!';
-    }
-    if (!game.isJokerOrJackAllowed && card.rule == SpecialRule.joker) {
-      return 'Du darfst keine zwei Joker/Buben aufeinander legen!';
-    }
-    if (game.allowedCardColor != null && game.allowedCardColor != card.color) {
-      return 'Der letzte Spieler hat sich eine andere Farbe gewünscht. Du darfst diese Karte daher nicht legen!';
-    }
-    if (game.cardDrawAmount > 1 && card.number != CardNumber.seven) {
-      return 'Du musst ${game.cardDrawAmount} Karten ziehen!';
-    }
-    if (!Rules.isCardAllowed(card, game.topCard)) {
-      return 'Du darfst diese Karte nicht legen!';
-    }
-
-    return null;
   }
 
   Player getDiffInPlayerLists(List<Player> newList, List<Player> oldList) {
