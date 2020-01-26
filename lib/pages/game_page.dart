@@ -263,7 +263,7 @@ class _GamePageState extends State<GamePage> {
                                 showCallBingoButton = false;
                               });
                               interactionBloc.add(
-                                isSuperBingo ? CallBingo() : CallSuperBingo(),
+                                isSuperBingo ? CallSuperBingo() : CallBingo(),
                               );
                             },
                             child: Text(
