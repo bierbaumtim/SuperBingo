@@ -82,7 +82,7 @@ class _CardStackState extends State<CardStack> {
               child: Transform.rotate(
                 angle: c['angle'] as double,
                 child: PlayCard(
-                  card: c['card'],
+                  card: c['card'] as GameCard,
                   elevation: c['elevation'] as double,
                   isFlipped: widget.type == CardStackType.unplayedCards,
                   onCardTap: (card) {
