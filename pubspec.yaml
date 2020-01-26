@@ -45,7 +45,7 @@ dependencies:
 
   sliding_up_panel:
     git:
-      url: https://github.com/tb2761/sliding_up_panel.git
+      url: https://github.com/bierbaumtim/sliding_up_panel.git
 
   # icons
   flat_icons_flutter: ^1.0.2
