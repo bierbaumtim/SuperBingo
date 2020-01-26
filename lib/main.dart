@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/single_child_widget.dart';
@@ -37,7 +38,7 @@ void main() async {
   ]);
   await Connection.instance.initConnection();
 
-  final networkService = NetworkService();
+  final networkService = NetworkService(Firestore.instance);
 
   runZoned(
     () => runApp(

@@ -10,6 +10,10 @@ import '../models/app_models/game.dart';
 import '../models/app_models/player.dart';
 
 abstract class INetworkService {
+  final Firestore _db;
+
+  const INetworkService(this._db);
+
   Firestore get db;
   Game get previousGame;
   Game get currentGame;
@@ -33,19 +37,18 @@ abstract class INetworkService {
 /// `NetworkService` provides all functions needed for online multiplayer part of the game.
 /// Every incoming and outgoing data will be processed by it.
 class NetworkService implements INetworkService {
+  @override
+  final Firestore _db;
   Game _previousGame, _currentGame;
   BehaviorSubject<Game> _gameChangedController;
   StreamSubscription<Game> _gameSub;
 
-  // static final NetworkService instance = NetworkService._internal();
-
-  // factory NetworkService() => instance;
-
-  NetworkService() {
+  NetworkService(this._db) {
     _gameChangedController = BehaviorSubject<Game>();
   }
+
   @override
-  Firestore get db => Firestore.instance;
+  Firestore get db => _db;
   @override
   Game get previousGame => _previousGame;
   @override
