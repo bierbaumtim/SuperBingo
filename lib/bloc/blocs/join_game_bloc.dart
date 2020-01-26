@@ -58,7 +58,9 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
           );
         } else {
           final cardStack = game.unplayedCardStack;
-          _self.drawCards(cardStack);
+          if (game.isRunning) {
+            _self.drawCards(cardStack);
+          }
           game.addPlayer(_self);
           final filledGame = game.copyWith(
             unplayedCardStack: cardStack,
