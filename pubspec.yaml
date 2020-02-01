@@ -31,21 +31,21 @@ dependencies:
   shared_preferences: ^0.5.6
 
   cloud_firestore: ^0.13.0+1
-  firebase_crashlytics: ^0.1.2+3
-  firebase_analytics: ^5.0.10
-  firebase_auth: ^0.15.3+1
+  firebase_crashlytics: ^0.1.2+6
+  firebase_analytics: ^5.0.11
+  firebase_auth: ^0.15.4
   cloud_firestore_mocks: ^0.2.7
 
   provider: ^4.0.2
   bloc: ^3.0.0
-  flutter_bloc: ^3.1.0
+  flutter_bloc: ^3.2.0
   bloc_test: ^3.1.0
   equatable: ^1.0.3
   
 
   sliding_up_panel:
     git:
-      url: https://github.com/tb2761/sliding_up_panel.git
+      url: https://github.com/bierbaumtim/sliding_up_panel.git
 
   # icons
   flat_icons_flutter: ^1.0.2
