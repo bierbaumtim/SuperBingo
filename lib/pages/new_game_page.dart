@@ -50,7 +50,7 @@ class _NewGamePageState extends State<NewGamePage> {
   Widget build(BuildContext context) {
     final gameBloc = BlocProvider.of<GameConfigurationBloc>(context);
 
-    final border = OutlineInputBorder(
+    const border = OutlineInputBorder(
       borderSide: BorderSide(
         color: Colors.white,
         width: 1.5,
@@ -123,7 +123,7 @@ class _NewGamePageState extends State<NewGamePage> {
                   child: Column(
                     children: <Widget>[
                       TextFormField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: border,
                           enabledBorder: border,
                           focusedBorder: border,
@@ -140,7 +140,7 @@ class _NewGamePageState extends State<NewGamePage> {
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _playerAmountController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: border,
                           enabledBorder: border,
                           focusedBorder: border,
@@ -164,7 +164,7 @@ class _NewGamePageState extends State<NewGamePage> {
                       const SizedBox(height: 8),
                       TextFormField(
                         controller: _cardDecksAmountController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: border,
                           enabledBorder: border,
                           focusedBorder: border,
