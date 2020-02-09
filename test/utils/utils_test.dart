@@ -11,9 +11,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 
 void main() {
-  group('Utils tests', () {
-    group('UI tils tests', () {
-      group('getPositionCoordinates tests', () {
+  group('Utils tests ->', () {
+    group('UI tils tests ->', () {
+      group('getPositionCoordinates tests ->', () {
         test('1 player', () {
           final coordinates = getPositionCoordinates(0, 1, 350);
           expect(coordinates['top'], 0);
@@ -151,8 +151,8 @@ void main() {
       });
     });
 
-    group('card utils tests', () {
-      group('getIconByCardColor tests', () {
+    group('card utils tests ->', () {
+      group('getIconByCardColor tests ->', () {
         test('null assertion', () {
           expect(() => getIconByCardColor(null), throwsAssertionError);
         });
@@ -182,7 +182,7 @@ void main() {
         });
       });
 
-      group('getColorByCardColor tests', () {
+      group('getColorByCardColor tests ->', () {
         test('null assertion', () {
           expect(() => getColorByCardColor(null), throwsAssertionError);
         });
@@ -212,7 +212,7 @@ void main() {
         });
       });
 
-      group('getTextByCardNumber tests', () {
+      group('getTextByCardNumber tests ->', () {
         test('null assertion', () {
           expect(() => getTextByCardNumber(null), throwsAssertionError);
         });
@@ -291,7 +291,7 @@ void main() {
       });
     });
 
-    group('configuration utils tests', () {
+    group('configuration utils tests ->', () {
       test('empty string if Preference is null', () async {
         SharedPreferences.setMockInitialValues(<String, dynamic>{
           'playername': null,
@@ -333,7 +333,7 @@ void main() {
       });
     });
 
-    group('list utils tests', () {
+    group('list utils tests ->', () {
       test('null assertion', () {
         expect(() => getMiddleIndex(null), throwsAssertionError);
       });
