@@ -3,7 +3,6 @@
 
 // import 'package:flutter_test/flutter_test.dart';
 
-
 // import 'package:superbingo/constants/card_deck.dart';
 // import 'package:superbingo/models/app_models/card.dart';
 // import 'package:superbingo/models/app_models/game.dart';
@@ -13,7 +12,7 @@
 // import 'package:uuid/uuid.dart';
 // import 'package:cloud_firestore_mocks/cloud_firestore_mocks.dart';
 
-// void main() {
+void main() {
 //   group(
 //     'network service test',
 //     () {
@@ -81,4 +80,4 @@
 //     },
 //     skip: true,
 //   );
-// }
+}
