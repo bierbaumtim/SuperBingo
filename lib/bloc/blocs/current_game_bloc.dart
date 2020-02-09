@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:meta/meta.dart';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:dartx/dartx.dart';
 
 import '../../constants/enums.dart';
 import '../../models/app_models/game.dart';
@@ -310,6 +312,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     try {
       final game = _currentGame;
       await gameSub.cancel();
+      final nextPlayer = _self.getNextPlayer(game.players);
       game.removePlayer(_self);
       if (_self.isHost) {
         if (game.players.isNotEmpty) {
@@ -319,6 +322,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           return;
         }
       }
+      game.currentPlayerId = nextPlayer?.id ?? game.players.firstOrNull?.id;
       await networkService.updateGameData(game);
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
@@ -339,5 +343,5 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 class GameLeaveException implements Exception {
   final bool subscriptionCanceled;
 
-  GameLeaveException({this.subscriptionCanceled});
+  const GameLeaveException({@required this.subscriptionCanceled});
 }
