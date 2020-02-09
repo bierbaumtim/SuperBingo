@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -31,7 +33,11 @@ class GameCard extends Equatable {
   final SpecialRule rule;
 
   /// {@macro gamecard}
-  GameCard({this.id, this.color, this.number}) : rule = ruleFromNumber(number);
+  GameCard({
+    this.id,
+    @required this.color,
+    @required this.number,
+  }) : rule = ruleFromNumber(number);
 
   /// Factory, um einen Datensatz in ein [GameCard]-Object umzuwandeln
   factory GameCard.fromJson(Map<String, dynamic> json) =>
