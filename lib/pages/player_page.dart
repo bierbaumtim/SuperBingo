@@ -39,7 +39,7 @@ class _PlayerPageState extends State<PlayerPage> {
   Widget build(BuildContext context) {
     final infoBloc = BlocProvider.of<InfoBloc>(context);
 
-    final border = OutlineInputBorder(
+    const border = OutlineInputBorder(
       borderSide: BorderSide(
         color: Colors.white,
         width: 1.5,
@@ -56,7 +56,7 @@ class _PlayerPageState extends State<PlayerPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: controller,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: border,
                 enabledBorder: border,
                 focusedBorder: border,
@@ -95,7 +95,7 @@ class _PlayerPageState extends State<PlayerPage> {
                       RaisedButton(
                         color: Colors.deepOrange,
                         onPressed: () => Navigator.pop(context),
-                        child: Text(
+                        child: const Text(
                           'Ok',
                           style: TextStyle(
                             color: Colors.white,
