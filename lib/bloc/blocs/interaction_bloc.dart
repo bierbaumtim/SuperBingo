@@ -52,10 +52,15 @@ class InteractionBloc extends Bloc<InteractionEvent, InteractionState> {
           (prev, curr) => prev.finishPosition.compareTo(curr.finishPosition),
         )
         .finishPosition;
+    int playerFinishPosition;
     if (maxPosition + 1 == game.players.length) {
       game.state = GameState.gameCompleted;
     }
-    game.updatePlayer(self.copyWith(finishPosition: maxPosition + 1));
+    playerFinishPosition = maxPosition + 1;
+    if (playerFinishPosition == 0) {
+      playerFinishPosition = 1;
+    }
+    game.updatePlayer(self.copyWith(finishPosition: playerFinishPosition));
     game.message = '${self.name} ist fertig !';
     await networkService.updateGameData(game);
   }
