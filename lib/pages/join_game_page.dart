@@ -87,7 +87,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
                             ),
                             child: Text(
                               'join',
-                              style: Theme.of(context).textTheme.body1.copyWith(
+                              style: Theme.of(context).textTheme.bodyText2.copyWith(
                                     color: Colors.white,
                                   ),
                             ),

@@ -36,6 +36,7 @@ class DialogInformationService {
     _showInformationNotification(
       content: config.content,
       subtitle: config.subtitle,
+      duration: config.duration,
       background: background,
       foreground: foreground,
       padding: padding,
@@ -48,6 +49,7 @@ class DialogInformationService {
     String subtitle = '',
     Color background,
     Color foreground,
+    Duration duration,
     EdgeInsets padding,
     Widget leading,
   }) {
@@ -67,9 +69,9 @@ class DialogInformationService {
               ),
               child: ListTileTheme(
                 textColor: foreground ??
-                    Theme.of(context)?.accentTextTheme?.title?.color,
+                    Theme.of(context)?.accentTextTheme?.headline6?.color,
                 iconColor: foreground ??
-                    Theme.of(context)?.accentTextTheme?.title?.color,
+                    Theme.of(context)?.accentTextTheme?.headline6?.color,
                 child: ListTile(
                   dense: true,
                   leading: leading,
@@ -83,24 +85,21 @@ class DialogInformationService {
           ),
         ),
       ),
-      duration: const Duration(seconds: 4),
+      duration: duration ?? const Duration(seconds: 4),
     );
-    // showSimpleNotification(
-    //   Text(content),
-    //   subtitle: subtitle != null ? Text(subtitle) : null,
-    //   background: background,
-    //   foreground: foreground,
-    //   contentPadding: padding,
-    //   leading: leading,
-    // );
   }
 }
 
 class NotificationConfiguration {
   final String content;
   final String subtitle;
+  final Duration duration;
 
-  const NotificationConfiguration({this.content, this.subtitle});
+  const NotificationConfiguration({
+    @required this.content,
+    this.subtitle,
+    this.duration = const Duration(seconds: 4),
+  });
 }
 
 enum NotificationType { error, content, success, information }

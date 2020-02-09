@@ -90,7 +90,7 @@ class PlayerAvatar extends StatelessWidget {
                     maxRadius: 20,
                     child: Text(
                       _getPlayerFirstLetter(player.name),
-                      style: theme.textTheme.body1.copyWith(fontSize: 17),
+                      style: theme.textTheme.bodyText2.copyWith(fontSize: 17),
                     ),
                   ),
                 ),
@@ -139,7 +139,7 @@ class PlayerAvatar extends StatelessWidget {
                       player?.name ?? '',
                       maxLines: 1,
                       overflow: TextOverflow.visible,
-                      style: theme.textTheme.body1.copyWith(
+                      style: theme.textTheme.bodyText2.copyWith(
                         color: Colors.white,
                         fontSize: 12,
                       ),

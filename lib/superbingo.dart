@@ -78,16 +78,16 @@ ThemeData get lightTheme => ThemeData.dark().copyWith(
 
 /// TextTheme mit Georgia als FontFamily
 TextTheme get basicTextTheme => TextTheme(
-      body1: TextStyle(
-        fontFamily: 'Georgia',
-        fontSize: 14,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0,
-      ),
-      body2: TextStyle(
+      bodyText1: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 14,
         fontWeight: FontWeight.w500,
+        letterSpacing: 0,
+      ),
+      bodyText2: TextStyle(
+        fontFamily: 'Georgia',
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
         letterSpacing: 0,
       ),
       caption: TextStyle(
@@ -102,7 +102,7 @@ TextTheme get basicTextTheme => TextTheme(
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
       ),
-      subtitle: TextStyle(
+      subtitle2: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 14,
         fontWeight: FontWeight.w500,
@@ -114,43 +114,43 @@ TextTheme get basicTextTheme => TextTheme(
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
       ),
-      title: TextStyle(
+      headline6: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 20,
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
       ),
-      subhead: TextStyle(
+      subtitle1: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 16,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
       ),
-      headline: TextStyle(
+      headline5: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 24,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
       ),
-      display1: TextStyle(
+      headline4: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 34,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
       ),
-      display2: TextStyle(
+      headline3: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 45,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
       ),
-      display3: TextStyle(
+      headline2: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 56,
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
       ),
-      display4: TextStyle(
+      headline1: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 112,
         fontWeight: FontWeight.w100,

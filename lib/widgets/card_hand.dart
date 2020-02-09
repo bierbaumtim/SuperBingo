@@ -60,7 +60,7 @@ class CardHand extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 36),
                 child: Text(
                   'Your done',
-                  style: theme.textTheme.body1.copyWith(fontSize: 24),
+                  style: theme.textTheme.bodyText2.copyWith(fontSize: 24),
                 ),
               );
             }
