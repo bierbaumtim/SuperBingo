@@ -67,13 +67,28 @@ class _CardStackState extends State<CardStack> {
 
   @override
   Widget build(BuildContext context) {
-    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
-
     return Stack(
       fit: StackFit.loose,
-      children: cards
-          .map<Widget>(
-            (c) => Transform(
+      children: cards.map<Widget>(
+        (c) {
+          final playCard = PlayCard(
+            card: c['card'] as GameCard,
+            elevation: c['elevation'] as double,
+            isFlipped: widget.type == CardStackType.unplayedCards,
+            onCardTap: (card) {
+              if (widget.type == CardStackType.unplayedCards) {
+                context.bloc<CurrentGameBloc>().add(const events.DrawCard());
+              }
+            },
+            shouldPaint: c['index'] as int >= cards.length - 5,
+          );
+
+          if (c['translationX'] == null &&
+              c['translationY'] == null &&
+              c['angle'] == 0.0) {
+            return playCard;
+          } else {
+            return Transform(
               transform: Matrix4.identity()
                 ..translate(
                   c['translationX'] as double,
@@ -81,21 +96,12 @@ class _CardStackState extends State<CardStack> {
                 ),
               child: Transform.rotate(
                 angle: c['angle'] as double,
-                child: PlayCard(
-                  card: c['card'] as GameCard,
-                  elevation: c['elevation'] as double,
-                  isFlipped: widget.type == CardStackType.unplayedCards,
-                  onCardTap: (card) {
-                    if (widget.type == CardStackType.unplayedCards) {
-                      currentGameBloc.add(const events.DrawCard());
-                    }
-                  },
-                  shouldPaint: c['index'] as int >= cards.length - 5,
-                ),
+                child: playCard,
               ),
-            ),
-          )
-          .toList(),
+            );
+          }
+        },
+      ).toList(),
     );
   }
 
@@ -105,22 +111,23 @@ class _CardStackState extends State<CardStack> {
       (c) {
         final index = widget.cards.indexOf(c);
         double translationY, translationX, elevation = 0.0, angle = 0.0;
-        if (c == widget.cards.last) {
-          angle = radians(0);
-        } else {
-          angle = 1.0 + rn.nextInt(10);
-          angle = radians(angle);
-          angle = index & 1 == 0 ? angle : -angle;
+        if (index <= 6) {
+          if (c == widget.cards.last) {
+            angle = radians(0);
+          } else {
+            angle = 1.0 + rn.nextInt(10);
+            angle = radians(angle);
+            angle = index & 1 == 0 ? angle : -angle;
+          }
+          translationY = 1.0 + rn.nextInt(5);
+          translationX = 1.0 + rn.nextInt(5);
+          if (rn.nextDouble() < 0.5) {
+            translationX = -translationX;
+          }
+          if (rn.nextDouble() < 0.5) {
+            translationY = -translationY;
+          }
         }
-        translationY = 1.0 + rn.nextInt(5);
-        translationX = 1.0 + rn.nextInt(5);
-        if (rn.nextDouble() < 0.5) {
-          translationX = -translationX;
-        }
-        if (rn.nextDouble() < 0.5) {
-          translationY = -translationY;
-        }
-
         if (index > widget.cards.length - 10) {
           elevation = index - (widget.cards.length - 10.0);
         }
