@@ -11,12 +11,7 @@ import 'pages/new_game_page.dart';
 import 'pages/player_page.dart';
 import 'pages/start.dart';
 
-class SuperBingo extends StatefulWidget {
-  @override
-  _SuperBingoState createState() => _SuperBingoState();
-}
-
-class _SuperBingoState extends State<SuperBingo> {
+class SuperBingo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OverlaySupport(

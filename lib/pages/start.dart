@@ -16,12 +16,7 @@ import '../bloc/states/join_game_states.dart';
 /// Hier landet der Spieler nachdem er die App startet
 /// Vor hier aus kann zur Spielerstellung, Spielsuche
 /// und Spielerkofiguration navigiert werden.
-class StartPage extends StatefulWidget {
-  @override
-  _StartPageState createState() => _StartPageState();
-}
-
-class _StartPageState extends State<StartPage> {
+class StartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
