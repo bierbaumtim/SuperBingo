@@ -16,14 +16,11 @@ class CardHand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
-
     final theme = Theme.of(context);
 
     return Align(
       alignment: Alignment.bottomCenter,
       child: BlocBuilder<CurrentGameBloc, CurrentGameState>(
-        bloc: currentGameBloc,
         builder: (context, state) {
           if (state is CurrentGameLoaded) {
             if (state.self.cards.isNotEmpty) {

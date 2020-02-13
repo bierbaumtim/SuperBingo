@@ -36,9 +36,13 @@ class _PlayerPageState extends State<PlayerPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final infoBloc = BlocProvider.of<InfoBloc>(context);
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     const border = OutlineInputBorder(
       borderSide: BorderSide(
         color: Colors.white,
@@ -78,6 +82,7 @@ class _PlayerPageState extends State<PlayerPage> {
             icon: Icon(Icons.arrow_forward_ios),
             onPressed: () async {
               if (username != null && username.isNotEmpty) {
+                final infoBloc = context.bloc<InfoBloc>();
                 if (state is FirstStart) {
                   infoBloc.add(CompleteFirstStartConfiguration(username));
                 } else {
@@ -85,7 +90,7 @@ class _PlayerPageState extends State<PlayerPage> {
                   Navigator.pop(context);
                 }
               } else {
-                showDialog<void>(
+                await showDialog<void>(
                   context: context,
                   builder: (context) => AlertDialog(
                     title: const Text('Hinweis'),

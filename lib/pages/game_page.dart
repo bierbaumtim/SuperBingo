@@ -44,7 +44,6 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
-    final interactionBloc = BlocProvider.of<InteractionBloc>(context);
 
     final height = MediaQuery.of(context).size.height;
     final playerAvatarBottomPosition = (height - kToolbarHeight) / 2.1;
@@ -262,9 +261,11 @@ class _GamePageState extends State<GamePage> {
                               setState(() {
                                 showCallBingoButton = false;
                               });
-                              interactionBloc.add(
-                                isSuperBingo ? CallSuperBingo() : CallBingo(),
-                              );
+                              context.bloc<InteractionBloc>().add(
+                                    isSuperBingo
+                                        ? CallSuperBingo()
+                                        : CallBingo(),
+                                  );
                             },
                             child: Text(
                               'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
