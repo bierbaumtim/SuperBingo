@@ -92,9 +92,16 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
     try {
       final linkData = parseGameLink(event.gameLink);
       yield* _mapJoinGameToState(JoinGame(linkData['gameid'] as String));
-    } catch (e, s) {
+    } on UnsupportedGameLinkException catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
       yield const JoinGameFailed('Der Link wird nicht unterstützt.');
+      yield WaitingForAction();
+    } on dynamic catch (e, s) {
+      await Crashlytics.instance.recordError(e, s);
+      yield const JoinGameFailed(
+        'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.',
+      );
+      yield WaitingForAction();
     }
   }
 
