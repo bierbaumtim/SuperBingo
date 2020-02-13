@@ -55,6 +55,8 @@ class _StartPageState extends State<StartPage> {
             } else if (state is GameCreationFailed) {
               showSimpleNotification(
                 Text(state.error),
+                foreground: Colors.white,
+                slideDismiss: true,
               );
             }
           },

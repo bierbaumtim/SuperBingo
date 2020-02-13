@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:superbingo/widgets/loading_widget.dart';
 
 import '../bloc/blocs/join_game_bloc.dart';
 import '../bloc/blocs/open_games_bloc.dart';
@@ -87,7 +88,10 @@ class _JoinGamePageState extends State<JoinGamePage> {
                             ),
                             child: Text(
                               'join',
-                              style: Theme.of(context).textTheme.bodyText2.copyWith(
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyText2
+                                  .copyWith(
                                     color: Colors.white,
                                   ),
                             ),
@@ -135,8 +139,8 @@ class _JoinGamePageState extends State<JoinGamePage> {
             filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
             child: Container(
               color: Colors.black.withOpacity(0.25),
-              child: const Center(
-                child: CircularProgressIndicator(),
+              child: const Loading(
+                content: 'Du trittst dem Spiel bei.',
               ),
             ),
           ),

@@ -10,6 +10,7 @@ import '../bloc/blocs/game_configuration_bloc.dart';
 import '../bloc/events/game_events.dart';
 import '../bloc/states/game_states.dart';
 import '../utils/dialogs.dart';
+import '../widgets/loading_widget.dart';
 
 class NewGamePage extends StatefulWidget {
   @override
@@ -63,7 +64,6 @@ class _NewGamePageState extends State<NewGamePage> {
           showGameCreationOverlay(context);
         } else if (state is GameCreated) {
           hideGameCreationOverlay();
-          // Navigator.of(context).pushNamed('/game');
           setState(() {
             showStartGame = true;
             isValid = false;
@@ -71,11 +71,6 @@ class _NewGamePageState extends State<NewGamePage> {
           });
         } else if (state is GameCreationFailed) {
           hideGameCreationOverlay();
-          await Dialogs.showInformationDialog<void>(
-            context,
-            title: 'Fehler',
-            content: state.error,
-          );
         }
       },
       child: WillPopScope(
@@ -258,24 +253,14 @@ class _NewGamePageState extends State<NewGamePage> {
 
   void showGameCreationOverlay(BuildContext context) {
     _gameCreationOverlay = OverlayEntry(
-      builder: (context) => Stack(
-        children: <Widget>[
-          BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
-            child: Container(
-              color: Colors.black.withOpacity(0.25),
-            ),
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
+        child: Container(
+          color: Colors.black.withOpacity(0.25),
+          child: const Loading(
+            content: 'Das Spiel wird erstellt.',
           ),
-          const Center(
-            child: Card(
-              elevation: 0,
-              child: Padding(
-                padding: EdgeInsets.all(12),
-                child: CircularProgressIndicator(),
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
 
@@ -283,9 +268,6 @@ class _NewGamePageState extends State<NewGamePage> {
   }
 
   void hideGameCreationOverlay() {
-    if (_gameCreationOverlay != null) {
-      _gameCreationOverlay.remove();
-      _gameCreationOverlay = null;
-    }
+    _gameCreationOverlay?.remove();
   }
 }
