@@ -22,8 +22,6 @@ class HorizontalCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
-
     if (cards == null || cards.isEmpty) {
       return Container();
     } else {
@@ -33,19 +31,22 @@ class HorizontalCardList extends StatelessWidget {
           height: 175,
           child: ListView.builder(
             itemBuilder: (context, index) => SmallPlayCard(
-                card: cards.elementAt(index),
-                onCardTap: (card) async {
-                  CardColor allowedCardColor;
-                  if (card.rule == SpecialRule.joker) {
-                    final route = BlurOverlayRoute<CardColor>(
-                      builder: (context) => const CardColorDecisionCard(),
-                    );
-                    allowedCardColor =
-                        await Navigator.of(context).push<CardColor>(route);
-                    if (allowedCardColor == null) return;
-                  }
-                  currentGameBloc.add(PlayCard(card, allowedCardColor));
-                }),
+              card: cards.elementAt(index),
+              onCardTap: (card) async {
+                CardColor allowedCardColor;
+                if (card.rule == SpecialRule.joker) {
+                  final route = BlurOverlayRoute<CardColor>(
+                    builder: (context) => const CardColorDecisionCard(),
+                  );
+                  allowedCardColor =
+                      await Navigator.of(context).push<CardColor>(route);
+                  if (allowedCardColor == null) return;
+                }
+                context
+                    .bloc<CurrentGameBloc>()
+                    .add(PlayCard(card, allowedCardColor));
+              },
+            ),
             itemCount: cards.length,
             scrollDirection: Axis.horizontal,
             physics: const ClampingScrollPhysics(),

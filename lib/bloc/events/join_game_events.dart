@@ -15,3 +15,12 @@ class JoinGame extends JoinGameEvent {
   @override
   List<Object> get props => super.props..add(gameId);
 }
+
+class JoinWithLink extends JoinGameEvent {
+  final String gameLink;
+
+  const JoinWithLink(this.gameLink);
+
+  @override
+  List get props => super.props..add(gameLink);
+}

@@ -1,4 +1,4 @@
-import 'dart:math';
+// import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -26,8 +26,8 @@ class PlayCard extends StatelessWidget {
   ///
   /// Default: 100
   final double width;
-  final double angle;
-  final double rotationAngle;
+  // final double angle;
+  // final double rotationAngle;
 
   /// Schatten
   ///
@@ -52,8 +52,8 @@ class PlayCard extends StatelessWidget {
   const PlayCard({
     Key key,
     @required this.card,
-    this.angle,
-    this.rotationAngle,
+    // this.angle,
+    // this.rotationAngle,
     this.height = 175,
     this.width = 100,
     this.elevation = 0,
@@ -77,7 +77,7 @@ class PlayCard extends StatelessWidget {
       paint = Container();
     }
 
-    final cardWidget = GestureDetector(
+    return GestureDetector(
       onTap: () {
         onCardTap?.call(card);
       },
@@ -94,22 +94,23 @@ class PlayCard extends StatelessWidget {
         ),
       ),
     );
-    if (angle != null && rotationAngle != null) {
-      final rad = radians(angle);
-      return Transform(
-        transform: Matrix4.identity()
-          ..translate(
-            100 * cos(rad),
-            (100 * sin(rad)) + 25,
-          ),
-        child: Transform.rotate(
-          angle: radians(rotationAngle),
-          child: cardWidget,
-        ),
-      );
-    } else {
-      return cardWidget;
-    }
+
+    // if (angle != null && rotationAngle != null) {
+    //   final rad = radians(angle);
+    //   return Transform(
+    //     transform: Matrix4.identity()
+    //       ..translate(
+    //         100 * cos(rad),
+    //         (100 * sin(rad)) + 25,
+    //       ),
+    //     child: Transform.rotate(
+    //       angle: radians(rotationAngle),
+    //       child: cardWidget,
+    //     ),
+    //   );
+    // } else {
+    //   return cardWidget;
+    // }
   }
 }
 

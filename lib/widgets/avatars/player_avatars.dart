@@ -21,10 +21,7 @@ class PlayerAvatars extends StatelessWidget {
     final height = MediaQuery.of(context).size.height;
     final playerAvatarBottomPosition = (height - kToolbarHeight) / 2.1;
 
-    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
-
     return BlocBuilder<CurrentGameBloc, CurrentGameState>(
-      bloc: currentGameBloc,
       builder: (context, state) {
         var player = <Player>[];
         var currentPlayerId = '';
