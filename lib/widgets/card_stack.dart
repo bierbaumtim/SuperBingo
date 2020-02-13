@@ -111,12 +111,11 @@ class _CardStackState extends State<CardStack> {
       (c) {
         final index = widget.cards.indexOf(c);
         double translationY, translationX, elevation = 0.0, angle = 0.0;
-        if (index <= 6) {
+        if (index > widget.cards.length - 6) {
           if (c == widget.cards.last) {
             angle = radians(0);
           } else {
-            angle = 1.0 + rn.nextInt(10);
-            angle = radians(angle);
+            angle = radians(1.0 + rn.nextInt(10));
             angle = index & 1 == 0 ? angle : -angle;
           }
           translationY = 1.0 + rn.nextInt(5);
