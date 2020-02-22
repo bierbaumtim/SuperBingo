@@ -282,7 +282,8 @@ class Game with EquatableMixin {
   /// Wandelt ein List eines Datensatzes in eine Queue von [GameCard]-Ojects um
   static Queue<GameCard> stackFromJson(List list) {
     final cards =
-        list.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
+        list?.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc))) ??
+            <GameCard>[];
     return Queue.from(cards);
   }
 
@@ -297,8 +298,9 @@ class Game with EquatableMixin {
   /// Wandelt ein List eines Datensatzes in eine Liste von [Player]-Ojects um
   static List<Player> playerFromJson(List list) {
     return list
-        .map<Player>((p) => Player.fromJson(Map<String, dynamic>.from(p)))
-        .toList();
+            ?.map<Player>((p) => Player.fromJson(Map<String, dynamic>.from(p)))
+            ?.toList() ??
+        <Player>[];
   }
 
   String _fillGameId(String nGameId) {

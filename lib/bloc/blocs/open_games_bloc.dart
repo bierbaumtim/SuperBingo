@@ -52,6 +52,7 @@ class PublicGamesBloc {
       }
     } on dynamic catch (e, s) {
       Crashlytics.instance.recordError(e, s);
+      _publicGamesSink.add(Error());
     }
   }
 

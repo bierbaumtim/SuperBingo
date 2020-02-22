@@ -300,6 +300,7 @@ class _GamePageState extends State<GamePage> {
   void hideStartingOverlay() {
     if (startingOverlay != null) {
       startingOverlay?.remove();
+      startingOverlay = null;
     }
   }
 }
