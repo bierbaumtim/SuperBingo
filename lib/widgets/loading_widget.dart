@@ -19,13 +19,17 @@ class Loading extends StatelessWidget {
   Widget build(BuildContext context) {
     if (Platform.isIOS) {
       return Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const CupertinoActivityIndicator(),
-            const SizedBox(width: 8),
-            Text(content),
-          ],
+        child: Material(
+          color: Colors.transparent,
+          elevation: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const CupertinoActivityIndicator(),
+              const SizedBox(width: 8),
+              Text(content),
+            ],
+          ),
         ),
       );
     }

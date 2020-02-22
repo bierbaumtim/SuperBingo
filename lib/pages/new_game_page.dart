@@ -255,7 +255,7 @@ class _NewGamePageState extends State<NewGamePage> {
     _gameCreationOverlay = OverlayEntry(
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
-        child: Container(
+        child: Material(
           color: Colors.black.withOpacity(0.25),
           child: const Loading(
             content: 'Das Spiel wird erstellt.',

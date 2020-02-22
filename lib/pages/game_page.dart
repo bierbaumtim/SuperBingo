@@ -285,7 +285,7 @@ class _GamePageState extends State<GamePage> {
     startingOverlay = OverlayEntry(
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 2.5, sigmaY: 2.5),
-        child: Container(
+        child: Material(
           color: Colors.black.withOpacity(0.25),
           child: const Loading(
             content: 'Das Spiel wird gestartet',
@@ -299,7 +299,7 @@ class _GamePageState extends State<GamePage> {
 
   void hideStartingOverlay() {
     if (startingOverlay != null) {
-      startingOverlay.remove();
+      startingOverlay?.remove();
     }
   }
 }
