@@ -22,6 +22,7 @@ class Connection {
 
   ///
   bool get hasConnection => _hasConnection;
+
   /// Aktuelle Netzwerkbverbindung bzw. verbindungsart. Die Verbindungsart, garantiert aber keine
   /// aktive Internetverbindung. Dafür muss der getter `hasConnetion` genutzt werden.
   ///
@@ -37,7 +38,8 @@ class Connection {
   Future<void> initConnection() async {
     _currentConnectivityResult = await Connectivity().checkConnectivity();
     _hasConnection = await isConnected;
-    _connectivityListener = Connectivity().onConnectivityChanged.listen((connection) async {
+    _connectivityListener =
+        Connectivity().onConnectivityChanged.listen((connection) async {
       _hasConnection = await isConnected;
     });
   }
