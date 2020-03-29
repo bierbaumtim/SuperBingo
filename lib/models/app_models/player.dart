@@ -16,7 +16,7 @@ part 'player.g.dart';
 /// Stellt Datenbank-relevate Methoden bereit.
 /// Stellt Methoden bereit um Karten zu ziehen und den nächsten Spieler zu ermitteln.
 /// {@endtemplate}
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Player with EquatableMixin {
   @override
   List<Object> get props => [id, name, cards, isHost];
@@ -78,18 +78,7 @@ class Player with EquatableMixin {
       );
 
   /// Factory um einen Datenbanksatz in ein `Player`-Object umzuwandeln
-  factory Player.fromJson(Map<String, dynamic> json) => Player(
-        id: json['id'] as String ?? '',
-        name: json['name'] as String ?? '',
-        cards: (json['cards'] as List)
-                ?.map((e) => e == null
-                    ? null
-                    : GameCard.fromJson(Map<String, dynamic>.from(e)))
-                ?.toList() ??
-            [],
-        isHost: json['isHost'] as bool ?? false,
-        finishPosition: json['finishPosition'] as int ?? 0,
-      );
+  factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
 
   /// Wandelt ein `Player`-Object in eine Datenbank-kompatible Map um
   Map<String, dynamic> toJson() => _$PlayerToJson(this);
@@ -143,5 +132,5 @@ class Player with EquatableMixin {
 
   /// Wandelt eine List an Spielkarten `cards` in eine List mit Datenbank-kompatiblen [GameCard]-Objecten um
   static List cardsToJson(List<GameCard> cards) =>
-      cards.map((c) => c.toJson()).toList();
+      cards?.map((c) => c.toJson())?.toList() ?? [];
 }

@@ -17,7 +17,7 @@ part 'game.g.dart';
 /// Datenhaltungsklasse für ein Spiel.
 /// {@endtemplate}
 @ToString()
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Game with EquatableMixin {
   @override
   List<Object> get props => [
@@ -177,28 +177,7 @@ class Game with EquatableMixin {
   Map<String, dynamic> toJson() => _$GameToJson(this);
 
   /// json wird in eine [Game] Object umgewandelt
-  factory Game.fromJson(Map<String, dynamic> json) => Game(
-        gameID: json['id'] as String ?? '',
-        playedCardStack: Game.stackFromJson(json['playedCards'] as List),
-        unplayedCardStack: Game.stackFromJson(json['unplayedCards'] as List),
-        players: (json['players'] as List)
-            ?.map((e) => e == null
-                ? null
-                : Player.fromJson(Map<String, dynamic>.from(e)))
-            ?.toList(),
-        name: json['name'] as String ?? 'SuperBingo',
-        maxPlayer: json['maxPlayer'] as int ?? 6,
-        isPublic: json['isPublic'] as bool ?? true,
-        cardAmount: json['cardAmount'] as int ?? 32,
-        currentPlayerId: json['currentPlayerId'] as String ?? '',
-        cardDrawAmount: json['cardDrawAmount'] as int ?? 1,
-        state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
-            GameState.waitingForPlayer,
-        allowedCardColor:
-            _$enumDecodeNullable(_$CardColorEnumMap, json['allowedCardColor']),
-        isJokerOrJackAllowed: json['isJokerOrJackAllowed'] as bool ?? true,
-        message: json['message'] as String ?? '',
-      );
+  factory Game.fromJson(Map<String, dynamic> json) => _$GameFromJson(json);
 
   /// [Game] Object wird in eine Datenbank-kompatible Map umgewandelt
   static Map<String, dynamic> toDBData(Game game) {
@@ -273,39 +252,22 @@ class Game with EquatableMixin {
 
   /// Wandelt cardStacks in Datenbank-kompatible Listen von [GameCard] Map Repräsentationen um
   static List<Map<String, dynamic>> stackToJson(Queue<GameCard> stack) {
-    if (stack != null) {
-      return stack.toList().map((gc) => gc.toJson()).toList();
-    }
-    return <Map<String, dynamic>>[];
+    return stack?.toList()?.map((gc) => gc.toJson())?.toList() ??
+        <Map<String, dynamic>>[];
   }
 
   /// Wandelt ein List eines Datensatzes in eine Queue von [GameCard]-Ojects um
   static Queue<GameCard> stackFromJson(List list) {
-    final cards =
-        list?.map((gc) => GameCard.fromJson(Map<String, dynamic>.from(gc))) ??
-            <GameCard>[];
+    final cards = list?.map<GameCard>(
+            (gc) => GameCard.fromJson(Map<String, dynamic>.from(gc))) ??
+        <GameCard>[];
     return Queue.from(cards);
   }
 
-  /// wandelt die Liste der Spieler `player` in eine Datenbank-kompatible Liste um
-  static List playerToJson(List<Player> player) {
-    if (player != null) {
-      return player.map((p) => p.toJson()).toList();
-    }
-    return <Map<String, dynamic>>[];
-  }
-
-  /// Wandelt ein List eines Datensatzes in eine Liste von [Player]-Ojects um
-  static List<Player> playerFromJson(List list) {
-    return list
-            ?.map<Player>((p) => Player.fromJson(Map<String, dynamic>.from(p)))
-            ?.toList() ??
-        <Player>[];
-  }
-
   String _fillGameId(String nGameId) {
-    if (gameID == null) return nGameId;
-    if (gameID.isEmpty) return nGameId;
+    if (gameID != null && gameID.isNotEmpty) {
+      return nGameId;
+    }
     return gameID;
   }
 

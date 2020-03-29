@@ -10,7 +10,7 @@ part 'card.g.dart';
 /// {@template gamecard}
 /// Datenhaltungsklasse für eine Spielkarte
 /// {@endtemplate}
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class GameCard extends Equatable {
   /// ID der Karte.
   ///
@@ -75,10 +75,5 @@ class GameCard extends Equatable {
   List<Object> get props => <Object>[rule, color, number, id];
 
   @override
-  String toString() => 'GameCard{ '
-      'id: $id, '
-      'color: $color, '
-      'number: $number, '
-      'rule: $rule'
-      ' }';
+  bool get stringify => true;
 }

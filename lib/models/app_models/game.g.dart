@@ -33,7 +33,7 @@ Game _$GameFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
       'playedCards': Game.stackToJson(instance.playedCardStack),
       'unplayedCards': Game.stackToJson(instance.unplayedCardStack),
-      'players': instance.players,
+      'players': instance.players?.map((e) => e?.toJson())?.toList(),
       'isPublic': instance.isPublic,
       'maxPlayer': instance.maxPlayer,
       'cardAmount': instance.cardAmount,
