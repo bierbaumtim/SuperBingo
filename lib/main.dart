@@ -15,7 +15,6 @@ import 'bloc/blocs/info_bloc.dart';
 import 'bloc/blocs/interaction_bloc.dart';
 import 'bloc/blocs/join_game_bloc.dart';
 import 'bloc/blocs/open_games_bloc.dart';
-import 'bloc/events/info_events.dart';
 import 'services/network_service.dart';
 import 'superbingo.dart';
 import 'utils/connection.dart';
@@ -57,7 +56,7 @@ void main() async {
               create: (_) => InteractionBloc(networkService),
             ),
             BlocProvider<InfoBloc>(
-              create: (_) => InfoBloc(FirebaseAuth.instance)..add(LoadInfos()),
+              create: (_) => InfoBloc(FirebaseAuth.instance),
             ),
           ],
           child: Builder(
