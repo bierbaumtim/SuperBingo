@@ -74,7 +74,6 @@ class Player with EquatableMixin {
         id: InformationStorage.instance.playerId,
         name: username,
         isHost: isHost,
-        finishPosition: 0,
       );
 
   /// Factory um einen Datenbanksatz in ein `Player`-Object umzuwandeln

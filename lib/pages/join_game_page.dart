@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:superbingo/widgets/loading_widget.dart';
 
 import '../bloc/blocs/join_game_bloc.dart';
 import '../bloc/blocs/open_games_bloc.dart';
@@ -11,6 +10,7 @@ import '../bloc/events/join_game_events.dart';
 import '../bloc/states/join_game_states.dart';
 import '../constants/enums.dart';
 import '../models/app_models/game.dart';
+import '../widgets/loading_widget.dart';
 
 /// [JoinGamePage] zeigt alle öffentlichen Spiele an.
 ///
@@ -51,7 +51,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
           title: const Text('Public Games'),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.refresh),
+              icon: const Icon(Icons.refresh),
               onPressed: publicGamesBloc.getPublicGames,
             ),
           ],

@@ -68,7 +68,7 @@ void main() async {
         ),
       ),
     ),
-    (Object error, StackTrace stackTrace) {
+    (error, stackTrace) {
       if (!kIsWeb) {
         Crashlytics.instance.recordError(error, stackTrace);
       }

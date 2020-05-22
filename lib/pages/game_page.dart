@@ -222,14 +222,14 @@ class _GamePageState extends State<GamePage> {
                                   RaisedButton.icon(
                                     onPressed: () {},
                                     label: const Text('Spiel neustarten'),
-                                    icon: Icon(Icons.refresh),
+                                    icon: const Icon(Icons.refresh),
                                   ),
                                   const SizedBox(height: 12),
                                   RaisedButton.icon(
                                     onPressed: () =>
                                         currentGameBloc.add(EndGame()),
                                     label: const Text('Spiel beenden'),
-                                    icon: Icon(Icons.close),
+                                    icon: const Icon(Icons.close),
                                   ),
                                 ],
                               ),

@@ -79,7 +79,7 @@ class _PlayerPageState extends State<PlayerPage> {
             label: Text(
               state is InfosLoaded ? 'Name ändern' : 'Spieler erstellen',
             ),
-            icon: Icon(Icons.arrow_forward_ios),
+            icon: const Icon(Icons.arrow_forward_ios),
             onPressed: () async {
               if (username != null && username.isNotEmpty) {
                 final infoBloc = context.bloc<InfoBloc>();
