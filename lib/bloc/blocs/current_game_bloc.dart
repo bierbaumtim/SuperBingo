@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 import 'package:bloc/bloc.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:dartx/dartx.dart';
+import 'package:supercharged/supercharged.dart';
 
 import '../../constants/enums.dart';
 import '../../models/app_models/game.dart';
@@ -322,7 +322,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           return;
         }
       }
-      game.currentPlayerId = nextPlayer?.id ?? game.players.firstOrNull?.id;
+      game.currentPlayerId = nextPlayer?.id ?? game.players.firstOrNull()?.id;
       await networkService.updateGameData(game);
     } on dynamic catch (e, s) {
       await Crashlytics.instance.recordError(e, s);
