@@ -268,6 +268,8 @@ class _NewGamePageState extends State<NewGamePage> {
   }
 
   void hideGameCreationOverlay() {
-    _gameCreationOverlay?.remove();
+    if (_gameCreationOverlay != null) {
+      _gameCreationOverlay?.remove();
+    }
   }
 }
