@@ -5,7 +5,6 @@ import 'dart:core';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:supercharged/supercharged.dart';
-import 'package:to_string/to_string.dart';
 
 import '../../constants/enums.dart';
 import 'card.dart';
@@ -16,9 +15,11 @@ part 'game.g.dart';
 /// {@template game}
 /// Datenhaltungsklasse für ein Spiel.
 /// {@endtemplate}
-@ToString()
 @JsonSerializable(explicitToJson: true)
 class Game with EquatableMixin {
+  @override
+  bool get stringify => true;
+
   @override
   List<Object> get props => [
         playedCardStack,
@@ -270,9 +271,6 @@ class Game with EquatableMixin {
     }
     return gameID;
   }
-
-  @override
-  String toString() => _$GameToString(this);
 }
 
 enum GameState {
