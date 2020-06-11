@@ -1,3 +1,9 @@
 {
-    "dart.flutterSdkPath": "C:\\Users\\Tb270\\Flutter\\flutter_beta"
+    "dart.flutterSdkPath": "C:\\Users\\Tb270\\Flutter\\flutter_beta",
+    "spellright.language": [
+        "de"
+    ],
+    "spellright.documentTypes": [
+        "latex"
+    ]
 }

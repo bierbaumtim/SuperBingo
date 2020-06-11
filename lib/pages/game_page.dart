@@ -122,11 +122,11 @@ class _GamePageState extends State<GamePage> {
               minHeight: state is CurrentGameLoaded && state.game.isRunning
                   ? constraints.maxHeight / 4
                   : 0,
-              // minHeight: 125,
               maxHeight: constraints.maxHeight - kToolbarHeight - 20,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               isDraggable: state is CurrentGameLoaded && state.game.isRunning,
               panelSnapping: false,
+              panel: CardScrollView(),
               body: Scaffold(
                 appBar: AppBar(
                   backgroundColor: Colors.deepOrangeAccent,
@@ -273,7 +273,6 @@ class _GamePageState extends State<GamePage> {
                   ),
                 ),
               ),
-              panel: CardScrollView(),
             ),
           );
         },
