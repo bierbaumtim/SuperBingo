@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:supercharged/supercharged.dart';
 
@@ -119,9 +119,8 @@ class Player with EquatableMixin {
   /// Ist keiner Vorhanden wird null zurückgegeben.
   static Player getPlayerFromList(List<Player> player, String playerId) {
     if (player.isEmpty) {
-      FirebaseAnalytics().logEvent(
-        name:
-            '[getPlayerFromList] Player in Game are empty. Can cause problems.',
+      Crashlytics.instance.log(
+        '[getPlayerFromList] Player in Game are empty. Can cause problems.',
       );
       return null;
     } else {

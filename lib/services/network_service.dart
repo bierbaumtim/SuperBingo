@@ -1,8 +1,8 @@
 import 'dart:async';
 
+import 'package:firedart/firedart.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -10,10 +10,7 @@ import '../models/app_models/game.dart';
 import '../models/app_models/player.dart';
 
 abstract class INetworkService {
-  // ignore: unused_field
-  final Firestore _db;
-
-  const INetworkService(this._db);
+  const INetworkService();
 
   Firestore get db;
   Game get previousGame;
@@ -22,7 +19,7 @@ abstract class INetworkService {
 
   Future<bool> setupSubscription(String gameId);
 
-  Future<DocumentReference> addGame(Game game);
+  Future<Document> addGame(Game game);
 
   Future<void> deleteGame(String gameId);
 
@@ -38,7 +35,6 @@ abstract class INetworkService {
 /// `NetworkService` provides all functions needed for online multiplayer part of the game.
 /// Every incoming and outgoing data will be processed by it.
 class NetworkService implements INetworkService {
-  @override
   final Firestore _db;
   Game _previousGame, _currentGame;
   BehaviorSubject<Game> _gameChangedController;
@@ -62,11 +58,11 @@ class NetworkService implements INetworkService {
     if (gameId != null) {
       try {
         final snapshot = await db.collection('games').document(gameId).get();
-        _currentGame = Game.fromJson(snapshot.data);
+        _currentGame = Game.fromJson(snapshot.map);
         _gameSub = db
             .collection('games')
             .document(gameId)
-            .snapshots()
+            .stream
             .asyncMap(_convertDBDataStreamEvent)
             .listen(_handleNewGameStreamEvent);
         return true;
@@ -78,7 +74,7 @@ class NetworkService implements INetworkService {
   }
 
   @override
-  Future<DocumentReference> addGame(Game game) async {
+  Future<Document> addGame(Game game) async {
     final gameDBData =
         await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
 
@@ -98,13 +94,13 @@ class NetworkService implements INetworkService {
     if (data is Game) {
       final dbGame =
           await compute<Game, Map<String, dynamic>>(Game.toDBData, data);
-      await db.collection('games').document(data.gameID).updateData(dbGame);
+      await db.collection('games').document(data.gameID).update(dbGame);
     } else if (data is Map<String, dynamic>) {
       assert(gameId != null || _currentGame?.gameID != null);
       await db
           .collection('games')
           .document(gameId ?? _currentGame.gameID)
-          .updateData(data);
+          .update(data);
     }
   }
 
@@ -137,8 +133,8 @@ class NetworkService implements INetworkService {
     await cancelSubscription();
   }
 
-  Future<Game> _convertDBDataStreamEvent(DocumentSnapshot snapshot) async {
-    return Game.fromJson(snapshot.data);
+  Future<Game> _convertDBDataStreamEvent(Document snapshot) async {
+    return Game.fromJson(snapshot.map);
   }
 
   void _handleNewGameStreamEvent(Game newGame) {

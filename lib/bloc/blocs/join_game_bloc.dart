@@ -47,7 +47,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
         _self = Player.create(username);
         final snapshot =
             await networkService.db.collection('games').document(gameId).get();
-        final game = Game.fromJson(snapshot.data);
+        final game = Game.fromJson(snapshot.map);
         if (game.players.length + 1 > game.maxPlayer) {
           yield const JoinGameFailed(
             'Die maximale Spieleranzahl für dieses Spiel ist erreicht. '
