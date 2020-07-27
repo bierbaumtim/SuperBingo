@@ -12,12 +12,9 @@ import '../states/info_states.dart';
 class InfoBloc extends Bloc<InfoEvent, InfoState> {
   final FirebaseAuth auth;
 
-  InfoBloc(this.auth) {
+  InfoBloc(this.auth) : super(InfosEmpty()) {
     add(LoadInfos());
   }
-
-  @override
-  InfoState get initialState => InfosEmpty();
 
   @override
   Stream<InfoState> mapEventToState(InfoEvent event) async* {

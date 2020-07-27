@@ -13,10 +13,7 @@ import '../states/interaction_states.dart';
 class InteractionBloc extends Bloc<InteractionEvent, InteractionState> {
   final INetworkService networkService;
 
-  InteractionBloc(this.networkService);
-
-  @override
-  InteractionState get initialState => InitialInteractionState();
+  InteractionBloc(this.networkService) : super(InitialInteractionState());
 
   @override
   Stream<InteractionState> mapEventToState(

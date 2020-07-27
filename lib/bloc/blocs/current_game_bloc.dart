@@ -30,10 +30,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Game get _previousGame => networkService.previousGame;
 
   /// {@macro currentgamebloc}
-  CurrentGameBloc(this.networkService);
-
-  @override
-  CurrentGameState get initialState => CurrentGameEmpty();
+  CurrentGameBloc(this.networkService) : super(CurrentGameEmpty());
 
   @override
   Stream<CurrentGameState> mapEventToState(CurrentGameEvent event) async* {

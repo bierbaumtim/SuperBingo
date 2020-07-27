@@ -93,7 +93,7 @@ class _GamePageState extends State<GamePage> {
             hideStartingOverlay();
           }
         },
-        bloc: currentGameBloc,
+        cubit: currentGameBloc,
         builder: (context, state) {
           String title;
           List<GameCard> playedCards, unplayedCards;

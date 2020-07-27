@@ -35,7 +35,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
     final joinGameBloc = BlocProvider.of<JoinGameBloc>(context);
 
     return BlocListener<JoinGameBloc, JoinGameState>(
-      bloc: joinGameBloc,
+      cubit: joinGameBloc,
       listener: (context, state) {
         if (state is JoiningGame) {
           showJoiningOverlay(context);
