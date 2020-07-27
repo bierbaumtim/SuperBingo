@@ -57,22 +57,21 @@ ThemeData get lightTheme => ThemeData.dark().copyWith(
       primaryTextTheme: basicTextTheme,
       textTheme: basicTextTheme,
       appBarTheme: const AppBarTheme(elevation: 0),
-      buttonTheme: ButtonThemeData(
+      buttonTheme: const ButtonThemeData(
         buttonColor: Colors.deepOrange,
-        textTheme: ButtonTextTheme.normal,
       ),
       buttonColor: Colors.deepOrange,
       cardTheme: CardTheme(
         color: Colors.grey[700],
       ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
       ),
     );
 
 /// TextTheme mit Georgia als FontFamily
-TextTheme get basicTextTheme => TextTheme(
+TextTheme get basicTextTheme => const TextTheme(
       bodyText1: TextStyle(
         fontFamily: 'Georgia',
         fontSize: 14,

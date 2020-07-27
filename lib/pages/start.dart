@@ -62,7 +62,7 @@ class StartPage extends StatelessWidget {
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.person),
+              icon: const Icon(Icons.person),
               onPressed: () => Navigator.pushNamed(context, '/user_page'),
             ),
           ],
@@ -70,8 +70,7 @@ class StartPage extends StatelessWidget {
         body: SafeArea(
           child: Stack(
             children: <Widget>[
-              Align(
-                alignment: Alignment.center,
+              const Align(
                 child: Text(
                   'SuperBingo',
                   style: TextStyle(

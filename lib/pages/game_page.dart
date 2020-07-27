@@ -107,26 +107,26 @@ class _GamePageState extends State<GamePage> {
             unplayedCards = state.game.unplayedCards;
           } else {
             title = 'Aktuelles Spiel';
-            playedCards = [];
-            unplayedCards = [];
+            playedCards = <GameCard>[];
+            unplayedCards = <GameCard>[];
           }
 
           return LayoutBuilder(
             builder: (context, constraints) => SlidingUpPanel(
               controller: panelController,
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(18.0),
-                topRight: Radius.circular(18.0),
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
               ),
               color: Theme.of(context).canvasColor,
               minHeight: state is CurrentGameLoaded && state.game.isRunning
                   ? constraints.maxHeight / 4
                   : 0,
-              // minHeight: 125,
               maxHeight: constraints.maxHeight - kToolbarHeight - 20,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               isDraggable: state is CurrentGameLoaded && state.game.isRunning,
               panelSnapping: false,
+              panel: CardScrollView(),
               body: Scaffold(
                 appBar: AppBar(
                   backgroundColor: Colors.deepOrangeAccent,
@@ -222,14 +222,14 @@ class _GamePageState extends State<GamePage> {
                                   RaisedButton.icon(
                                     onPressed: () {},
                                     label: const Text('Spiel neustarten'),
-                                    icon: Icon(Icons.refresh),
+                                    icon: const Icon(Icons.refresh),
                                   ),
                                   const SizedBox(height: 12),
                                   RaisedButton.icon(
                                     onPressed: () =>
                                         currentGameBloc.add(EndGame()),
                                     label: const Text('Spiel beenden'),
-                                    icon: Icon(Icons.close),
+                                    icon: const Icon(Icons.close),
                                   ),
                                 ],
                               ),
@@ -273,7 +273,6 @@ class _GamePageState extends State<GamePage> {
                   ),
                 ),
               ),
-              panel: CardScrollView(),
             ),
           );
         },

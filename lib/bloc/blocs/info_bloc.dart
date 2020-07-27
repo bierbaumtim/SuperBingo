@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firedart/firedart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../service/information_storage.dart';
@@ -12,7 +12,9 @@ import '../states/info_states.dart';
 class InfoBloc extends Bloc<InfoEvent, InfoState> {
   final FirebaseAuth auth;
 
-  InfoBloc(this.auth);
+  InfoBloc(this.auth) {
+    add(LoadInfos());
+  }
 
   @override
   InfoState get initialState => InfosEmpty();
@@ -72,11 +74,11 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
   }
 
   Future<void> _loginUserAnonymous() async {
-    final currentUser = await auth.currentUser();
+    final currentUser = await auth.getUser();
     if (currentUser == null) {
       await auth.signInAnonymously();
     }
   }
 
-  Future<String> get userUid async => (await auth.currentUser())?.uid;
+  Future<String> get userUid async => (await auth.getUser())?.id;
 }

@@ -24,7 +24,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedColor = Colors.deepOrangeAccent;
+    const selectedColor = Colors.deepOrangeAccent;
 
     return SafeArea(
       child: Align(
@@ -43,7 +43,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   value: CardColor.clover,
                   groupValue: color,
                   title: const Text('Kreuz'),
-                  secondary: Icon(CommunityMaterialIcons.cards_club),
+                  secondary: const Icon(CommunityMaterialIcons.cards_club),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
@@ -52,7 +52,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   value: CardColor.spade,
                   groupValue: color,
                   title: const Text('Pik'),
-                  secondary: Icon(CommunityMaterialIcons.cards_spade),
+                  secondary: const Icon(CommunityMaterialIcons.cards_spade),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
@@ -61,7 +61,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   value: CardColor.heart,
                   groupValue: color,
                   title: const Text('Herz'),
-                  secondary: Icon(CommunityMaterialIcons.cards_heart),
+                  secondary: const Icon(CommunityMaterialIcons.cards_heart),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
@@ -70,7 +70,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   value: CardColor.diamond,
                   groupValue: color,
                   title: const Text('Karo'),
-                  secondary: Icon(CommunityMaterialIcons.cards_diamond),
+                  secondary: const Icon(CommunityMaterialIcons.cards_diamond),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),

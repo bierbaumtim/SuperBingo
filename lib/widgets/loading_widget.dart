@@ -21,7 +21,6 @@ class Loading extends StatelessWidget {
       return Center(
         child: Material(
           color: Colors.transparent,
-          elevation: 0,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -43,7 +42,6 @@ class Loading extends StatelessWidget {
             padding: padding,
             child: Material(
               color: Colors.transparent,
-              elevation: 0,
               child: Text(
                 content,
                 style: const TextStyle(

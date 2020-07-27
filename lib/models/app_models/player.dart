@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:supercharged/supercharged.dart';
 
@@ -16,7 +16,7 @@ part 'player.g.dart';
 /// Stellt Datenbank-relevate Methoden bereit.
 /// Stellt Methoden bereit um Karten zu ziehen und den nächsten Spieler zu ermitteln.
 /// {@endtemplate}
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Player with EquatableMixin {
   @override
   List<Object> get props => [id, name, cards, isHost];
@@ -74,22 +74,10 @@ class Player with EquatableMixin {
         id: InformationStorage.instance.playerId,
         name: username,
         isHost: isHost,
-        finishPosition: 0,
       );
 
   /// Factory um einen Datenbanksatz in ein `Player`-Object umzuwandeln
-  factory Player.fromJson(Map<String, dynamic> json) => Player(
-        id: json['id'] as String ?? '',
-        name: json['name'] as String ?? '',
-        cards: (json['cards'] as List)
-                ?.map((e) => e == null
-                    ? null
-                    : GameCard.fromJson(Map<String, dynamic>.from(e)))
-                ?.toList() ??
-            [],
-        isHost: json['isHost'] as bool ?? false,
-        finishPosition: json['finishPosition'] as int ?? 0,
-      );
+  factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
 
   /// Wandelt ein `Player`-Object in eine Datenbank-kompatible Map um
   Map<String, dynamic> toJson() => _$PlayerToJson(this);
@@ -131,9 +119,8 @@ class Player with EquatableMixin {
   /// Ist keiner Vorhanden wird null zurückgegeben.
   static Player getPlayerFromList(List<Player> player, String playerId) {
     if (player.isEmpty) {
-      FirebaseAnalytics().logEvent(
-        name:
-            '[getPlayerFromList] Player in Game are empty. Can cause problems.',
+      Crashlytics.instance.log(
+        '[getPlayerFromList] Player in Game are empty. Can cause problems.',
       );
       return null;
     } else {
@@ -143,5 +130,5 @@ class Player with EquatableMixin {
 
   /// Wandelt eine List an Spielkarten `cards` in eine List mit Datenbank-kompatiblen [GameCard]-Objecten um
   static List cardsToJson(List<GameCard> cards) =>
-      cards.map((c) => c.toJson()).toList();
+      cards?.map((c) => c.toJson())?.toList() ?? [];
 }

@@ -1,21 +1,24 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'package:firedart/firedart.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
+import 'auth/secure_stoage_impl.dart';
+import 'auth/secure_token_repository.dart';
+import 'auth/secure_token_store.dart';
 import 'bloc/blocs/current_game_bloc.dart';
 import 'bloc/blocs/game_configuration_bloc.dart';
 import 'bloc/blocs/info_bloc.dart';
 import 'bloc/blocs/interaction_bloc.dart';
 import 'bloc/blocs/join_game_bloc.dart';
 import 'bloc/blocs/open_games_bloc.dart';
-import 'bloc/events/info_events.dart';
+import 'constants/firestore_data.dart';
 import 'services/network_service.dart';
 import 'superbingo.dart';
 import 'utils/connection.dart';
@@ -23,13 +26,19 @@ import 'utils/connection.dart';
 /// ignore: avoid_void_async
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FlutterError.onError = Crashlytics.instance.recordFlutterError;
+  if (!kIsWeb) {
+    FlutterError.onError = Crashlytics.instance.recordFlutterError;
+  }
+  final tokenRepo = SecureTokenRepository(const PlatformSecureStorage());
+  await tokenRepo.loadToken();
 
+  FirebaseAuth.initialize(kFirestoreApiKey, ScureTokenStore(tokenRepo));
+  Firestore.initialize(kFirestoreProjectId);
   await Connection.instance.initConnection();
 
   final networkService = NetworkService(Firestore.instance);
 
-  runZoned(
+  runZonedGuarded(
     () => runApp(
       MultiProvider(
         providers: <SingleChildWidget>[
@@ -57,7 +66,7 @@ void main() async {
               create: (_) => InteractionBloc(networkService),
             ),
             BlocProvider<InfoBloc>(
-              create: (_) => InfoBloc(FirebaseAuth.instance)..add(LoadInfos()),
+              create: (_) => InfoBloc(FirebaseAuth.instance),
             ),
           ],
           child: Builder(
@@ -66,6 +75,10 @@ void main() async {
         ),
       ),
     ),
-    onError: Crashlytics.instance.recordError,
+    (error, stackTrace) {
+      if (!kIsWeb) {
+        Crashlytics.instance.recordError(error, stackTrace);
+      }
+    },
   );
 }

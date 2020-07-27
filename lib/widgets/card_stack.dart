@@ -68,7 +68,6 @@ class _CardStackState extends State<CardStack> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      fit: StackFit.loose,
       children: cards.map<Widget>(
         (c) {
           final playCard = PlayCard(

@@ -57,7 +57,7 @@ class SmallPlayCard extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.black),
+                      border: Border.all(),
                     ),
                   ),
                 ),
@@ -72,13 +72,11 @@ class SmallPlayCard extends StatelessWidget {
                     children: <Widget>[
                       InnerCardIcons(
                         color: card.color,
-                        isSmall: true,
                       ),
                       Transform.rotate(
                         angle: radians(180),
                         child: InnerCardIcons(
                           color: card.color,
-                          isSmall: true,
                         ),
                       ),
                     ],

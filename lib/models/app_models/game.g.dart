@@ -33,7 +33,7 @@ Game _$GameFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
       'playedCards': Game.stackToJson(instance.playedCardStack),
       'unplayedCards': Game.stackToJson(instance.unplayedCardStack),
-      'players': instance.players,
+      'players': instance.players?.map((e) => e?.toJson())?.toList(),
       'isPublic': instance.isPublic,
       'maxPlayer': instance.maxPlayer,
       'cardAmount': instance.cardAmount,
@@ -93,11 +93,3 @@ const _$GameStateEnumMap = {
   GameState.gameCompleted: 'gameCompleted',
   GameState.finished: 'finished',
 };
-
-// **************************************************************************
-// ToStringGenerator
-// **************************************************************************
-
-String _$GameToString(Game o) {
-  return """Game{playedCardStack: ${o.playedCardStack}, unplayedCardStack: ${o.unplayedCardStack}, players: ${o.players}, isPublic: ${o.isPublic}, maxPlayer: ${o.maxPlayer}, cardAmount: ${o.cardAmount}, cardDrawAmount: ${o.cardDrawAmount}, name: ${o.name}, gameID: ${o.gameID}, currentPlayerId: ${o.currentPlayerId}, state: ${o.state}, allowedCardColor: ${o.allowedCardColor}, isJokerOrJackAllowed: ${o.isJokerOrJackAllowed}, message: ${o.message}}""";
-}

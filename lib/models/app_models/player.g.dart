@@ -23,7 +23,7 @@ Player _$PlayerFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$PlayerToJson(Player instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'cards': instance.cards,
+      'cards': instance.cards?.map((e) => e?.toJson())?.toList(),
       'isHost': instance.isHost,
       'finishPosition': instance.finishPosition,
     };

@@ -75,7 +75,7 @@ class GameConfigurationBloc
       );
 
       final gameDoc = await networkService.addGame(game);
-      gameId = gameDoc.documentID;
+      gameId = gameDoc.id;
       gamePath = gameDoc.path;
       gameLink = 'superbingo://id:$gameId|name:${game.name}';
       _gameLinkSink.add(gameLink);

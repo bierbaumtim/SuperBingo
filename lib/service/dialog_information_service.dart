@@ -29,7 +29,7 @@ class DialogInformationService {
       case NotificationType.content:
       case NotificationType.information:
       default:
-        leading = Icon(Icons.info_outline);
+        leading = const Icon(Icons.info_outline);
         break;
     }
 

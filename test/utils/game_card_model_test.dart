@@ -156,7 +156,7 @@ void main() {
 
       test('json decoding', () {
         final card = GameCard.fromJson(
-          <String, dynamic>{
+          const <String, dynamic>{
             'id': 'toJson id',
             'color': 'heart',
             'number': 'nine',

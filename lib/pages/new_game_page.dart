@@ -94,7 +94,7 @@ class _NewGamePageState extends State<NewGamePage> {
             title: const Text('Neues Spiel'),
             actions: <Widget>[
               IconButton(
-                icon: Icon(Icons.check),
+                icon: const Icon(Icons.check),
                 onPressed: !isDisabled
                     ? () {
                         _node.unfocus();
@@ -268,6 +268,8 @@ class _NewGamePageState extends State<NewGamePage> {
   }
 
   void hideGameCreationOverlay() {
-    _gameCreationOverlay?.remove();
+    if (_gameCreationOverlay != null) {
+      _gameCreationOverlay?.remove();
+    }
   }
 }
