@@ -6,7 +6,7 @@ analyzer:
     implicit-casts: false
     # implicit-dynamic: false
   errors:
-    argument_type_not_assignable: info
+    argument_type_not_assignable: warning
 
 linter:
   rules:
