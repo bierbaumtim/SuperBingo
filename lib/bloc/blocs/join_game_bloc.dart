@@ -16,10 +16,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   String gamePath;
   Player _self;
 
-  JoinGameBloc(this.networkService);
-
-  @override
-  JoinGameState get initialState => JoiningGame();
+  JoinGameBloc(this.networkService) : super(JoiningGame());
 
   @override
   Stream<JoinGameState> mapEventToState(

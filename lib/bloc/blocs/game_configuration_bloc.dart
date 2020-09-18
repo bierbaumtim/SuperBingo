@@ -26,7 +26,7 @@ class GameConfigurationBloc
   String gamePath;
   Player _self;
 
-  GameConfigurationBloc(this.networkService) {
+  GameConfigurationBloc(this.networkService) : super(WaitingGameConfigInput()) {
     _gameLinkController = BehaviorSubject<String>();
   }
 
@@ -35,9 +35,6 @@ class GameConfigurationBloc
     await _gameLinkController?.close();
     super.close();
   }
-
-  @override
-  GameConfigurationState get initialState => WaitingGameConfigInput();
 
   @override
   Stream<GameConfigurationState> mapEventToState(
