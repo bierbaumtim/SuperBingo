@@ -22,20 +22,20 @@ class PublicGamesBloc {
   Stream<List<Game>> get publicGamesStream => _publicGamesController.stream;
 
   Future<void> getPublicGames() async {
-    final dbGames = await Firestore.instance.collection('games').getDocuments();
+    final dbGames = await FirebaseFirestore.instance.collection('games').get();
     _publicGamesSink.add(null);
     _handleSnapshot(dbGames);
   }
 
   void initListener() {
-    final dbGames = Firestore.instance.collection('games');
+    final dbGames = FirebaseFirestore.instance.collection('games');
     _gamesSub = dbGames.snapshots().listen(_handleSnapshot);
   }
 
   void _handleSnapshot(QuerySnapshot snapshot) {
     try {
-      final docs = snapshot.documents;
-      final games = docs.map<Game>((g) => Game.fromJson(g.data)).toList();
+      final docs = snapshot.docs;
+      final games = docs.map<Game>((g) => Game.fromJson(g.data())).toList();
       final publicGames = <Game>[];
       for (final game in games) {
         if (game.isPublic == true && game.state == GameState.waitingForPlayer) {
@@ -51,7 +51,7 @@ class PublicGamesBloc {
         _publicGamesSink.add(Error());
       }
     } on dynamic catch (e, s) {
-      Crashlytics.instance.recordError(e, s);
+      FirebaseCrashlytics.instance.recordError(e, s);
       _publicGamesSink.add(Error());
     }
   }

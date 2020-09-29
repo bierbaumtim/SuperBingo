@@ -46,7 +46,7 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
         );
       }
     } on dynamic catch (e, s) {
-      await Crashlytics.instance.recordError(e, s);
+      await FirebaseCrashlytics.instance.recordError(e, s);
 
       yield InfosEmpty();
     }

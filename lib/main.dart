@@ -27,7 +27,7 @@ import 'utils/connection.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
-    FlutterError.onError = Crashlytics.instance.recordFlutterError;
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   }
   final tokenRepo = SecureTokenRepository(const PlatformSecureStorage());
   await tokenRepo.loadToken();
@@ -35,8 +35,6 @@ void main() async {
   FirebaseAuth.initialize(kFirestoreApiKey, ScureTokenStore(tokenRepo));
   Firestore.initialize(kFirestoreProjectId);
   await Connection.instance.initConnection();
-
-  final networkService = NetworkService(Firestore.instance);
 
   runZonedGuarded(
     () => runApp(
@@ -47,23 +45,31 @@ void main() async {
             dispose: (_, bloc) => bloc.dispose(),
           ),
           Provider<NetworkService>(
-            create: (context) => networkService,
+            create: (_) => NetworkService(Firestore.instance),
             dispose: (_, service) => service.dispose(),
           ),
         ],
         child: MultiBlocProvider(
           providers: <BlocProvider>[
             BlocProvider<GameConfigurationBloc>(
-              create: (context) => GameConfigurationBloc(networkService),
+              create: (context) => GameConfigurationBloc(
+                context.read<NetworkService>(),
+              ),
             ),
             BlocProvider<JoinGameBloc>(
-              create: (context) => JoinGameBloc(networkService),
+              create: (context) => JoinGameBloc(
+                context.read<NetworkService>(),
+              ),
             ),
             BlocProvider<CurrentGameBloc>(
-              create: (context) => CurrentGameBloc(networkService),
+              create: (context) => CurrentGameBloc(
+                context.read<NetworkService>(),
+              ),
             ),
             BlocProvider<InteractionBloc>(
-              create: (_) => InteractionBloc(networkService),
+              create: (context) => InteractionBloc(
+                context.read<NetworkService>(),
+              ),
             ),
             BlocProvider<InfoBloc>(
               create: (_) => InfoBloc(FirebaseAuth.instance),
@@ -77,7 +83,7 @@ void main() async {
     ),
     (error, stackTrace) {
       if (!kIsWeb) {
-        Crashlytics.instance.recordError(error, stackTrace);
+        FirebaseCrashlytics.instance.recordError(error, stackTrace);
       }
     },
   );
