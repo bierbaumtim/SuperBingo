@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/foundation.dart';
 
 /// {@template connection}
 /// Singleton um auf Internetverbindungsänderungen zu reagieren
@@ -46,6 +47,7 @@ class Connection {
 
   /// Startet einen lookup um zu überprüfen, ob eine Internetverbindung besteht.
   Future<bool> get isConnected async {
+    if (kIsWeb) return true;
     try {
       final result = await InternetAddress.lookup('google.com');
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
