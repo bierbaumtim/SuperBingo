@@ -56,7 +56,9 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       CompleteFirstStartConfiguration event) async* {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('firststart', false);
-    await _loginUserAnonymous();
+    await _loginUserAnonymous(
+      forceLogin: true,
+    );
     add(SetPlayerName(event.playerName));
   }
 
@@ -70,9 +72,8 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
     );
   }
 
-  Future<void> _loginUserAnonymous() async {
-    final currentUser = await auth.getUser();
-    if (currentUser == null) {
+  Future<void> _loginUserAnonymous({bool forceLogin = false}) async {
+    if (forceLogin || (await auth.getUser()) != null) {
       await auth.signInAnonymously();
     }
   }
