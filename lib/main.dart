@@ -27,7 +27,7 @@ import 'utils/connection.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
-    FlutterError.onError = Crashlytics.instance.recordFlutterError;
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   }
   final tokenRepo = SecureTokenRepository(const PlatformSecureStorage());
   await tokenRepo.loadToken();
@@ -45,7 +45,7 @@ void main() async {
             dispose: (_, bloc) => bloc.dispose(),
           ),
           Provider<NetworkService>(
-            create: (context) => NetworkService(Firestore.instance),
+            create: (_) => NetworkService(Firestore.instance),
             dispose: (_, service) => service.dispose(),
             lazy: false,
           ),
@@ -84,7 +84,7 @@ void main() async {
     ),
     (error, stackTrace) {
       if (!kIsWeb) {
-        Crashlytics.instance.recordError(error, stackTrace);
+        FirebaseCrashlytics.instance.recordError(error, stackTrace);
       }
     },
   );

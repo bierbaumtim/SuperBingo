@@ -96,7 +96,7 @@ class GameConfigurationBloc
         self: _self,
       );
     } on dynamic catch (e, s) {
-      await Crashlytics.instance.recordError(e, s);
+      await FirebaseCrashlytics.instance.recordError(e, s);
       yield const GameCreationFailed(
         'Beim erstellen des Spiels ist ein Fehler aufgetreten.',
       );

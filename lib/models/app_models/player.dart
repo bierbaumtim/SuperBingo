@@ -119,7 +119,7 @@ class Player with EquatableMixin {
   /// Ist keiner Vorhanden wird null zurückgegeben.
   static Player getPlayerFromList(List<Player> player, String playerId) {
     if (player.isEmpty) {
-      Crashlytics.instance.log(
+      FirebaseCrashlytics.instance.log(
         '[getPlayerFromList] Player in Game are empty. Can cause problems.',
       );
       return null;

@@ -67,7 +67,7 @@ class NetworkService implements INetworkService {
             .listen(_handleNewGameStreamEvent);
         return true;
       } on dynamic catch (e, s) {
-        await Crashlytics.instance.recordError(e, s);
+        await FirebaseCrashlytics.instance.recordError(e, s);
       }
     }
     return false;
@@ -118,7 +118,7 @@ class NetworkService implements INetworkService {
       game.updatePlayer(currentPlayer);
       return updateGameData(game);
     } on dynamic catch (e, s) {
-      await Crashlytics.instance.recordError(e, s);
+      await FirebaseCrashlytics.instance.recordError(e, s);
     }
   }
 
@@ -143,7 +143,7 @@ class NetworkService implements INetworkService {
       _currentGame = newGame;
       _gameChangedController.sink.add(_currentGame);
     } else {
-      Crashlytics.instance
+      FirebaseCrashlytics.instance
           .recordError('newGame is null: $newGame', StackTrace.current);
     }
   }
