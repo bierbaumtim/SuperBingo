@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import 'package:firedart/firedart.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +18,7 @@ import 'bloc/blocs/interaction_bloc.dart';
 import 'bloc/blocs/join_game_bloc.dart';
 import 'bloc/blocs/open_games_bloc.dart';
 import 'constants/firestore_data.dart';
+import 'services/log_service.dart';
 import 'services/network_service.dart';
 import 'superbingo.dart';
 import 'utils/connection.dart';
@@ -26,9 +26,10 @@ import 'utils/connection.dart';
 /// ignore: avoid_void_async
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb) {
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-  }
+
+  LogService.instance.initFirebase();
+
+  FlutterError.onError = LogService.instance.recordFlutterError;
   final tokenRepo = SecureTokenRepository(const PlatformSecureStorage());
   await tokenRepo.loadToken();
 
@@ -82,10 +83,6 @@ void main() async {
         ),
       ),
     ),
-    (error, stackTrace) {
-      if (!kIsWeb) {
-        FirebaseCrashlytics.instance.recordError(error, stackTrace);
-      }
-    },
+    LogService.instance.recordError,
   );
 }

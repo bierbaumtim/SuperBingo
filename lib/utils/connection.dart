@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
 
+import 'configuration_utils.dart';
+
 /// {@template connection}
 /// Singleton um auf Internetverbindungsänderungen zu reagieren
 /// und um die aktuelle Verbindung abzurufen.
@@ -37,12 +39,18 @@ class Connection {
   /// Es wird überprüft, ob eine aktive Internetverbindung besteht.
   /// StreamSubscription für Netzwerkänderungen wird initialisiert.
   Future<void> initConnection() async {
-    _currentConnectivityResult = await Connectivity().checkConnectivity();
-    _hasConnection = await isConnected;
-    _connectivityListener =
-        Connectivity().onConnectivityChanged.listen((connection) async {
+    if (isDesktop) {
+      _currentConnectivityResult = ConnectivityResult.wifi;
       _hasConnection = await isConnected;
-    });
+      _connectivityListener = Stream<ConnectivityResult>.empty().listen((_) {});
+    } else {
+      _currentConnectivityResult = await Connectivity().checkConnectivity();
+      _hasConnection = await isConnected;
+      _connectivityListener =
+          Connectivity().onConnectivityChanged.listen((connection) async {
+        _hasConnection = await isConnected;
+      });
+    }
   }
 
   /// Startet einen lookup um zu überprüfen, ob eine Internetverbindung besteht.
