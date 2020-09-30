@@ -81,3 +81,4 @@ pubspec.lock
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 android/key.properties
 web/init_firebase.js
+lib/constants/firestore_data.dart
