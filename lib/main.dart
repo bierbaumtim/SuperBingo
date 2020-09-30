@@ -36,8 +36,6 @@ void main() async {
   Firestore.initialize(kFirestoreProjectId);
   await Connection.instance.initConnection();
 
-  final networkService = NetworkService(Firestore.instance);
-
   runZonedGuarded(
     () => runApp(
       MultiProvider(
@@ -47,23 +45,32 @@ void main() async {
             dispose: (_, bloc) => bloc.dispose(),
           ),
           Provider<NetworkService>(
-            create: (context) => networkService,
+            create: (context) => NetworkService(Firestore.instance),
             dispose: (_, service) => service.dispose(),
+            lazy: false,
           ),
         ],
         child: MultiBlocProvider(
           providers: <BlocProvider>[
             BlocProvider<GameConfigurationBloc>(
-              create: (context) => GameConfigurationBloc(networkService),
+              create: (context) => GameConfigurationBloc(
+                context.read<NetworkService>(),
+              ),
             ),
             BlocProvider<JoinGameBloc>(
-              create: (context) => JoinGameBloc(networkService),
+              create: (context) => JoinGameBloc(
+                context.read<NetworkService>(),
+              ),
             ),
             BlocProvider<CurrentGameBloc>(
-              create: (context) => CurrentGameBloc(networkService),
+              create: (context) => CurrentGameBloc(
+                context.read<NetworkService>(),
+              ),
             ),
             BlocProvider<InteractionBloc>(
-              create: (_) => InteractionBloc(networkService),
+              create: (context) => InteractionBloc(
+                context.read<NetworkService>(),
+              ),
             ),
             BlocProvider<InfoBloc>(
               create: (_) => InfoBloc(FirebaseAuth.instance),
