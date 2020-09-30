@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firedart/firedart.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -22,20 +22,21 @@ class PublicGamesBloc {
   Stream<List<Game>> get publicGamesStream => _publicGamesController.stream;
 
   Future<void> getPublicGames() async {
-    final dbGames = await Firestore.instance.collection('games').getDocuments();
+    final dbGames = await Firestore.instance.collection('games').get();
     _publicGamesSink.add(null);
     _handleSnapshot(dbGames);
   }
 
   void initListener() {
     final dbGames = Firestore.instance.collection('games');
-    _gamesSub = dbGames.snapshots().listen(_handleSnapshot);
+    _gamesSub = dbGames.stream
+        .listen(_handleSnapshot); // snapshots().listen(_handleSnapshot);
   }
 
-  void _handleSnapshot(QuerySnapshot snapshot) {
+  void _handleSnapshot(List<Document> snapshot) {
     try {
-      final docs = snapshot.documents;
-      final games = docs.map<Game>((g) => Game.fromJson(g.data)).toList();
+      final docs = snapshot;
+      final games = docs.map<Game>((g) => Game.fromJson(g.map)).toList();
       final publicGames = <Game>[];
       for (final game in games) {
         if (game.isPublic == true && game.state == GameState.waitingForPlayer) {
