@@ -42,7 +42,7 @@ class Connection {
     if (isDesktop) {
       _currentConnectivityResult = ConnectivityResult.wifi;
       _hasConnection = await isConnected;
-      _connectivityListener = Stream<ConnectivityResult>.empty().listen((_) {});
+      _connectivityListener =const Stream<ConnectivityResult>.empty().listen((_) {});
     } else {
       _currentConnectivityResult = await Connectivity().checkConnectivity();
       _hasConnection = await isConnected;
