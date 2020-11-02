@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:bloc/bloc.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,6 +10,7 @@ import '../../models/app_models/card.dart';
 import '../../models/app_models/game.dart';
 import '../../models/app_models/player.dart';
 import '../../service/information_storage.dart';
+import '../../services/log_service.dart';
 import '../../services/network_service.dart';
 import '../../utils/configuration_utils.dart';
 import '../../utils/connection.dart';
@@ -96,7 +96,7 @@ class GameConfigurationBloc
         self: _self,
       );
     } on dynamic catch (e, s) {
-      await FirebaseCrashlytics.instance.recordError(e, s);
+      await LogService.instance.recordError(e, s);
       yield const GameCreationFailed(
         'Beim erstellen des Spiels ist ein Fehler aufgetreten.',
       );

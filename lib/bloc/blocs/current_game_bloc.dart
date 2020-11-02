@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 
 import 'package:bloc/bloc.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:supercharged/supercharged.dart';
 
 import '../../constants/enums.dart';
@@ -11,6 +10,7 @@ import '../../models/app_models/player.dart';
 import '../../models/app_models/rules.dart';
 import '../../service/dialog_information_service.dart';
 import '../../service/information_storage.dart';
+import '../../services/log_service.dart';
 import '../../services/network_service.dart';
 import '../events/current_game_events.dart';
 import '../states/current_game_states.dart';
@@ -76,7 +76,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         }
       }
     } on dynamic catch (e, s) {
-      await FirebaseCrashlytics.instance.recordError(e, s);
+      await LogService.instance.recordError(e, s);
       yield CurrentGameStartingFailed();
     }
   }
@@ -101,7 +101,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         yield CurrentGameStartingFailed();
       }
     } on dynamic catch (e, s) {
-      await FirebaseCrashlytics.instance.recordError(e, s);
+      await LogService.instance.recordError(e, s);
       yield CurrentGameStartingFailed();
     }
   }
@@ -146,7 +146,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           );
       }
     } on dynamic catch (e, s) {
-      await FirebaseCrashlytics.instance.recordError(e, s);
+      await LogService.instance.recordError(e, s);
     }
   }
 
@@ -243,7 +243,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         );
       }
     } on dynamic catch (e, s) {
-      await FirebaseCrashlytics.instance.recordError(e, s);
+      await LogService.instance.recordError(e, s);
     }
   }
 
@@ -297,7 +297,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
             .listen((game) => add(UpdateCurrentGame(game)));
         return true;
       } on dynamic catch (e, s) {
-        await FirebaseCrashlytics.instance.recordError(e, s);
+        await LogService.instance.recordError(e, s);
         return false;
       }
     } else {
@@ -322,7 +322,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       game.currentPlayerId = nextPlayer?.id ?? game.players.firstOrNull()?.id;
       await networkService.updateGameData(game);
     } on dynamic catch (e, s) {
-      await FirebaseCrashlytics.instance.recordError(e, s);
+      await LogService.instance.recordError(e, s);
       throw GameLeaveException(subscriptionCanceled: gameSub == null);
     }
   }

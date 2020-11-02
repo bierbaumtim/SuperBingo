@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
 import '../../models/app_models/game.dart';
 import '../../models/app_models/player.dart';
 import '../../service/information_storage.dart';
+import '../../services/log_service.dart';
 import '../../services/network_service.dart';
 import '../../utils/configuration_utils.dart';
 import '../events/join_game_events.dart';
@@ -76,7 +76,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
           );
         }
       } on dynamic catch (e, s) {
-        await FirebaseCrashlytics.instance.recordError(e, s);
+        await LogService.instance.recordError(e, s);
         yield const JoinGameFailed(
           'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.',
         );
@@ -90,11 +90,11 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
       final linkData = parseGameLink(event.gameLink);
       yield* _mapJoinGameToState(JoinGame(linkData['gameid'] as String));
     } on UnsupportedGameLinkException catch (e, s) {
-      await FirebaseCrashlytics.instance.recordError(e, s);
+      await LogService.instance.recordError(e, s);
       yield const JoinGameFailed('Der Link wird nicht unterstützt.');
       yield WaitingForAction();
     } on dynamic catch (e, s) {
-      await FirebaseCrashlytics.instance.recordError(e, s);
+      await LogService.instance.recordError(e, s);
       yield const JoinGameFailed(
         'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.',
       );

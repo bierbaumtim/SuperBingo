@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 import 'package:firedart/firedart.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:rxdart/subjects.dart';
 
 import '../../models/app_models/game.dart';
+import '../../services/log_service.dart';
 
 class PublicGamesBloc {
   StreamSubscription _gamesSub;
@@ -52,7 +52,7 @@ class PublicGamesBloc {
         _publicGamesSink.add(Error());
       }
     } on dynamic catch (e, s) {
-      FirebaseCrashlytics.instance.recordError(e, s);
+      LogService.instance.recordError(e, s);
       _publicGamesSink.add(Error());
     }
   }

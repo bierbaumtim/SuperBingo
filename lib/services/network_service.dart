@@ -3,11 +3,11 @@ import 'dart:async';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/foundation.dart';
 
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '../models/app_models/game.dart';
 import '../models/app_models/player.dart';
+import 'log_service.dart';
 
 abstract class INetworkService {
   const INetworkService();
@@ -67,7 +67,7 @@ class NetworkService implements INetworkService {
             .listen(_handleNewGameStreamEvent);
         return true;
       } on dynamic catch (e, s) {
-        await FirebaseCrashlytics.instance.recordError(e, s);
+        await LogService.instance.recordError(e, s);
       }
     }
     return false;
@@ -118,7 +118,7 @@ class NetworkService implements INetworkService {
       game.updatePlayer(currentPlayer);
       return updateGameData(game);
     } on dynamic catch (e, s) {
-      await FirebaseCrashlytics.instance.recordError(e, s);
+      await LogService.instance.recordError(e, s);
     }
   }
 
@@ -143,7 +143,7 @@ class NetworkService implements INetworkService {
       _currentGame = newGame;
       _gameChangedController.sink.add(_currentGame);
     } else {
-      FirebaseCrashlytics.instance
+      LogService.instance
           .recordError('newGame is null: $newGame', StackTrace.current);
     }
   }
