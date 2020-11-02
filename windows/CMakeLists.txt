@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
-project(SuperBingo LANGUAGES CXX)
+project(superbingo LANGUAGES CXX)
 
-set(BINARY_NAME "SuperBingo")
+set(BINARY_NAME "superbingo")
 
 cmake_policy(SET CMP0063 NEW)
 

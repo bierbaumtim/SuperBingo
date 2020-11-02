@@ -92,10 +92,10 @@ BEGIN
             VALUE "CompanyName", "bierbaum.com" "\0"
             VALUE "FileDescription", "A new Flutter project." "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "SuperBingo" "\0"
+            VALUE "InternalName", "superbingo" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2020 bierbaum.com. All rights reserved." "\0"
-            VALUE "OriginalFilename", "SuperBingo.exe" "\0"
-            VALUE "ProductName", "SuperBingo" "\0"
+            VALUE "OriginalFilename", "superbingo.exe" "\0"
+            VALUE "ProductName", "superbingo" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
