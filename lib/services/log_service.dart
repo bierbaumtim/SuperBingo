@@ -7,11 +7,11 @@ import '../utils/configuration_utils.dart';
 class LogService {
   static final LogService instance = LogService._();
 
+  factory LogService() => instance;
+
   LogService._() {
     _initialized = false;
   }
-
-  factory LogService() => instance;
 
   bool _initialized;
 
