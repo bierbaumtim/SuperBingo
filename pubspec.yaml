@@ -18,11 +18,11 @@ dependencies:
   rxdart: ^0.24.1
   overlay_support: ^1.0.4
   share: ^0.6.5+4
-  shared_preferences: ^0.5.12+2
+  shared_preferences: ^0.5.12+4
   flutter_secure_storage: ^3.3.5
 
   # cloud_firestore: ^0.13.6
-  firebase_crashlytics: ^0.2.2
+  firebase_crashlytics: ^0.2.4
   # firebase_auth: ^0.16.1
   cloud_firestore_mocks: ^0.5.1
   firedart: ^0.8.3
@@ -30,7 +30,7 @@ dependencies:
     #   url: https://github.com/bierbaumtim/firedart.git
 
   provider: ^4.3.2+2
-  flutter_bloc: ^6.0.6
+  flutter_bloc: 6.0.6
   bloc_test: ^7.1.0
   equatable: ^1.2.5
 
@@ -44,22 +44,22 @@ dependencies:
   # helper
   vector_math: ^2.0.8
   uuid: ^2.2.2
-  supercharged: ^1.11.1
+  supercharged: ^1.12.0
 
   #Json Serialization
-  json_annotation: ^3.0.1
+  json_annotation: ^3.1.1
 
-  win32: ^1.7.3
+  win32: ^1.7.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^1.10.1
-  json_serializable: ^3.5.0
+  build_runner: ^1.10.7
+  json_serializable: ^3.5.1
   flutter_native_splash: ^0.1.9
 
-  effective_dart: ^1.2.2
-  lint: ^1.3.0
+  effective_dart: ^1.3.0
+  lint: ^1.5.1
 
 flutter_native_splash:
   color: "FF6E40"
