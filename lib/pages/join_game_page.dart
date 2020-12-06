@@ -6,10 +6,10 @@ import 'package:provider/provider.dart';
 
 import '../bloc/blocs/join_game_bloc.dart';
 import '../bloc/blocs/open_games_bloc.dart';
-import '../bloc/events/join_game_events.dart';
 import '../bloc/states/join_game_states.dart';
 import '../constants/enums.dart';
 import '../models/app_models/game.dart';
+import '../widgets/game_card.dart';
 import '../widgets/loading_widget.dart';
 
 /// [JoinGamePage] zeigt alle öffentlichen Spiele an.
@@ -72,32 +72,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
                     itemBuilder: (context, index) {
                       final game = snapshot.data.elementAt(index);
 
-                      return Card(
-                        child: ListTile(
-                          title: Text(game?.name ?? ''),
-                          subtitle: Text(
-                            '${game?.players?.length ?? 0}/${game?.maxPlayer} Player',
-                          ),
-                          trailing: RaisedButton(
-                            color: Colors.deepOrangeAccent,
-                            onPressed: () {
-                              joinGameBloc.add(JoinGame(game.gameID));
-                            },
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            child: Text(
-                              'join',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyText2
-                                  .copyWith(
-                                    color: Colors.white,
-                                  ),
-                            ),
-                          ),
-                        ),
-                      );
+                      return GameCard(game: game);
                     },
                   ),
                 );
