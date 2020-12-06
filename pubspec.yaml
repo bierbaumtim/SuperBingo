@@ -15,7 +15,7 @@ dependencies:
   cupertino_icons: ^1.0.0
 
   connectivity: ^2.0.0
-  rxdart: ^0.24.1
+  rxdart: ^0.25.0
   overlay_support: ^1.0.4
   share: ^0.6.5+4
   shared_preferences: ^0.5.12+4
