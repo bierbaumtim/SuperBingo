@@ -20,8 +20,6 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
   Stream<InfoState> mapEventToState(InfoEvent event) async* {
     if (event is LoadInfos) {
       yield* _mapLoadInfosToState(event);
-    } else if (event is CompleteFirstStartConfiguration) {
-      yield* _mapCompleteFirstStartConfigurationToState(event);
     } else if (event is SetPlayerName) {
       yield* _mapSetPlayerNameToState(event);
     }
@@ -31,35 +29,20 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
     yield InfosLoading();
     try {
       final prefs = await SharedPreferences.getInstance();
-      final firstStart = prefs.getBool('firststart') ?? true;
-      if (firstStart) {
-        await prefs.setInt('starttime', DateTime.now().millisecondsSinceEpoch);
-        yield FirstStart();
-      } else {
-        final playerName = prefs.getString('playername') ?? '';
-        await _loginUserAnonymous();
-        final playerId = await userUid;
-        InformationStorage.instance.playerId = playerId;
-        yield InfosLoaded(
-          playerName: playerName,
-          playerId: playerId,
-        );
-      }
+
+      final playerName = prefs.getString('playername') ?? '';
+      await _loginUserAnonymous();
+      final playerId = await userUid;
+      InformationStorage.instance.playerId = playerId;
+      yield InfosLoaded(
+        playerName: playerName,
+        playerId: playerId,
+      );
     } on dynamic catch (e, s) {
       await LogService.instance.recordError(e, s);
 
       yield InfosEmpty();
     }
-  }
-
-  Stream<InfoState> _mapCompleteFirstStartConfigurationToState(
-      CompleteFirstStartConfiguration event) async* {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('firststart', false);
-    await _loginUserAnonymous(
-      forceLogin: true,
-    );
-    add(SetPlayerName(event.playerName));
   }
 
   Stream<InfoState> _mapSetPlayerNameToState(SetPlayerName event) async* {

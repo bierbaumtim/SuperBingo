@@ -72,47 +72,35 @@ class _PlayerPageState extends State<PlayerPage> {
           ),
         ],
       ),
-      floatingActionButton: BlocBuilder<InfoBloc, InfoState>(
-        builder: (context, state) {
-          return FloatingActionButton.extended(
-            backgroundColor: Colors.deepOrange,
-            label: Text(
-              state is InfosLoaded ? 'Name ändern' : 'Spieler erstellen',
-            ),
-            icon: const Icon(Icons.arrow_forward_ios),
-            onPressed: () async {
-              if (username != null && username.isNotEmpty) {
-                final infoBloc = context.read<InfoBloc>();
-                if (state is FirstStart) {
-                  infoBloc.add(CompleteFirstStartConfiguration(username));
-                } else {
-                  infoBloc.add(SetPlayerName(username));
-                  Navigator.pop(context);
-                }
-              } else {
-                await showDialog<void>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Hinweis'),
-                    content:
-                        const Text('Der Benutzername darf nicht leer sein.'),
-                    actions: <Widget>[
-                      RaisedButton(
-                        color: Colors.deepOrange,
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'Ok',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
-                        ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.deepOrange,
+        label: Text('Spieler erstellen'),
+        icon: const Icon(Icons.arrow_forward_ios),
+        onPressed: () async {
+          if (username != null && username.isNotEmpty) {
+            context.read<InfoBloc>().add(SetPlayerName(username));
+            Navigator.of(context).pop(username);
+          } else {
+            await showDialog<void>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Hinweis'),
+                content: const Text('Der Benutzername darf nicht leer sein.'),
+                actions: <Widget>[
+                  RaisedButton(
+                    color: Colors.deepOrange,
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'Ok',
+                      style: TextStyle(
+                        color: Colors.white,
                       ),
-                    ],
+                    ),
                   ),
-                );
-              }
-            },
-          );
+                ],
+              ),
+            );
+          }
         },
       ),
     );
