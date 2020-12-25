@@ -24,7 +24,7 @@ class GameCard extends StatelessWidget {
         ),
         trailing: RaisedButton(
           color: Colors.deepOrangeAccent,
-          onPressed: () => context.bloc<JoinGameBloc>().add(
+          onPressed: () => context.read<JoinGameBloc>().add(
                 JoinGame(
                   game.gameID,
                 ),

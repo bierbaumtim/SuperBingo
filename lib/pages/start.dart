@@ -57,7 +57,7 @@ class _StartPageState extends State<StartPage> {
               hideJoiningOverlay();
             }
             if (state is JoinedGame) {
-              context.bloc<CurrentGameBloc>().add(StartGame(
+              context.read<CurrentGameBloc>().add(StartGame(
                     gameId: state.gameId,
                     self: state.self,
                   ));
@@ -74,7 +74,7 @@ class _StartPageState extends State<StartPage> {
         BlocListener<GameConfigurationBloc, GameConfigurationState>(
           listener: (context, state) {
             if (state is GameCreated) {
-              context.bloc<CurrentGameBloc>().add(OpenGameWaitingLobby(
+              context.read<CurrentGameBloc>().add(OpenGameWaitingLobby(
                     gameId: state.gameId,
                     self: state.self,
                   ));

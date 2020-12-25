@@ -30,9 +30,10 @@ dependencies:
     #   url: https://github.com/bierbaumtim/firedart.git
 
   provider: ^4.3.2+3
-  flutter_bloc: 6.0.6
+  flutter_bloc: ^6.1.1
   bloc_test: ^7.1.0
   equatable: ^1.2.5
+  responsive_builder: ^0.3.0
 
   sliding_up_panel:
     git:

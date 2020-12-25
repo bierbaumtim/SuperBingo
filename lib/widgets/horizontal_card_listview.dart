@@ -43,7 +43,7 @@ class HorizontalCardList extends StatelessWidget {
                   if (allowedCardColor == null) return;
                 }
                 context
-                    .bloc<CurrentGameBloc>()
+                    .read<CurrentGameBloc>()
                     .add(game_events.PlayCard(card, allowedCardColor));
               },
             ),

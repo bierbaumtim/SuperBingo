@@ -257,7 +257,7 @@ class _GamePageState extends State<GamePage> {
                                 setState(() {
                                   showCallBingoButton = false;
                                 });
-                                context.bloc<InteractionBloc>().add(
+                                context.read<InteractionBloc>().add(
                                       isSuperBingo
                                           ? CallSuperBingo()
                                           : CallBingo(),

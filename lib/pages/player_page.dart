@@ -82,7 +82,7 @@ class _PlayerPageState extends State<PlayerPage> {
             icon: const Icon(Icons.arrow_forward_ios),
             onPressed: () async {
               if (username != null && username.isNotEmpty) {
-                final infoBloc = context.bloc<InfoBloc>();
+                final infoBloc = context.read<InfoBloc>();
                 if (state is FirstStart) {
                   infoBloc.add(CompleteFirstStartConfiguration(username));
                 } else {
