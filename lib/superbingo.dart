@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
 
-import 'bloc/blocs/info_bloc.dart';
-import 'bloc/states/info_states.dart';
 import 'pages/game_page.dart';
 import 'pages/join_game_page.dart';
 import 'pages/new_game_page.dart';
@@ -19,25 +16,7 @@ class SuperBingo extends StatelessWidget {
         themeMode: ThemeMode.light,
         theme: lightTheme,
         // showPerformanceOverlay: true,
-        home: BlocBuilder<InfoBloc, InfoState>(
-          builder: (context, state) {
-            if (state is InfosLoaded) {
-              return StartPage();
-            } else if (state is InfosLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (state is FirstStart) {
-              return PlayerPage();
-            } else {
-              return const Scaffold(
-                body: Center(
-                  child: Text('Test'),
-                ),
-              );
-            }
-          },
-        ),
+        home: StartPage(),
         routes: {
           '/new_game': (context) => NewGamePage(),
           '/join_game': (context) => JoinGamePage(),
