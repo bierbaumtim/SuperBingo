@@ -35,14 +35,12 @@ class PublicGamesBloc {
 
   void _handleSnapshot(List<Document> snapshot) {
     try {
-      final docs = snapshot;
-      final games = docs.map<Game>((g) => Game.fromJson(g.map)).toList();
-      final publicGames = <Game>[];
-      for (final game in games) {
-        if (game.isPublic == true && game.state == GameState.waitingForPlayer) {
-          publicGames.add(game);
-        }
-      }
+      final games = snapshot.map<Game>((g) => Game.fromJson(g.map)).toList();
+      final publicGames = games
+          .where((game) =>
+              game.isPublic && game.state == GameState.waitingForPlayer)
+          .toList();
+
       _publicGamesSink.add(publicGames);
     } on PlatformException catch (e) {
       if (e.message.contains('PERMISSION_DENIED')) {
