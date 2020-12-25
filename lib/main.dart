@@ -45,7 +45,7 @@ void main() async {
             create: (_) => PublicGamesBloc(),
             dispose: (_, bloc) => bloc.dispose(),
           ),
-          Provider<NetworkService>(
+          Provider<INetworkService>(
             create: (_) => NetworkService(Firestore.instance),
             dispose: (_, service) => service.dispose(),
             lazy: false,
@@ -55,22 +55,22 @@ void main() async {
           providers: <BlocProvider>[
             BlocProvider<GameConfigurationBloc>(
               create: (context) => GameConfigurationBloc(
-                context.read<NetworkService>(),
+                context.read<INetworkService>(),
               ),
             ),
             BlocProvider<JoinGameBloc>(
               create: (context) => JoinGameBloc(
-                context.read<NetworkService>(),
+                context.read<INetworkService>(),
               ),
             ),
             BlocProvider<CurrentGameBloc>(
               create: (context) => CurrentGameBloc(
-                context.read<NetworkService>(),
+                context.read<INetworkService>(),
               ),
             ),
             BlocProvider<InteractionBloc>(
               create: (context) => InteractionBloc(
-                context.read<NetworkService>(),
+                context.read<INetworkService>(),
               ),
             ),
             BlocProvider<InfoBloc>(
