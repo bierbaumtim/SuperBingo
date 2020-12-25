@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/blocs/info_bloc.dart';
 import '../bloc/events/info_events.dart';
 import '../bloc/states/info_states.dart';
+import '../utils/dialogs.dart';
 
 class PlayerPage extends StatefulWidget {
   @override
@@ -25,7 +26,7 @@ class _PlayerPageState extends State<PlayerPage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final infoBloc = BlocProvider.of<InfoBloc>(context);
+    final infoBloc = context.read<InfoBloc>();
     final username = infoBloc.state is InfosLoaded
         ? (infoBloc.state as InfosLoaded).playerName
         : '';
@@ -77,28 +78,14 @@ class _PlayerPageState extends State<PlayerPage> {
         label: Text('Spieler erstellen'),
         icon: const Icon(Icons.arrow_forward_ios),
         onPressed: () async {
-          if (username != null && username.isNotEmpty) {
+          if (username.isNotEmpty) {
             context.read<InfoBloc>().add(SetPlayerName(username));
             Navigator.of(context).pop(username);
           } else {
-            await showDialog<void>(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Hinweis'),
-                content: const Text('Der Benutzername darf nicht leer sein.'),
-                actions: <Widget>[
-                  RaisedButton(
-                    color: Colors.deepOrange,
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'Ok',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            await Dialogs.showInformationDialog(
+              context,
+              title: 'Hinweis',
+              content: 'Der Benutzername darf nicht leer sein.',
             );
           }
         },

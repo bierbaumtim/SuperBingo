@@ -26,8 +26,6 @@ dependencies:
   # firebase_auth: ^0.16.1
   cloud_firestore_mocks: ^0.5.1
   firedart: ^0.8.3
-    # git:
-    #   url: https://github.com/bierbaumtim/firedart.git
 
   provider: ^4.3.2+3
   flutter_bloc: ^6.1.1

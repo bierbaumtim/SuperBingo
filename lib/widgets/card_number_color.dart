@@ -31,38 +31,44 @@ class CardNumberColor extends StatelessWidget {
     final iconSize = isSmall ? 14.0 : 24.0;
     final fontSize = isSmall ? 16.0 : 20.0;
 
+    Widget child = Column(
+      children: <Widget>[
+        if (!flip)
+          Text(
+            getTextByCardNumber(number),
+            style: TextStyle(
+              fontSize: fontSize,
+              fontFamily: 'Georgia',
+              color: getColorByCardColor(color),
+            ),
+          ),
+        Icon(
+          getIconByCardColor(color),
+          color: getColorByCardColor(color),
+          size: iconSize,
+        ),
+        if (flip)
+          Text(
+            getTextByCardNumber(number),
+            style: TextStyle(
+              fontSize: fontSize,
+              fontFamily: 'Georgia',
+              color: getColorByCardColor(color),
+            ),
+          ),
+      ],
+    );
+
+    if (flip) {
+      child = Transform.rotate(
+        angle: radians(180),
+        child: child,
+      );
+    }
+
     return Container(
       color: Colors.white,
-      child: Transform.rotate(
-        angle: radians(flip ? 180 : 0),
-        child: Column(
-          children: <Widget>[
-            if (!flip)
-              Text(
-                getTextByCardNumber(number),
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontFamily: 'Georgia',
-                  color: getColorByCardColor(color),
-                ),
-              ),
-            Icon(
-              getIconByCardColor(color),
-              color: getColorByCardColor(color),
-              size: iconSize,
-            ),
-            if (flip)
-              Text(
-                getTextByCardNumber(number),
-                style: TextStyle(
-                  fontSize: fontSize,
-                  fontFamily: 'Georgia',
-                  color: getColorByCardColor(color),
-                ),
-              ),
-          ],
-        ),
-      ),
+      child: child,
     );
   }
 }
