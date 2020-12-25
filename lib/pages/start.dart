@@ -150,7 +150,12 @@ class _StartPageState extends State<StartPage> {
 
                                 return Text(
                                   '$gameCount offene Spiele verfügbar',
-                                  style: Theme.of(context).textTheme.subtitle1,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .subtitle1
+                                      .copyWith(
+                                        color: Colors.white.withOpacity(.7),
+                                      ),
                                 );
                               },
                             ),
@@ -232,9 +237,11 @@ class _StartPageState extends State<StartPage> {
                     height: newGameCardHeight,
                     child: InkWell(
                       onTap: () async {
-                        await Navigator.of(context).pushNamed('/new_game');
-                        BlocProvider.of<GameConfigurationBloc>(context)
-                            .add(ResetGameConfiguration());
+                        if (await _checkPlayer(context)) {
+                          await Navigator.of(context).pushNamed('/new_game');
+                          BlocProvider.of<GameConfigurationBloc>(context)
+                              .add(ResetGameConfiguration());
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -256,7 +263,12 @@ class _StartPageState extends State<StartPage> {
                             const SizedBox(height: 8),
                             Text(
                               'Starte dein eigenes Spiel',
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .subtitle1
+                                  .copyWith(
+                                    color: Colors.white.withOpacity(.7),
+                                  ),
                             ),
                           ],
                         ),
@@ -270,6 +282,15 @@ class _StartPageState extends State<StartPage> {
         ),
       ),
     );
+  }
+
+  Future<bool> _checkPlayer(BuildContext context) async {
+    if (context.read<InfoBloc>().state is! InfosLoaded) {
+      final result =
+          await Navigator.of(context).pushNamed('/user_page') as String;
+      return result != null && result.isNotEmpty;
+    }
+    return true;
   }
 
   String messageByJoiningState(JoiningState state) {
