@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 
 import '../../models/app_models/game.dart';
 import '../../models/app_models/player.dart';
-import '../../service/information_storage.dart';
+import '../../services/information_storage.dart';
 import '../../services/log_service.dart';
 import '../../services/network_service.dart';
 import '../../utils/configuration_utils.dart';

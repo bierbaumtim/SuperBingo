@@ -4,7 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:firedart/firedart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../service/information_storage.dart';
+import '../../services/information_storage.dart';
 import '../../services/log_service.dart';
 import '../events/info_events.dart';
 import '../states/info_states.dart';
