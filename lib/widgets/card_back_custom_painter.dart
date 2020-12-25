@@ -70,5 +70,4 @@ class CardBackPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
-  //  oldDelegate != this
 }

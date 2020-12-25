@@ -20,7 +20,7 @@ import '../bloc/states/join_game_states.dart';
 import '../constants/enums.dart';
 import '../models/app_models/card.dart';
 import '../models/app_models/game.dart';
-import '../utils/list_utils.dart';
+import '../utils/card_utils.dart';
 import '../widgets/loading_widget.dart';
 import '../widgets/play_card.dart';
 
@@ -270,26 +270,6 @@ class _StartPageState extends State<StartPage> {
         ),
       ),
     );
-  }
-
-  Map<String, double> getRotationAngles(int index, int length) {
-    var angle = 160 / length;
-    double rotationAngle;
-    if (angle >= 50) angle = 20;
-    final middle = getMiddleIndex(List.generate(length, (_) => ''));
-
-    if (index >= middle || index <= middle) {
-      angle = -90 - (angle * (middle - index));
-      rotationAngle = 270 + angle;
-    } else {
-      angle = -90;
-      rotationAngle = 0;
-    }
-
-    return {
-      'angle': angle,
-      'rotation': rotationAngle,
-    };
   }
 
   String messageByJoiningState(JoiningState state) {

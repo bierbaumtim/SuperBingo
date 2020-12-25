@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:community_material_icon/community_material_icon.dart';
 
 import '../constants/enums.dart';
+import 'list_utils.dart';
 
 /// Gibt das zur `color` gehörende Icon zurück.
 IconData getIconByCardColor(CardColor color) {
@@ -70,3 +71,23 @@ bool isNumberCard(CardNumber number) =>
     number == CardNumber.seven ||
     number == CardNumber.eight ||
     number == CardNumber.nine;
+
+ Map<String, double> getRotationAngles(int index, int length) {
+  var angle = 160 / length;
+  double rotationAngle;
+  if (angle >= 50) angle = 20;
+  final middle = getMiddleIndex(List.generate(length, (_) => ''));
+
+  if (index >= middle || index <= middle) {
+    angle = -90 - (angle * (middle - index));
+    rotationAngle = 270 + angle;
+  } else {
+    angle = -90;
+    rotationAngle = 0;
+  }
+
+  return {
+    'angle': angle,
+    'rotation': rotationAngle,
+  };
+}

@@ -4,8 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:supercharged/supercharged.dart';
 
-import '../../service/information_storage.dart';
-import '../../services/log_service.dart';
+import '../../services/information_storage.dart';
 import 'card.dart';
 
 part 'player.g.dart';
@@ -32,7 +31,7 @@ class Player with EquatableMixin {
   final String name;
 
   /// Liste des Spielers - Kartenhand
-  @JsonKey(name: 'cards', defaultValue: <GameCard>[]) //, toJson: cardsToJson
+  @JsonKey(name: 'cards', defaultValue: <GameCard>[])
   final List<GameCard> cards;
 
   /// Konfiguration, ob der Spieler der Host ist.
@@ -127,8 +126,4 @@ class Player with EquatableMixin {
       return player.firstWhere((p) => p.id == playerId, orElse: () => null);
     }
   }
-
-  /// Wandelt eine List an Spielkarten `cards` in eine List mit Datenbank-kompatiblen [GameCard]-Objecten um
-  static List cardsToJson(List<GameCard> cards) =>
-      cards?.map((c) => c.toJson())?.toList() ?? [];
 }

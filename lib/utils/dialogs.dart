@@ -6,8 +6,11 @@ class Dialogs {
   ///
   /// `title` - Titel für den Dialog(Standard - Hinweis)
   /// `content` - Information für den Dialog
-  static Future<T> showInformationDialog<T>(BuildContext context,
-      {String title = 'Hinweis', String content = ''}) {
+  static Future<T> showInformationDialog<T>(
+    BuildContext context, {
+    String title = 'Hinweis',
+    String content = '',
+  }) {
     return showDialog<T>(
       context: context,
       builder: (context) => AlertDialog(

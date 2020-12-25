@@ -46,10 +46,13 @@ class NetworkService implements INetworkService {
 
   @override
   Firestore get db => _db;
+
   @override
   Game get previousGame => _previousGame;
+
   @override
   Game get currentGame => _currentGame;
+  
   @override
   Stream<Game> get gameChangedStream => _gameChangedController.stream;
 
