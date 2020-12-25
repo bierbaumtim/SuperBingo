@@ -5,25 +5,30 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
-import 'package:superbingo/bloc/blocs/open_games_bloc.dart';
-import 'package:superbingo/constants/enums.dart';
-import 'package:superbingo/models/app_models/game.dart';
-import 'package:superbingo/widgets/game_card.dart';
-import 'package:superbingo/widgets/loading_widget.dart';
 
 import '../bloc/blocs/current_game_bloc.dart';
 import '../bloc/blocs/game_configuration_bloc.dart';
+import '../bloc/blocs/info_bloc.dart';
 import '../bloc/blocs/join_game_bloc.dart';
-import '../bloc/events/current_game_events.dart';
+import '../bloc/blocs/open_games_bloc.dart';
+import '../bloc/events/current_game_events.dart'
+    show StartGame, OpenGameWaitingLobby;
 import '../bloc/events/game_events.dart';
 import '../bloc/states/game_states.dart';
+import '../bloc/states/info_states.dart';
 import '../bloc/states/join_game_states.dart';
+import '../constants/enums.dart';
+import '../models/app_models/card.dart';
+import '../models/app_models/game.dart';
+import '../utils/list_utils.dart';
+import '../widgets/loading_widget.dart';
+import '../widgets/play_card.dart';
 
 /// Startseite
 ///
 /// Hier landet der Spieler nachdem er die App startet
 /// Vor hier aus kann zur Spielerstellung, Spielsuche
-/// und Spielerkofiguration navigiert werden.
+/// und Spielerkonfiguration navigiert werden.
 class StartPage extends StatefulWidget {
   @override
   _StartPageState createState() => _StartPageState();
@@ -40,7 +45,6 @@ class _StartPageState extends State<StartPage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
     final publicGamesBloc = Provider.of<PublicGamesBloc>(context);
 
     return MultiBlocListener(
@@ -49,16 +53,14 @@ class _StartPageState extends State<StartPage> {
           listener: (context, state) {
             if (state is JoiningGame) {
               showJoiningOverlay(context);
-            } else if (state is JoinGameFailed) {
-              hideJoiningOverlay();
             } else {
               hideJoiningOverlay();
             }
             if (state is JoinedGame) {
-              currentGameBloc.add(StartGame(
-                gameId: state.gameId,
-                self: state.self,
-              ));
+              context.bloc<CurrentGameBloc>().add(StartGame(
+                    gameId: state.gameId,
+                    self: state.self,
+                  ));
               Navigator.of(context).pushNamed('/game');
             } else if (state is JoinGameFailed) {
               showSimpleNotification(
@@ -72,10 +74,10 @@ class _StartPageState extends State<StartPage> {
         BlocListener<GameConfigurationBloc, GameConfigurationState>(
           listener: (context, state) {
             if (state is GameCreated) {
-              currentGameBloc.add(OpenGameWaitingLobby(
-                gameId: state.gameId,
-                self: state.self,
-              ));
+              context.bloc<CurrentGameBloc>().add(OpenGameWaitingLobby(
+                    gameId: state.gameId,
+                    self: state.self,
+                  ));
             } else if (state is GameCreationFailed) {
               showSimpleNotification(
                 Text(state.error),
@@ -87,153 +89,207 @@ class _StartPageState extends State<StartPage> {
         ),
       ],
       child: Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        //   actions: <Widget>[
-        //     IconButton(
-        //       icon: const Icon(Icons.person),
-        //       onPressed: () => Navigator.pushNamed(context, '/user_page'),
-        //     ),
-        //   ],
-        // ),
-        body: StreamBuilder<List<Game>>(
-          stream: publicGamesBloc.publicGamesStream,
-          builder: (context, snapshot) => CustomScrollView(
-            slivers: <Widget>[
-              SliverAppBar(
-                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                actions: <Widget>[
-                  IconButton(
-                    icon: const Icon(Icons.person),
-                    onPressed: () => Navigator.pushNamed(context, '/user_page'),
-                  ),
-                ],
-                expandedHeight: MediaQuery.of(context).size.height / 3,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text('SuperBingo'),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Center(
-                  child: RaisedButton(
-                    onPressed: () async {
-                      await Navigator.of(context).pushNamed('/new_game');
-                      BlocProvider.of<GameConfigurationBloc>(context)
-                          .add(ResetGameConfiguration());
-                    },
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(50),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 12,
-                      horizontal: 24,
-                    ),
-                    textColor: Colors.white,
-                    color: Colors.deepOrange,
-                    elevation: 6.0,
-                    child: const Text('Neues Spiel'),
-                  ),
-                ),
-              ),
-              if (snapshot.hasData)
-                if (snapshot.data.isEmpty)
-                  SliverFillRemaining(
-                    child: const Center(
-                      child: Text('Es sind keine offenen Spiele verfügbar.'),
-                    ),
-                  )
-                else
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) => GameCard(
-                        game: snapshot.data.elementAt(index),
-                      ),
-                      childCount: snapshot.data.length,
-                    ),
-                  )
-              else if (snapshot.hasError)
-                SliverFillRemaining(
-                  child: Center(
-                    child: Text(
-                      snapshot.error is PermissionError
-                          ? (snapshot.error as PermissionError).message
-                          : 'Beim Laden der Spiele ist ein Fehler aufgetreten.\nBitte versuche es später erneut.',
-                    ),
-                  ),
-                )
-              else
-                SliverFillRemaining(
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-            ],
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: BlocBuilder<InfoBloc, InfoState>(
+            builder: (context, state) => Text(
+              state is InfosLoaded ? 'Hallo ${state.playerName}' : 'Superbingo',
+            ),
           ),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.person),
+              onPressed: () => Navigator.pushNamed(context, '/user_page'),
+            ),
+          ],
         ),
-        // body: SafeArea(
-        //   child: Stack(
-        //     children: <Widget>[
-        //       const Align(
-        //         child: Text(
-        //           'SuperBingo',
-        //           style: TextStyle(
-        //             fontSize: 45,
-        //             fontFamily: 'Georgia',
-        //             color: Colors.white,
-        //             fontWeight: FontWeight.bold,
-        //           ),
-        //         ),
-        //       ),
-        //       Positioned(
-        //         bottom: 75,
-        //         left: 36,
-        //         right: 36,
-        //         child: Center(
-        //           child: Row(
-        //             mainAxisAlignment: MainAxisAlignment.spaceAround,
-        //             children: <Widget>[
-        //               RaisedButton(
-        //                 onPressed: () async {
-        //                   await Navigator.of(context).pushNamed('/new_game');
-        //                   BlocProvider.of<GameConfigurationBloc>(context)
-        //                       .add(ResetGameConfiguration());
-        //                 },
-        //                 shape: RoundedRectangleBorder(
-        //                   borderRadius: BorderRadius.circular(50),
-        //                 ),
-        //                 padding: const EdgeInsets.symmetric(
-        //                   vertical: 12,
-        //                   horizontal: 24,
-        //                 ),
-        //                 textColor: Colors.white,
-        //                 color: Colors.deepOrange,
-        //                 elevation: 6.0,
-        //                 child: const Text('Neues Spiel'),
-        //               ),
-        //               RaisedButton(
-        //                 onPressed: () =>
-        //                     Navigator.of(context).pushNamed('/join_game'),
-        //                 shape: RoundedRectangleBorder(
-        //                   borderRadius: BorderRadius.circular(50),
-        //                 ),
-        //                 padding: const EdgeInsets.symmetric(
-        //                   vertical: 12,
-        //                   horizontal: 24,
-        //                 ),
-        //                 textColor: Colors.white,
-        //                 color: Colors.deepOrange,
-        //                 elevation: 6.0,
-        //                 child: const Text('Spiel beitreten'),
-        //               ),
-        //             ],
-        //           ),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final joinGameCardHeight = constraints.maxHeight * (2 / 3) - 32;
+            final newGameCardHeight = constraints.maxHeight * (1 / 3) - 32;
+
+            return Column(
+              children: <Widget>[
+                Card(
+                  margin: const EdgeInsets.all(16),
+                  clipBehavior: Clip.antiAlias,
+                  color: Colors.orangeAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: SizedBox(
+                    height: joinGameCardHeight,
+                    child: InkWell(
+                      onTap: () async =>
+                          Navigator.of(context).pushNamed('/join_game'),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            const SizedBox(height: 24),
+                            Text(
+                              'Spiel beitreten',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline3
+                                  .copyWith(
+                                    color: Colors.white,
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: 8),
+                            StreamBuilder<List<Game>>(
+                              initialData: [],
+                              stream: publicGamesBloc.publicGamesStream,
+                              builder: (context, snapshot) {
+                                final gameCount =
+                                    snapshot.hasData ? snapshot.data.length : 0;
+
+                                return Text(
+                                  '$gameCount offene Spiele verfügbar',
+                                  style: Theme.of(context).textTheme.subtitle1,
+                                );
+                              },
+                            ),
+                            const Spacer(),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 56, bottom: 16),
+                              child: Stack(
+                                children: <Widget>[
+                                  Builder(
+                                    builder: (_) {
+                                      final rotationValues =
+                                          getRotationAngles(0, 3);
+
+                                      return PlayCard(
+                                        elevation: 2,
+                                        isFlipped: false,
+                                        onCardTap: (_) {},
+                                        card: GameCard(
+                                          color: CardColor.heart,
+                                          number: CardNumber.seven,
+                                          id: '',
+                                        ),
+                                        angle: rotationValues['angle'],
+                                        rotationAngle:
+                                            rotationValues['rotation'],
+                                        rotationYOffset: 100,
+                                      );
+                                    },
+                                  ),
+                                  Builder(
+                                    builder: (_) {
+                                      final rotationValues =
+                                          getRotationAngles(2, 3);
+
+                                      return PlayCard(
+                                        elevation: 2,
+                                        isFlipped: false,
+                                        onCardTap: (_) {},
+                                        card: GameCard(
+                                          color: CardColor.diamond,
+                                          number: CardNumber.nine,
+                                          id: '',
+                                        ),
+                                        angle: rotationValues['angle'],
+                                        rotationAngle:
+                                            rotationValues['rotation'],
+                                        rotationYOffset: 100,
+                                      );
+                                    },
+                                  ),
+                                  PlayCard(
+                                    elevation: 3,
+                                    isFlipped: false,
+                                    onCardTap: (_) {},
+                                    card: GameCard(
+                                      color: CardColor.clover,
+                                      number: CardNumber.eight,
+                                      id: '',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Card(
+                  margin: const EdgeInsets.all(16),
+                  clipBehavior: Clip.antiAlias,
+                  color: Colors.greenAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: SizedBox(
+                    height: newGameCardHeight,
+                    child: InkWell(
+                      onTap: () async {
+                        await Navigator.of(context).pushNamed('/new_game');
+                        BlocProvider.of<GameConfigurationBloc>(context)
+                            .add(ResetGameConfiguration());
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Text(
+                              'Neues Spiel',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headline3
+                                  .copyWith(
+                                    color: Colors.white,
+                                    fontFamily: 'Roboto',
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Starte dein eigenes Spiel',
+                              style: Theme.of(context).textTheme.subtitle1,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
+  }
+
+  Map<String, double> getRotationAngles(int index, int length) {
+    var angle = 160 / length;
+    double rotationAngle;
+    if (angle >= 50) angle = 20;
+    final middle = getMiddleIndex(List.generate(length, (_) => ''));
+
+    if (index >= middle || index <= middle) {
+      angle = -90 - (angle * (middle - index));
+      rotationAngle = 270 + angle;
+    } else {
+      angle = -90;
+      rotationAngle = 0;
+    }
+
+    return {
+      'angle': angle,
+      'rotation': rotationAngle,
+    };
   }
 
   String messageByJoiningState(JoiningState state) {
