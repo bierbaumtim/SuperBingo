@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/blocs/current_game_bloc.dart';
-import '../bloc/events/current_game_events.dart';
+import '../bloc/events/current_game_events.dart' as game_events;
 import '../constants/enums.dart';
 import '../models/app_models/card.dart';
 import '../routes/blur_overlay_route.dart';
 import 'card_color_decision_card.dart';
-import 'small_play_card.dart';
+import 'play_card.dart';
 
 ///{@template horizontalcardlist}
 /// Erzeugt ein ListView, mit der `scrollDirection` `Axis.horizontal` und den `cards`.
@@ -30,7 +30,7 @@ class HorizontalCardList extends StatelessWidget {
         child: SizedBox(
           height: 175,
           child: ListView.builder(
-            itemBuilder: (context, index) => SmallPlayCard(
+            itemBuilder: (context, index) => PlayCard(
               card: cards.elementAt(index),
               onCardTap: (card) async {
                 CardColor allowedCardColor;
@@ -44,7 +44,7 @@ class HorizontalCardList extends StatelessWidget {
                 }
                 context
                     .bloc<CurrentGameBloc>()
-                    .add(PlayCard(card, allowedCardColor));
+                    .add(game_events.PlayCard(card, allowedCardColor));
               },
             ),
             itemCount: cards.length,

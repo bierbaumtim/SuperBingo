@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/blocs/current_game_bloc.dart';
 import '../bloc/states/current_game_states.dart';
 import '../utils/list_utils.dart';
-import 'small_play_card.dart';
+import 'play_card.dart';
 
 /// {@template cardhand}
 /// Dieses Widget bildet die aufgefächerten Karten eines Spielers nach.
@@ -44,10 +44,9 @@ class CardHand extends StatelessWidget {
                   }
 
                   /// ignore: missing_required_param
-                  return SmallPlayCard(
+                  return PlayCard(
                     card: c,
                     angle: angle,
-                    index: index,
                     rotationAngle: rotationAngle,
                   );
                 }).toList(),
