@@ -9,16 +9,7 @@ class LogService {
 
   factory LogService() => instance;
 
-  LogService._() {
-    _initialized = false;
-  }
-
-  bool _initialized;
-
-  void initFirebase() {
-    if (kIsWeb || isDesktop) return;
-    // FirebaseCore.
-  }
+  LogService._();
 
   Future<void> recordError(
     dynamic exception,
@@ -27,11 +18,7 @@ class LogService {
     Iterable<DiagnosticsNode> information,
     bool printDetails,
   }) {
-    if (!_initialized) {
-      debugPrint('FirebaseCrashlytics is not initialized');
-      return Future.value();
-    }
-    if (!kIsWeb || !isDesktop) {
+    if (!isDesktop) {
       return FirebaseCrashlytics.instance.recordError(
         exception,
         stackTrace,
@@ -40,20 +27,19 @@ class LogService {
         printDetails: printDetails,
       );
     } else {
+      debugPrint(exception.toString());
+      debugPrintStack(stackTrace: stackTrace);
       return Future.value();
     }
   }
 
   Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) {
-    if (!_initialized) {
-      debugPrint('FirebaseCrashlytics is not initialized');
-      return Future.value();
-    }
-    if (!kIsWeb || !isDesktop) {
+    if (!isDesktop) {
       return FirebaseCrashlytics.instance.recordFlutterError(
         flutterErrorDetails,
       );
     } else {
+      FlutterError.dumpErrorToConsole(flutterErrorDetails);
       return Future.value();
     }
   }

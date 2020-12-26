@@ -2,10 +2,11 @@ import 'package:firedart/firedart.dart';
 
 import 'secure_token_repository.dart';
 
-class ScureTokenStore extends TokenStore {
+class SecureTokenStore extends TokenStore {
   final SecureTokenRepository _repository;
 
-  ScureTokenStore(this._repository);
+  SecureTokenStore(this._repository);
+
   @override
   void delete() {
     _repository.token.value = null;

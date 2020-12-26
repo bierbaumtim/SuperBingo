@@ -11,7 +11,7 @@ import '../../models/app_models/rules.dart';
 import '../../services/dialog_information_service.dart';
 import '../../services/information_storage.dart';
 import '../../services/log_service.dart';
-import '../../services/network_service.dart';
+import '../../services/network_service/network_service_interface.dart';
 import '../events/current_game_events.dart';
 import '../states/current_game_states.dart';
 

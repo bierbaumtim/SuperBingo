@@ -6,7 +6,7 @@ import 'package:supercharged/supercharged.dart';
 import '../../models/app_models/game.dart';
 import '../../models/app_models/player.dart';
 import '../../services/information_storage.dart';
-import '../../services/network_service.dart';
+import '../../services/network_service/network_service_interface.dart';
 import '../events/interaction_events.dart';
 import '../states/interaction_states.dart';
 

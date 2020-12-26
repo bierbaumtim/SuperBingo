@@ -11,7 +11,7 @@ import '../../models/app_models/game.dart';
 import '../../models/app_models/player.dart';
 import '../../services/information_storage.dart';
 import '../../services/log_service.dart';
-import '../../services/network_service.dart';
+import '../../services/network_service/network_service_interface.dart';
 import '../../utils/configuration_utils.dart';
 import '../../utils/connection.dart';
 import '../events/game_events.dart';
@@ -21,9 +21,8 @@ class GameConfigurationBloc
     extends Bloc<GameConfigurationEvent, GameConfigurationState> {
   final INetworkService networkService;
 
-  String gameId;
-  String gameLink;
-  String gamePath;
+  String _gameId;
+  String _gameLink;
   Player _self;
 
   GameConfigurationBloc(this.networkService) : super(WaitingGameConfigInput()) {
@@ -72,27 +71,26 @@ class GameConfigurationBloc
       );
 
       final gameDoc = await networkService.addGame(game);
-      gameId = gameDoc.id;
-      gamePath = gameDoc.path;
-      gameLink = 'superbingo://id:$gameId|name:${game.name}';
-      _gameLinkSink.add(gameLink);
+      _gameId = gameDoc.id;
+      _gameLink = 'superbingo://id:$_gameId|name:${game.name}';
+      _gameLinkSink.add(_gameLink);
 
-      game = game.copyWith(gameId: gameId);
+      game = game.copyWith(gameId: _gameId);
 
       await networkService.updateGameData(
         <String, dynamic>{
-          'id': gameId,
+          'id': _gameId,
         },
-        gameId,
+        _gameId,
       );
 
       InformationStorage.instance.playerId = _self.id;
-      InformationStorage.instance.gameId = gameId;
-      InformationStorage.instance.gameLink = gameLink;
+      InformationStorage.instance.gameId = _gameId;
+      InformationStorage.instance.gameLink = _gameLink;
 
       yield GameCreated(
-        gameId: gameId,
-        gameLink: gameLink,
+        gameId: _gameId,
+        gameLink: _gameLink,
         self: _self,
       );
     } on dynamic catch (e, s) {
@@ -147,7 +145,7 @@ class GameConfigurationBloc
     return filledGame;
   }
 
-  Future<void> endGame() => networkService.deleteGame(gameId);
+  Future<void> endGame() => networkService.deleteGame(_gameId);
 
   Queue<GameCard> _generateCardStack(int decks) {
     final uuid = Uuid();

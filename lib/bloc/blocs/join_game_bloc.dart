@@ -1,10 +1,9 @@
 import 'package:bloc/bloc.dart';
 
-import '../../models/app_models/game.dart';
 import '../../models/app_models/player.dart';
 import '../../services/information_storage.dart';
 import '../../services/log_service.dart';
-import '../../services/network_service.dart';
+import '../../services/network_service/network_service_interface.dart';
 import '../../utils/configuration_utils.dart';
 import '../events/join_game_events.dart';
 import '../states/join_game_states.dart';
@@ -42,9 +41,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
       try {
         final username = await getUsername();
         _self = Player.create(username);
-        final snapshot =
-            await networkService.db.collection('games').document(gameId).get();
-        final game = Game.fromJson(snapshot.map);
+        final game = await networkService.getGameById(gameId);
         if (game.players.length + 1 > game.maxPlayer) {
           yield const JoinGameFailed(
             'Die maximale Spieleranzahl für dieses Spiel ist erreicht. '
