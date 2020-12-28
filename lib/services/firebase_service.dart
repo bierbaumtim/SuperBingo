@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firedart/firedart.dart';
 
-import '../auth/secure_stoage_impl.dart';
+import '../auth/secure_storage_interface.dart';
 import '../auth/secure_token_repository.dart';
 import '../auth/secure_token_store.dart';
 import '../constants/firestore_data.dart';
@@ -27,7 +27,7 @@ class FirebaseService {
   }
 
   Future<void> _initFiredart() async {
-    final tokenRepo = SecureTokenRepository(const PlatformSecureStorage());
+    final tokenRepo = SecureTokenRepository(ISecureStorage());
     await tokenRepo.loadToken();
 
     FirebaseAuth.initialize(kFirestoreApiKey, SecureTokenStore(tokenRepo));

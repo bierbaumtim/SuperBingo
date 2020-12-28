@@ -6,21 +6,21 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
 
 import 'secure_storage_interface.dart';
 
-class PlatformSecureStorage implements ISecureStorage {
-  const PlatformSecureStorage();
+class IOSecureStorage implements ISecureStorage {
+  static const IOSecureStorage instance = IOSecureStorage._();
+
+  factory IOSecureStorage() => instance;
+
+  const IOSecureStorage._();
 
   @override
   Future<void> delete({String key}) async {
-    if (kIsWeb) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(key);
-    } else if (Platform.isWindows) {
+    if (Platform.isWindows) {
       final result = CredDelete(TEXT(key), CRED_TYPE_GENERIC, 0);
       if (result != TRUE) {
         final errorCode = GetLastError();
@@ -34,10 +34,7 @@ class PlatformSecureStorage implements ISecureStorage {
 
   @override
   Future<void> deleteAll() async {
-    if (kIsWeb) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.clear();
-    } else if (Platform.isWindows) {
+    if (Platform.isWindows) {
       throw UnimplementedError();
     } else {
       const storage = FlutterSecureStorage();
@@ -47,10 +44,7 @@ class PlatformSecureStorage implements ISecureStorage {
 
   @override
   Future<String> read({String key}) async {
-    if (kIsWeb) {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getString(key);
-    } else if (Platform.isWindows) {
+    if (Platform.isWindows) {
       final credPointer = allocate<Pointer<CREDENTIAL>>();
       final result = CredRead(
         TEXT(key),
@@ -77,18 +71,7 @@ class PlatformSecureStorage implements ISecureStorage {
 
   @override
   Future<Map<String, String>> readAll() async {
-    if (kIsWeb) {
-      final prefs = await SharedPreferences.getInstance();
-      final keys = prefs.getKeys();
-      final allStringValue = <String, String>{};
-      for (final key in keys) {
-        final value = await prefs.get(key);
-        if (value is String) {
-          allStringValue.putIfAbsent(key, () => value);
-        }
-      }
-      return allStringValue;
-    } else if (Platform.isWindows) {
+    if (Platform.isWindows) {
       throw UnimplementedError();
     } else {
       const storage = FlutterSecureStorage();
@@ -98,10 +81,7 @@ class PlatformSecureStorage implements ISecureStorage {
 
   @override
   Future<void> write({String key, String value}) async {
-    if (kIsWeb) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(key, value);
-    } else if (Platform.isWindows) {
+    if (Platform.isWindows) {
       final encodedValue = utf8.encode(value) as Uint8List;
       final blob = encodedValue.allocatePointer();
 
@@ -132,3 +112,5 @@ class PlatformSecureStorage implements ISecureStorage {
     }
   }
 }
+
+ISecureStorage getSecureStorage() => IOSecureStorage.instance;
