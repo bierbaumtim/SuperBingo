@@ -11,6 +11,7 @@ import '../bloc/blocs/interaction_bloc.dart';
 import '../bloc/events/current_game_events.dart';
 import '../bloc/events/interaction_events.dart';
 import '../bloc/states/current_game_states.dart';
+import '../constants/ui_constants.dart';
 import '../models/app_models/card.dart';
 import '../utils/dialogs.dart';
 import '../widgets/avatars/player_avatars.dart';
@@ -132,42 +133,113 @@ class _GamePageState extends State<GamePage> {
                   backgroundColor: Colors.deepOrangeAccent,
                   title: Text(title),
                 ),
-                backgroundColor: Colors.deepOrangeAccent,
+                // backgroundColor: Colors.deepOrangeAccent,
                 body: SafeArea(
                   child: Stack(
                     children: <Widget>[
-                      Positioned(
-                        top: 80,
-                        left: 76,
-                        right: 76,
-                        bottom: playerAvatarBottomPosition,
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Expanded(
-                                child: CardStack(
-                                  type: CardStackType.unplayedCards,
-                                  cards: unplayedCards,
-                                  // cards: defaultCardDeck,
+                      Center(
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final innerConstraints = constraints * 0.8;
+
+                            return ConstrainedBox(
+                              constraints: innerConstraints,
+                              child: AspectRatio(
+                                aspectRatio: innerConstraints.maxHeight >=
+                                        innerConstraints.maxWidth
+                                    ? 0.675
+                                    : 2,
+                                child: CustomPaint(
+                                  painter: VirtualTablePainter(),
+                                  child: SizedBox.expand(
+                                    child: Stack(
+                                      children: <Widget>[
+                                        Positioned.fill(
+                                          child: PlayerAvatars(
+                                            player: (state is CurrentGameLoaded)
+                                                ? state.game.players
+                                                : [],
+                                            currentPlayerUid:
+                                                (state is CurrentGameLoaded)
+                                                    ? state.game.currentPlayerId
+                                                    : '',
+                                          ),
+                                        ),
+                                        Center(
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              CardStack(
+                                                type:
+                                                    CardStackType.unplayedCards,
+                                                cards: unplayedCards,
+                                                // cards: defaultCardDeck,
+                                              ),
+                                              SizedBox(
+                                                width:
+                                                    innerConstraints.maxWidth *
+                                                        0.1,
+                                              ),
+                                              CardStack(
+                                                type: CardStackType.playedCards,
+                                                cards: playedCards,
+                                                // cards: defaultCardDeck,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: CardStack(
-                                  type: CardStackType.playedCards,
-                                  cards: playedCards,
-                                  // cards: defaultCardDeck,
-                                ),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
                       ),
+
+                      // Positioned(
+                      //   top: 80,
+                      //   left: 76,
+                      //   right: 76,
+                      //   bottom: playerAvatarBottomPosition,
+                      //   child: Align(
+                      //     alignment: Alignment.topCenter,
+                      //     child: Row(
+                      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //       mainAxisSize: MainAxisSize.min,
+                      //       children: <Widget>[
+                      //         Expanded(
+                      //           child: CardStack(
+                      //             type: CardStackType.unplayedCards,
+                      //             cards: unplayedCards,
+                      //             // cards: defaultCardDeck,
+                      //           ),
+                      //         ),
+                      //         const SizedBox(width: 20),
+                      //         Expanded(
+                      //           child: CardStack(
+                      //             type: CardStackType.playedCards,
+                      //             cards: playedCards,
+                      //             // cards: defaultCardDeck,
+                      //           ),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
+
                       // const CardHand(),
-                      const PlayerAvatars(),
+
+                      // PlayerAvatars(
+                      //   player: (state is CurrentGameLoaded)
+                      //       ? state.game.players
+                      //       : [],
+                      //   currentPlayerUid: (state is CurrentGameLoaded)
+                      //       ? state.game.currentPlayerId
+                      //       : '',
+                      // ),
+
                       // Positioned(
                       //   bottom: MediaQuery.of(context).size.height / 3,
                       //   right: 8,
@@ -178,32 +250,46 @@ class _GamePageState extends State<GamePage> {
                       //   ),
                       // ),
                       if (state is CurrentGameWaitingForPlayer) ...[
-                        if (state.self.isHost)
-                          Positioned(
-                            bottom: 2,
-                            left: 8,
-                            right: 8,
+                        IgnorePointer(
+                          child: SizedBox.expand(),
+                        ),
+                        BackdropFilter(
+                          filter: ImageFilter.blur(
+                            sigmaX: 5,
+                            sigmaY: 5,
+                          ),
+                          child: SizedBox.expand(
                             child: Center(
-                              child: RaisedButton(
-                                onPressed: () {
-                                  currentGameBloc.add(StartGame(
-                                    gameId: state.game.gameID,
-                                    self: state.self,
-                                  ));
-                                },
-                                child: const Text('Spiel starten'),
+                              child: Card(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      if (state.self.isHost)
+                                        RaisedButton(
+                                          onPressed: () {
+                                            print('Tapped');
+                                            // currentGameBloc.add(
+                                            //   StartGame(
+                                            //     gameId: state.game.gameID,
+                                            //     self: state.self,
+                                            //   ),
+                                            // );
+                                          },
+                                          child: const Text('Spiel starten'),
+                                        )
+                                      else
+                                        const Text(
+                                          'Warten auf weitere Spieler...',
+                                        ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
-                          )
-                        else
-                          const Positioned(
-                            bottom: 8,
-                            left: 8,
-                            right: 8,
-                            child: Center(
-                              child: Text('Warten auf weitere Spieler...'),
-                            ),
                           ),
+                        ),
                       ],
                       if (state is CurrentGameLoaded &&
                           state.game.isCompleted) ...[
@@ -302,4 +388,130 @@ class _GamePageState extends State<GamePage> {
       startingOverlay = null;
     }
   }
+}
+
+class VirtualTablePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final basePaint = Paint()..color = Colors.blueAccent;
+    final borderPaint = Paint()..color = Colors.black.withOpacity(0.1);
+    Path basePath, borderPath, upperPath;
+
+    if (size.width >= size.height) {
+      basePath = _buildHorizontalTableBaseShape(size);
+      borderPath = _buildHorizontalTableBaseShape(
+        Size(size.width * 0.95, size.height * 0.9),
+      ).shift(
+        Offset(size.width * 0.025, size.height * 0.05),
+      );
+      upperPath = _buildHorizontalTableBaseShape(
+        Size(size.width * 0.925, size.height * 0.85),
+      ).shift(
+        Offset(size.width * 0.0375, size.height * 0.075),
+      );
+    } else {
+      basePath = _buildVerticalTableBaseShape(size);
+      borderPath = _buildVerticalTableBaseShape(
+        Size(size.width * 0.9, size.height * 0.95),
+      ).shift(
+        Offset(size.width * 0.05, size.height * 0.025),
+      );
+      upperPath = _buildVerticalTableBaseShape(
+        Size(size.width * 0.85, size.height * 0.925),
+      ).shift(
+        Offset(size.width * 0.075, size.height * 0.0375),
+      );
+    }
+
+    canvas.drawPath(basePath, basePaint);
+    canvas.drawPath(borderPath, borderPaint);
+    canvas.drawPath(upperPath, basePaint);
+  }
+
+  Path _buildVerticalTableBaseShape(Size size) {
+    final innerHeight = size.height * kTableInnerSizeFactor;
+    final endsRadius = (size.height - innerHeight) / 2;
+
+    return Path()
+      ..addRect(
+        Rect.fromLTWH(
+          0,
+          endsRadius,
+          size.width,
+          innerHeight,
+        ),
+      )
+      ..arcTo(
+        Rect.fromLTWH(
+          0,
+          0,
+          size.width,
+          2 * endsRadius,
+        ),
+        0,
+        270,
+        true,
+      )
+      ..arcTo(
+        Rect.fromLTWH(
+          0,
+          size.height - (2 * endsRadius),
+          size.width,
+          2 * endsRadius,
+        ),
+        0,
+        270,
+        true,
+      );
+  }
+
+  Path _buildHorizontalTableBaseShape(Size size) {
+    final innerWidth = size.width * kTableInnerSizeFactor;
+    final endsRadius = (size.width - innerWidth) / 2;
+
+    // debugPrint('========= Painter =========');
+    // debugPrint('Size: $size');
+    // debugPrint('InnerWidth: $innerWidth');
+    // debugPrint('CalcWidth: ${innerWidth + 2 * endsRadius}');
+    // debugPrint('========= Painter =========');
+
+    return Path()
+      ..addRect(
+        Rect.fromLTWH(
+          endsRadius,
+          0,
+          innerWidth,
+          size.height,
+        ),
+      )
+      ..arcTo(
+        Rect.fromLTWH(
+          0,
+          0,
+          2 * endsRadius,
+          size.height,
+        ),
+        0,
+        270,
+        false,
+      )
+      ..arcTo(
+        Rect.fromLTWH(
+          size.width - (2 * endsRadius),
+          0,
+          2 * endsRadius,
+          size.height,
+        ),
+        -90,
+        180,
+        true,
+      )
+      ..close();
+  }
+
+  @override
+  bool shouldRepaint(VirtualTablePainter oldDelegate) => false;
+
+  @override
+  bool shouldRebuildSemantics(VirtualTablePainter oldDelegate) => false;
 }

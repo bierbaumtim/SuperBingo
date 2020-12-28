@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/app_models/player.dart';
+import '../../models/ui_models/player_avatar_coordinates.dart';
 
 /// {@template playeravatar}
 /// Avatarähnliches Widget mit großem Anfangsbuchstaben des Namen des Spielers in der Mitte und der Anzahl der Karten des Spielers.
@@ -10,7 +11,7 @@ class PlayerAvatar extends StatelessWidget {
   /// {@macro playeravatar}
   const PlayerAvatar({
     Key key,
-    @required this.postitionCoordinates,
+    @required this.positionCoordinates,
     @required this.player,
     this.isCurrentPlayer = false,
   }) : super(key: key);
@@ -19,7 +20,7 @@ class PlayerAvatar extends StatelessWidget {
   final Player player;
 
   /// Position des Avatars
-  final Map<String, double> postitionCoordinates;
+  final PlayerAvatarCoordinates positionCoordinates;
 
   final bool isCurrentPlayer;
 
@@ -27,56 +28,49 @@ class PlayerAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Positioned(
-      left: postitionCoordinates['left'],
-      bottom: postitionCoordinates['bottom'],
-      right: postitionCoordinates['right'],
-      top: postitionCoordinates['top'],
-      child: SizedBox(
-        width: 52,
-        height: 60,
-        child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            if (isCurrentPlayer)
-              Align(
-                alignment: Alignment.topCenter,
-                child: SizedBox(
-                  width: 50,
-                  height: 50,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: Colors.greenAccent[700],
-                          blurRadius: 2,
-                          spreadRadius: 1,
-                        ),
-                        BoxShadow(
-                          color: Colors.greenAccent[400],
-                          blurRadius: 4,
-                          spreadRadius: 2,
-                        ),
-                        BoxShadow(
-                          color: Colors.greenAccent[100],
-                          blurRadius: 8,
-                          spreadRadius: 3,
-                        ),
-                        const BoxShadow(
-                          color: Colors.greenAccent,
-                          blurRadius: 12,
-                          spreadRadius: 4,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+    Widget child = SizedBox(
+      width: 52,
+      child: Stack(
+        children: <Widget>[
+          if (isCurrentPlayer)
             Align(
               alignment: Alignment.topCenter,
               child: SizedBox(
+                width: 50,
+                height: 50,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Colors.greenAccent[700],
+                        blurRadius: 2,
+                        spreadRadius: 1,
+                      ),
+                      BoxShadow(
+                        color: Colors.greenAccent[400],
+                        blurRadius: 4,
+                        spreadRadius: 2,
+                      ),
+                      BoxShadow(
+                        color: Colors.greenAccent[100],
+                        blurRadius: 8,
+                        spreadRadius: 3,
+                      ),
+                      const BoxShadow(
+                        color: Colors.greenAccent,
+                        blurRadius: 12,
+                        spreadRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          Column(
+            children: <Widget>[
+              SizedBox(
                 width: 50,
                 height: 50,
                 child: Material(
@@ -95,63 +89,61 @@ class PlayerAvatar extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              top: 0,
-              right: 0,
-              child: FractionalTranslation(
-                translation: const Offset(.175, -.175),
-                child: Container(
-                  width: 18,
-                  height: 18,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Colors.red,
-                  ),
-                  padding: const EdgeInsets.all(3),
-                  child: Text(
-                    '${player.cards.length}',
-                    // '30',
-                    style: const TextStyle(
-                      fontSize: 10,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+              const SizedBox(height: 8),
+              Text(
+                player?.name ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.visible,
+                style: theme.textTheme.bodyText2,
+                textAlign: TextAlign.center,
               ),
-            ),
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
+            ],
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: FractionalTranslation(
+              translation: const Offset(.175, -.175),
               child: Container(
+                width: 20,
+                height: 20,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.red,
                 ),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 2.5, horizontal: 6),
-                child: ClipRRect(
-                  child: Material(
-                    elevation: 14,
-                    color: Colors.black,
-                    child: Text(
-                      player?.name ?? '',
-                      maxLines: 1,
-                      overflow: TextOverflow.visible,
-                      style: theme.textTheme.bodyText2.copyWith(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                padding: const EdgeInsets.all(3),
+                child: Text(
+                  // '${player.cards.length}',
+                  '30',
+                  style: const TextStyle(
+                    fontSize: 10,
                   ),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
+    );
+
+    if (positionCoordinates.horizontalTranslation != 0 ||
+        positionCoordinates.verticalTranslation != 0) {
+      child = FractionalTranslation(
+        translation: Offset(
+          positionCoordinates.horizontalTranslation,
+          positionCoordinates.verticalTranslation,
+        ),
+        child: child,
+      );
+    }
+
+    return Positioned(
+      left: positionCoordinates.left,
+      bottom: positionCoordinates.bottom,
+      right: positionCoordinates.right,
+      top: positionCoordinates.top,
+      child: child,
     );
   }
 
