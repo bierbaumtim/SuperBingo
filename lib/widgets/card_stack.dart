@@ -6,7 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:vector_math/vector_math.dart' show radians;
 
 import '../bloc/blocs/current_game_bloc.dart';
-import '../bloc/events/current_game_events.dart' as events;
+import '../bloc/events/current_game_events.dart' show DrawCard;
 import '../models/app_models/card.dart';
 import 'play_card.dart';
 
@@ -43,7 +43,7 @@ class CardStack extends StatefulWidget {
 }
 
 class _CardStackState extends State<CardStack> {
-  List<Map<String, dynamic>> cards;
+  List<_CardStackVisualCard> cards;
 
   @override
   void initState() {
@@ -71,30 +71,30 @@ class _CardStackState extends State<CardStack> {
       children: cards.map<Widget>(
         (c) {
           final playCard = PlayCard(
-            card: c['card'] as GameCard,
-            elevation: c['elevation'] as double,
+            card: c.card,
+            elevation: c.elevation,
             isFlipped: widget.type == CardStackType.unplayedCards,
             onCardTap: (card) {
               if (widget.type == CardStackType.unplayedCards) {
-                context.read<CurrentGameBloc>().add(const events.DrawCard());
+                context.read<CurrentGameBloc>().add(const DrawCard());
               }
             },
-            shouldPaint: c['index'] as int >= cards.length - 5,
+            shouldPaint: c.index >= cards.length - 5,
           );
 
-          if (c['translationX'] == null &&
-              c['translationY'] == null &&
-              c['angle'] == 0.0) {
+          if (c.translationX == null &&
+              c.translationY == null &&
+              c.angle == 0.0) {
             return playCard;
           } else {
             return Transform(
               transform: Matrix4.identity()
                 ..translate(
-                  c['translationX'] as double,
-                  c['translationY'] as double,
+                  c.translationX,
+                  c.translationY,
                 ),
               child: Transform.rotate(
-                angle: c['angle'] as double,
+                angle: c.angle,
                 child: playCard,
               ),
             );
@@ -106,7 +106,7 @@ class _CardStackState extends State<CardStack> {
 
   void buildVisualEffects() {
     final rn = Random();
-    cards = widget.cards.map<Map<String, dynamic>>(
+    cards = widget.cards.map<_CardStackVisualCard>(
       (c) {
         final index = widget.cards.indexOf(c);
         double translationY, translationX, elevation = 0.0, angle = 0.0;
@@ -130,15 +130,33 @@ class _CardStackState extends State<CardStack> {
           elevation = index - (widget.cards.length - 10.0);
         }
 
-        return <String, dynamic>{
-          'card': c,
-          'index': index,
-          'elevation': elevation,
-          'angle': angle,
-          'translationX': translationX,
-          'translationY': translationY,
-        };
+        return _CardStackVisualCard(
+          card: c,
+          index: index,
+          elevation: elevation,
+          angle: angle,
+          translationX: translationX,
+          translationY: translationY,
+        );
       },
     ).toList();
   }
+}
+
+class _CardStackVisualCard {
+  final GameCard card;
+  final int index;
+  final double elevation;
+  final double angle;
+  final double translationX;
+  final double translationY;
+
+  _CardStackVisualCard({
+    @required this.card,
+    @required this.index,
+    @required this.elevation,
+    @required this.angle,
+    @required this.translationX,
+    @required this.translationY,
+  });
 }
