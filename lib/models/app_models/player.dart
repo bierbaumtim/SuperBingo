@@ -106,7 +106,7 @@ class Player with EquatableMixin {
     assert(id != null);
     final activePlayer =
         player.filter((player) => player.finishPosition == 0).toList();
-    var index = activePlayer.indexWhere((p) => p.id == id) ?? -1;
+    var index = activePlayer?.indexWhere((p) => p.id == id) ?? -1;
     index = skipNextPlayer ? index + 2 : index + 1;
     if (index > activePlayer.length - 1) {
       index = 0;
