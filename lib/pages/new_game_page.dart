@@ -3,12 +3,12 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:share/share.dart';
 import 'package:supercharged/supercharged.dart';
 
 import '../bloc/blocs/game_configuration_bloc.dart';
 import '../bloc/events/game_events.dart';
 import '../bloc/states/game_states.dart';
+import '../services/share_service/share_service_interface.dart';
 import '../utils/dialogs.dart';
 import '../widgets/loading_widget.dart';
 
@@ -229,7 +229,7 @@ class _NewGamePageState extends State<NewGamePage> {
                                   borderRadius: BorderRadius.circular(40),
                                 ),
                                 onPressed: canShare
-                                    ? () async => Share.share(
+                                    ? () async => IShareService().share(
                                           snapshot.data,
                                           subject: 'SuperBingo Spieleinladung',
                                         )
@@ -270,6 +270,7 @@ class _NewGamePageState extends State<NewGamePage> {
   void hideGameCreationOverlay() {
     if (_gameCreationOverlay != null) {
       _gameCreationOverlay?.remove();
+      _gameCreationOverlay = null;
     }
   }
 }
