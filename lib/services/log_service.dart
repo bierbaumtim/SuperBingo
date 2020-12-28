@@ -18,7 +18,11 @@ class LogService {
     Iterable<DiagnosticsNode> information,
     bool printDetails,
   }) {
-    if (!isDesktop) {
+    if (isDesktop || kIsWeb) {
+      debugPrint(exception.toString());
+      debugPrintStack(stackTrace: stackTrace);
+      return Future.value();
+    } else {
       return FirebaseCrashlytics.instance.recordError(
         exception,
         stackTrace,
@@ -26,21 +30,17 @@ class LogService {
         information: information,
         printDetails: printDetails,
       );
-    } else {
-      debugPrint(exception.toString());
-      debugPrintStack(stackTrace: stackTrace);
-      return Future.value();
     }
   }
 
   Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) {
-    if (!isDesktop) {
+    if (isDesktop || kIsWeb) {
+      FlutterError.dumpErrorToConsole(flutterErrorDetails);
+      return Future.value();
+    } else {
       return FirebaseCrashlytics.instance.recordFlutterError(
         flutterErrorDetails,
       );
-    } else {
-      FlutterError.dumpErrorToConsole(flutterErrorDetails);
-      return Future.value();
     }
   }
 }

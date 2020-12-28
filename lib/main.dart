@@ -35,14 +35,17 @@ void main() async {
     () => runApp(
       MultiProvider(
         providers: <SingleChildWidget>[
-          Provider<PublicGamesBloc>(
-            create: (_) => PublicGamesBloc(),
-            dispose: (_, bloc) => bloc.dispose(),
-          ),
           Provider<INetworkService>(
             create: (_) => FirebaseService.instance.networkService,
             dispose: (_, service) => service.dispose(),
             lazy: false,
+          ),
+          Provider<PublicGamesBloc>(
+            create: (context) => PublicGamesBloc(
+              context.read<INetworkService>(),
+            ),
+            dispose: (_, bloc) => bloc.dispose(),
+            lazy: true,
           ),
         ],
         child: MultiBlocProvider(
@@ -80,3 +83,6 @@ void main() async {
     LogService.instance.recordError,
   );
 }
+
+
+// C:\Users\Tb270\Downloads\protobuf-protobuf-1.0.1\protobuf-protobuf-1.0.1\protoc_plugin\bin
