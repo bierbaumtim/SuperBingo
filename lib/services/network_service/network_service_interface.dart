@@ -24,6 +24,15 @@ abstract class INetworkService {
   Future<void> dispose();
 
   Future<Game> getGameById(String id);
+
+  /// Public Games Section
+
+  Stream<List<Game>> get publicGamesStream;
+  Future<List<Game>> getPublicGames();
+
+  void initPublicGamesStream();
+  void pausePublicGamesStream();
+  void resumePublicGamesStream();
 }
 
 class GameMetaInformation {
@@ -34,4 +43,10 @@ class GameMetaInformation {
     @required this.id,
     @required this.path,
   });
+}
+
+class PermissionError extends Error {
+  final String message;
+
+  PermissionError(this.message);
 }

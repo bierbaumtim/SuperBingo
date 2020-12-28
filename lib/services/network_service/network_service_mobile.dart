@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rxdart/rxdart.dart';
@@ -16,10 +17,13 @@ class NetworkServiceMobile implements INetworkService {
   final FirebaseFirestore _db;
   Game _previousGame, _currentGame;
   BehaviorSubject<Game> _gameChangedController;
+  BehaviorSubject<List<Game>> _publicGamesController;
   StreamSubscription<Game> _gameSub;
+  StreamSubscription<QuerySnapshot> _publicGamesSub;
 
   NetworkServiceMobile(this._db) {
     _gameChangedController = BehaviorSubject<Game>();
+    _publicGamesController = BehaviorSubject<List<Game>>.seeded(<Game>[]);
   }
 
   @override
@@ -30,6 +34,9 @@ class NetworkServiceMobile implements INetworkService {
 
   @override
   Stream<Game> get gameChangedStream => _gameChangedController.stream;
+
+  @override
+  Stream<List<Game>> get publicGamesStream => _publicGamesController.stream;
 
   @override
   Future<bool> setupSubscription(String gameId) async {
@@ -120,6 +127,8 @@ class NetworkServiceMobile implements INetworkService {
   @override
   Future<void> dispose() async {
     await _gameChangedController.close();
+    await _publicGamesController.close();
+    await _publicGamesSub.cancel();
     await cancelSubscription();
   }
 
@@ -137,8 +146,65 @@ class NetworkServiceMobile implements INetworkService {
           .recordError('newGame is null: $newGame', StackTrace.current);
     }
   }
-}
 
-/// Actions describing the current game state.
-/// Also each actions are indicators for the UI to start animations or other stuff
-enum Action { playCard, startGame, dealCards }
+  @override
+  Future<List<Game>> getPublicGames() async {
+    try {
+      final snapshot = await _db.collection('games').get();
+      return _getPublicGamesFromQuerySnapshot(snapshot);
+    } on dynamic catch (e, s) {
+      LogService.instance.recordError(e, s);
+      return <Game>[];
+    }
+  }
+
+  @override
+  void initPublicGamesStream() {
+    _publicGamesSub =
+        _db.collection('games').snapshots().listen(_handleSnapshot);
+  }
+
+  @override
+  void pausePublicGamesStream() {
+    _publicGamesSub.pause();
+  }
+
+  @override
+  void resumePublicGamesStream() {
+    _publicGamesSub.resume();
+  }
+
+  List<Game> _getPublicGamesFromQuerySnapshot(QuerySnapshot snapshot) {
+    try {
+      final games =
+          snapshot.docs.map<Game>((g) => Game.fromJson(g.data())).toList();
+      return games
+          .where((game) =>
+              game.isPublic && game.state == GameState.waitingForPlayer)
+          .toList();
+    } on dynamic catch (e, s) {
+      LogService.instance.recordError(e, s);
+      return <Game>[];
+    }
+  }
+
+  void _handleSnapshot(QuerySnapshot snapshot) {
+    try {
+      _publicGamesController.sink
+          .add(_getPublicGamesFromQuerySnapshot(snapshot));
+    } on PlatformException catch (e) {
+      if (e.message.contains('PERMISSION_DENIED')) {
+        _publicGamesController.sink.addError(
+          PermissionError(
+            e.message.replaceAll('PERMISSION_DENIED:', '').trim(),
+          ),
+        );
+      } else {
+        _publicGamesController.sink.addError(Error());
+      }
+    } on dynamic catch (e, s) {
+      LogService.instance.recordError(e, s);
+      _publicGamesController.sink.addError(Error());
+    }
+  }
+}
