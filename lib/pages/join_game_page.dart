@@ -6,9 +6,11 @@ import 'package:provider/provider.dart';
 
 import '../bloc/blocs/join_game_bloc.dart';
 import '../bloc/blocs/open_games_bloc.dart';
+import '../bloc/events/join_game_events.dart';
 import '../bloc/states/join_game_states.dart';
 import '../constants/enums.dart';
 import '../models/app_models/game.dart';
+import '../services/network_service/network_service_interface.dart';
 import '../widgets/game_card.dart';
 import '../widgets/loading_widget.dart';
 
@@ -22,9 +24,17 @@ class JoinGamePage extends StatefulWidget {
 
 class _JoinGamePageState extends State<JoinGamePage> {
   OverlayEntry _joiningOverlay;
+  TextEditingController linkController;
+
+  @override
+  void initState() {
+    super.initState();
+    linkController = TextEditingController();
+  }
 
   @override
   void dispose() {
+    linkController.dispose();
     hideJoiningOverlay();
     super.dispose();
   }
@@ -56,41 +66,71 @@ class _JoinGamePageState extends State<JoinGamePage> {
             ),
           ],
         ),
-        body: StreamBuilder<List<Game>>(
-          stream: publicGamesBloc.publicGamesStream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.data.isEmpty) {
-                return const Center(
-                  child: Text('Es sind keine offenen Spiele verfügbar.'),
-                );
-              } else {
-                return RefreshIndicator(
-                  onRefresh: publicGamesBloc.getPublicGames,
-                  child: ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      final game = snapshot.data.elementAt(index);
-
-                      return GameCard(game: game);
-                    },
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: linkController,
+                      decoration: InputDecoration(
+                        hintText: 'Link zum Spiel einfügen',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
                   ),
-                );
-              }
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                  snapshot.error is PermissionError
-                      ? (snapshot.error as PermissionError).message
-                      : 'Beim Laden der Spiele ist ein Fehler aufgetreten.\nBitte versuche es später erneut.',
-                ),
-              );
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          },
+                  const SizedBox(width: 8),
+                  IconButton(
+                    icon: Icon(Icons.send),
+                    onPressed: () =>
+                        joinGameBloc.add(JoinWithLink(linkController.text)),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(),
+            Expanded(
+              child: StreamBuilder<List<Game>>(
+                stream: publicGamesBloc.publicGamesStream,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    if (snapshot.data.isEmpty) {
+                      return const Center(
+                        child: Text('Es sind keine offenen Spiele verfügbar.'),
+                      );
+                    } else {
+                      return RefreshIndicator(
+                        onRefresh: publicGamesBloc.getPublicGames,
+                        child: ListView.builder(
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) {
+                            final game = snapshot.data.elementAt(index);
+
+                            return GameCard(game: game);
+                          },
+                        ),
+                      );
+                    }
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        snapshot.error is PermissionError
+                            ? (snapshot.error as PermissionError).message
+                            : 'Beim Laden der Spiele ist ein Fehler aufgetreten.\nBitte versuche es später erneut.',
+                      ),
+                    );
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
