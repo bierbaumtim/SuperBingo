@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,10 +76,12 @@ class _StartPageState extends State<StartPage> {
         BlocListener<GameConfigurationBloc, GameConfigurationState>(
           listener: (context, state) {
             if (state is GameCreated) {
-              context.read<CurrentGameBloc>().add(OpenGameWaitingLobby(
-                    gameId: state.gameId,
-                    self: state.self,
-                  ));
+              context.read<CurrentGameBloc>().add(
+                    OpenGameWaitingLobby(
+                      gameId: state.gameId,
+                      self: state.self,
+                    ),
+                  );
             } else if (state is GameCreationFailed) {
               showSimpleNotification(
                 Text(state.error),
@@ -102,11 +105,11 @@ class _StartPageState extends State<StartPage> {
               icon: const Icon(Icons.person),
               onPressed: () => Navigator.pushNamed(context, '/user_page'),
             ),
-            IconButton(
-              icon: Icon(Icons.bug_report),
-              onPressed: () =>
-                  Navigator.of(context).pushNamed('/desktop_game_page_debug'),
-            ),
+            if (!kReleaseMode)
+              IconButton(
+                icon: Icon(Icons.bug_report),
+                onPressed: () => Navigator.of(context).pushNamed('/game'),
+              ),
           ],
         ),
         body: LayoutBuilder(
