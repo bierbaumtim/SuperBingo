@@ -99,7 +99,6 @@ class _GamePageState extends State<GamePage> {
             showTimerOverlay(duration: const Duration(seconds: 4));
             await Future.delayed(const Duration(seconds: 4), () {
               if (showCallBingoButton) {
-                hideTimerOverlay();
                 setState(() => showCallBingoButton = false);
                 currentGameBloc.add(const DrawCard());
               }
@@ -294,7 +293,15 @@ class _GamePageState extends State<GamePage> {
                       builder: (context) {
                         if (state is CurrentGameLoaded) {
                           if (state.self.cards.isEmpty) {
-                            if (state.self.finishPosition <= 0) {
+                            if (showCallBingoButton) {
+                              return const Padding(
+                                padding: EdgeInsets.all(12),
+                                child: Text(
+                                  'Vergiss nicht Superbingo zu rufen!',
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            } else if (state.self.finishPosition <= 0) {
                               return Padding(
                                 padding: const EdgeInsets.all(12),
                                 child: Column(
@@ -489,11 +496,19 @@ class _TimerTextState extends State<TimerText> {
     SchedulerBinding.instance.addPostFrameCallback(
       (_) => timer = Timer.periodic(
         widget.duration,
-        (_) => setState(
-          () => math.min(0, remainingSeconds--),
-        ),
+        (_) {
+          if (remainingSeconds > 0) {
+            setState(() => remainingSeconds--);
+          }
+        },
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
