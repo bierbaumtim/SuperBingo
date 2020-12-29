@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/blocs/info_bloc.dart';
 import '../bloc/blocs/join_game_bloc.dart';
 import '../bloc/events/join_game_events.dart';
+import '../bloc/states/info_states.dart';
 import '../models/app_models/game.dart';
 
 class GameCard extends StatelessWidget {
@@ -24,11 +26,15 @@ class GameCard extends StatelessWidget {
         ),
         trailing: RaisedButton(
           color: Colors.deepOrangeAccent,
-          onPressed: () => context.read<JoinGameBloc>().add(
-                JoinGame(
-                  game.gameID,
-                ),
-              ),
+          onPressed: () async {
+            if (await _checkPlayer(context)) {
+              context.read<JoinGameBloc>().add(
+                    JoinGame(
+                      game.gameID,
+                    ),
+                  );
+            }
+          },
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25),
           ),
@@ -42,4 +48,13 @@ class GameCard extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<bool> _checkPlayer(BuildContext context) async {
+  if (context.read<InfoBloc>().state is! InfosLoaded) {
+    final result =
+        await Navigator.of(context).pushNamed('/user_page') as String;
+    return result != null && result.isNotEmpty;
+  }
+  return true;
 }
