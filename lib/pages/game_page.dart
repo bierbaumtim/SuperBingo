@@ -6,14 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:list_wheel_scroll_view_x/list_wheel_scroll_view_x.dart';
-
-import 'package:superbingo/constants/enums.dart';
-import 'package:superbingo/models/app_models/game.dart';
-import 'package:superbingo/models/app_models/player.dart';
-import 'package:superbingo/services/share_service/share_service_interface.dart';
-import 'package:superbingo/widgets/horizontal_card_listview.dart';
-import 'package:superbingo/widgets/play_card.dart';
 
 import '../bloc/blocs/current_game_bloc.dart';
 import '../bloc/blocs/interaction_bloc.dart';
@@ -21,12 +13,17 @@ import '../bloc/events/current_game_events.dart'
     show LeaveGame, DrawCard, StartGame, EndGame;
 import '../bloc/events/interaction_events.dart';
 import '../bloc/states/current_game_states.dart';
+import '../constants/enums.dart';
 import '../constants/ui_constants.dart';
 import '../models/app_models/card.dart';
+import '../models/app_models/game.dart';
+import '../models/app_models/player.dart';
+import '../services/share_service/share_service_interface.dart';
 import '../utils/dialogs.dart';
 import '../widgets/avatars/player_avatars.dart';
 import '../widgets/card_scroll_view.dart';
 import '../widgets/card_stack.dart';
+import '../widgets/horizontal_card_listview.dart';
 import '../widgets/loading_widget.dart';
 
 class GamePage extends StatefulWidget {
@@ -56,9 +53,6 @@ class _GamePageState extends State<GamePage> {
   @override
   Widget build(BuildContext context) {
     final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
-
-    final height = MediaQuery.of(context).size.height;
-    final playerAvatarBottomPosition = (height - kToolbarHeight) / 2.1;
 
     return WillPopScope(
       onWillPop: () async {
@@ -250,7 +244,7 @@ class _GamePageState extends State<GamePage> {
                     title: Text(title),
                   ),
                   body: baseChild,
-                  floatingActionButton: isSuperBingo | true
+                  floatingActionButton: showCallBingoButton
                       ? FloatingActionButton.extended(
                           icon: Icon(Icons.volume_up),
                           label: Text(
@@ -341,7 +335,7 @@ class _GamePageState extends State<GamePage> {
                   ),
                 ],
               ),
-              floatingActionButton: isSuperBingo | true
+              floatingActionButton: showCallBingoButton
                   ? FloatingActionButton.extended(
                       icon: Icon(Icons.volume_up),
                       label: Text(
