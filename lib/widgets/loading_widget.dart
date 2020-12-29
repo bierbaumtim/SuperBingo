@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class Loading extends StatelessWidget {
@@ -17,7 +18,7 @@ class Loading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (Platform.isIOS) {
+    if (!kIsWeb && Platform.isIOS) {
       return Center(
         child: Material(
           color: Colors.transparent,
@@ -37,7 +38,7 @@ class Loading extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          const CircularProgressIndicator(),
+          const CircularProgressIndicator.adaptive(),
           Padding(
             padding: padding,
             child: Material(
