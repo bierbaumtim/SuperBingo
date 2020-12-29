@@ -89,14 +89,7 @@ PlayerAvatarCoordinates _getVerticalPositionCoordinates(
     case 7:
       return positionVerticalLeftTop(constraints);
     default:
-      return PlayerAvatarCoordinates(
-        left: 0,
-        top: 0,
-        right: null,
-        bottom: null,
-        horizontalTranslation: 0,
-        verticalTranslation: 0,
-      );
+      return defaultPlayerAvatarCoordinates;
   }
 }
 
@@ -159,16 +152,18 @@ PlayerAvatarCoordinates _getHorizontalPositionCoordinates(
     case 7:
       return positionHorizontalBottomLeft(constraints);
     default:
-      return PlayerAvatarCoordinates(
-        left: 0,
-        top: 0,
-        right: null,
-        bottom: null,
-        horizontalTranslation: 0,
-        verticalTranslation: 0,
-      );
+      return defaultPlayerAvatarCoordinates;
   }
 }
+
+const defaultPlayerAvatarCoordinates = PlayerAvatarCoordinates(
+  left: 0,
+  top: 0,
+  right: null,
+  bottom: null,
+  horizontalTranslation: 0,
+  verticalTranslation: 0,
+);
 
 /// ========== Horizontal Positions ==========
 

@@ -14,7 +14,7 @@ void main() {
   group('Utils tests ->', () {
     group('UI tils tests ->', () {
       group('getPositionCoordinates tests ->', () {
-        final constraints = BoxConstraints.tightFor(width: 1920, height: 1080);
+        const constraints = BoxConstraints.tightFor(width: 1920, height: 1080);
 
         test('1 player', () {
           final coordinates = getPositionCoordinates(0, 1, constraints);

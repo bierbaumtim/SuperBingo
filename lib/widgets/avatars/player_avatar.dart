@@ -113,8 +113,8 @@ class PlayerAvatar extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.all(3),
                 child: Text(
-                  // '${player.cards.length}',
-                  '30',
+                  '${player.cards.length}',
+                  // '30',
                   style: const TextStyle(
                     fontSize: 10,
                   ),

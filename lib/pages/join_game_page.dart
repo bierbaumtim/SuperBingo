@@ -76,7 +76,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
                   Expanded(
                     child: TextField(
                       controller: linkController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Link zum Spiel einfügen',
                         border: OutlineInputBorder(),
                       ),
@@ -84,7 +84,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    icon: Icon(Icons.send),
+                    icon: const Icon(Icons.send),
                     onPressed: () =>
                         joinGameBloc.add(JoinWithLink(linkController.text)),
                   ),

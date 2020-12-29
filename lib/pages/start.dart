@@ -107,7 +107,7 @@ class _StartPageState extends State<StartPage> {
             ),
             if (!kReleaseMode)
               IconButton(
-                icon: Icon(Icons.bug_report),
+                icon: const Icon(Icons.bug_report),
                 onPressed: () => Navigator.of(context).pushNamed('/game'),
               ),
           ],
@@ -138,7 +138,6 @@ class _StartPageState extends State<StartPage> {
                             padding: EdgeInsets.all(
                                 math.max(16, joinGameCardHeight * 0.05)),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: <Widget>[
                                 Expanded(
@@ -159,7 +158,7 @@ class _StartPageState extends State<StartPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       StreamBuilder<List<Game>>(
-                                        initialData: [],
+                                        initialData: const [],
                                         stream:
                                             publicGamesBloc.publicGamesStream,
                                         builder: (context, snapshot) {

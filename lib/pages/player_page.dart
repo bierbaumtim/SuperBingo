@@ -75,7 +75,7 @@ class _PlayerPageState extends State<PlayerPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.deepOrange,
-        label: Text('Spieler erstellen'),
+        label: const Text('Spieler erstellen'),
         icon: const Icon(Icons.arrow_forward_ios),
         onPressed: () async {
           if (username.isNotEmpty) {

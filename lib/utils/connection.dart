@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:connectivity/connectivity.dart';
 import 'package:flutter/foundation.dart';
+
+import 'package:connectivity/connectivity.dart';
 
 import 'configuration_utils.dart';
 
@@ -42,7 +43,8 @@ class Connection {
     if (isDesktop) {
       _currentConnectivityResult = ConnectivityResult.wifi;
       _hasConnection = await isConnected;
-      _connectivityListener =const Stream<ConnectivityResult>.empty().listen((_) {});
+      _connectivityListener =
+          const Stream<ConnectivityResult>.empty().listen((_) {});
     } else {
       _currentConnectivityResult = await Connectivity().checkConnectivity();
       _hasConnection = await isConnected;
@@ -61,8 +63,9 @@ class Connection {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         return true;
       }
-    } on dynamic catch (e) {
-      print(e);
+    } on dynamic catch (e, s) {
+      debugPrint(e.toString());
+      debugPrintStack(stackTrace: s);
       return false;
     }
     return false;

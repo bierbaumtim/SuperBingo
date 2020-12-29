@@ -203,7 +203,7 @@ class _GamePageState extends State<GamePage> {
               //   ),
               // ),
               if (state is CurrentGameWaitingForPlayer) ...[
-                IgnorePointer(
+                const IgnorePointer(
                   child: SizedBox.expand(),
                 ),
                 _LobbyOverlay(
@@ -234,8 +234,7 @@ class _GamePageState extends State<GamePage> {
                     : 0,
                 maxHeight: constraints.maxHeight - kToolbarHeight - 20,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                isDraggable:
-                    true, // state is CurrentGameLoaded && state.game.isRunning,
+                isDraggable: state is CurrentGameLoaded && state.game.isRunning,
                 panelSnapping: false,
                 panel: CardScrollView(),
                 body: Scaffold(
@@ -246,7 +245,7 @@ class _GamePageState extends State<GamePage> {
                   body: baseChild,
                   floatingActionButton: showCallBingoButton
                       ? FloatingActionButton.extended(
-                          icon: Icon(Icons.volume_up),
+                          icon: const Icon(Icons.volume_up),
                           label: Text(
                             'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
                           ),
@@ -301,7 +300,7 @@ class _GamePageState extends State<GamePage> {
                                 ),
                               );
                             } else {
-                              return Padding(
+                              return const Padding(
                                 padding: EdgeInsets.all(12),
                                 child: Text(
                                   'Du bist fertig. Warte bis alle ihre Karten abgelegt haben.',
@@ -337,7 +336,7 @@ class _GamePageState extends State<GamePage> {
               ),
               floatingActionButton: showCallBingoButton
                   ? FloatingActionButton.extended(
-                      icon: Icon(Icons.volume_up),
+                      icon: const Icon(Icons.volume_up),
                       label: Text(
                         'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
                       ),
@@ -434,10 +433,10 @@ class _CompletedGameOverlay extends StatelessWidget {
                   ),
                 );
               } else {
-                return Card(
+                return const Card(
                   elevation: 4,
                   child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: EdgeInsets.all(16),
                     child: Text(
                       'Das Spiel ist vorbei.',
                       textAlign: TextAlign.center,

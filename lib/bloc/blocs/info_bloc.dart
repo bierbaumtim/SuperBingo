@@ -65,10 +65,10 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
   }
 
   Future<void> _loginUserAnonymous({bool forceLogin = false}) async {
-    if (forceLogin || (await auth.isUserLoggedIn)) {
+    if (forceLogin || auth.isUserLoggedIn) {
       await auth.signInAnonymously();
     }
   }
 
-  Future<String> get userUid async => await auth.userId;
+  Future<String> get userUid async => auth.userId;
 }
