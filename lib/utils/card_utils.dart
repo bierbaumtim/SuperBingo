@@ -76,7 +76,7 @@ bool isNumberCard(CardNumber number) =>
   var angle = 160 / length;
   double rotationAngle;
   if (angle >= 50) angle = 20;
-  final middle = getMiddleIndex(List.generate(length, (_) => ''));
+  final middle = getMiddleIndex(List<String>.generate(length, (_) => ''));
 
   if (index >= middle || index <= middle) {
     angle = -90 - (angle * (middle - index));
