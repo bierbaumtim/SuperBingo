@@ -71,11 +71,11 @@ class GameConfigurationBloc
       );
 
       final gameDoc = await networkService.addGame(game);
+      game = game.copyWith(gameId: gameDoc.id);
       _gameId = gameDoc.id;
-      _gameLink = 'superbingo://id:$_gameId|name:${game.name}';
+      _gameLink = game.link;
       _gameLinkSink.add(_gameLink);
 
-      game = game.copyWith(gameId: _gameId);
 
       await networkService.updateGameData(
         <String, dynamic>{

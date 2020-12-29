@@ -85,7 +85,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   Stream<JoinGameState> _mapJoinWithLinkToState(JoinWithLink event) async* {
     try {
       final linkData = parseGameLink(event.gameLink);
-      yield* _mapJoinGameToState(JoinGame(linkData['gameid'] as String));
+      yield* _mapJoinGameToState(JoinGame(linkData));
     } on UnsupportedGameLinkException catch (e, s) {
       await LogService.instance.recordError(e, s);
       yield const JoinGameFailed('Der Link wird nicht unterstützt.');
@@ -99,18 +99,14 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
     }
   }
 
-  Map<String, dynamic> parseGameLink(String link) {
-    // superbingo://id:$gameId|name:${game.name}
+  String parseGameLink(String link) {
+    // superbingo://id:$gameId
 
-    final parts = link.replaceAll('superbingo://', '').split('|');
-    if (parts.isNotEmpty) {
-      final id = parts.first.replaceAll('id:', '');
-      final name = parts.last.replaceAll('name:', '');
+    if (link.isNotEmpty &&
+        RegExp(r'superbingo:\/\/id:.+').allMatches(link).length == 1) {
+      final id = link.replaceAll('superbingo://', '').replaceAll('id:', '');
 
-      return <String, dynamic>{
-        'gameid': id,
-        'gamename': name,
-      };
+      return id;
     } else {
       throw UnsupportedGameLinkException();
     }

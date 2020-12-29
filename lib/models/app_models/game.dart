@@ -142,7 +142,7 @@ class Game with EquatableMixin {
 
   bool get isCompleted => state == GameState.gameCompleted;
 
-  String get link => 'superbingo://id:$gameID|name:$name';
+  String get link => 'superbingo://id:$gameID';
 
   /// Überschreibt aktuelles Object mit bestimmten neuen Werten
   Game copyWith({
