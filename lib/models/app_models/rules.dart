@@ -22,7 +22,7 @@ class Rules {
       return true;
     } else if (card.color == topCard.color || card.number == topCard.number) {
       return true;
-    } else if (topCard.rule == SpecialRule.joker) {
+    } else if (card.rule == SpecialRule.joker) {
       return true;
     } else {
       return false;
