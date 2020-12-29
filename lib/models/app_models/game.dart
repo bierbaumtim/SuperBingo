@@ -63,19 +63,19 @@ class Game with EquatableMixin {
   ///
   /// Default: true
   @JsonKey(name: 'isPublic', defaultValue: true)
-  bool isPublic;
+  final bool isPublic;
 
   /// Konfiguration, wie viele Spieler maximal in diesem Spiel mitspielen können.
   ///
   /// Default: 6
   @JsonKey(name: 'maxPlayer', defaultValue: 6)
-  int maxPlayer;
+  final int maxPlayer;
 
   /// Konfiguration mit wie vielen Karten gespielt werden soll.
   ///
   /// Default: 32
   @JsonKey(name: 'cardAmount', defaultValue: 32)
-  int cardAmount;
+  final int cardAmount;
 
   /// Menge der Karten die gezogen werden muss.
   ///
@@ -85,7 +85,7 @@ class Game with EquatableMixin {
 
   /// Konfiguration, unter welchem Namen das Spiel sichtbar sein soll. Kann auch zur Suche eines Spiels genutzt werden.
   @JsonKey(name: 'name', defaultValue: 'SuperBingo')
-  String name;
+  final String name;
 
   /// Firestore Document-ID, die eindeutig auf ein Spiel-Datensatz in der Datenbank verweist
   @JsonKey(name: 'id', defaultValue: '')

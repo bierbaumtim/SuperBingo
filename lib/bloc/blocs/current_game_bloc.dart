@@ -224,10 +224,19 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
             break;
         }
 
-        final nextPlayer = _self.getNextPlayer(
-          game.players,
-          skipNextPlayer: event.card.rule == SpecialRule.skip,
-        );
+        Player nextPlayer;
+        nextPlayer = _self.getNextPlayer(game.players);
+
+        /// Beim einer 8(Aussetzen) prüfen, ob der nächste Spieler
+        /// auch eine 8(Aussetzen) hat. Wenn ja, wird er nicht übersprungen,
+        /// wenn nein, ist der Spieler nach ihm an der Reihe.
+        if (event.card.rule == SpecialRule.skip &&
+            !nextPlayer.cards.any((c) => c.number == CardNumber.eight)) {
+          nextPlayer = _self.getNextPlayer(
+            game.players,
+            skipNextPlayer: true,
+          );
+        }
 
         game.playedCardStack.add(event.card);
         game.updatePlayer(_self);
