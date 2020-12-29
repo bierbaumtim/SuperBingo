@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:overlay_support/overlay_support.dart';
 
-// import 'pages/desktop_game_page_debug.dart';
 import 'pages/game_page.dart';
 import 'pages/join_game_page.dart';
 import 'pages/new_game_page.dart';
@@ -23,7 +22,6 @@ class SuperBingo extends StatelessWidget {
           '/join_game': (context) => JoinGamePage(),
           '/game': (context) => GamePage(),
           '/user_page': (context) => PlayerPage(),
-          // '/desktop_game_page_debug': (context) => DesktopGamePageDebug(),
         },
       ),
     );

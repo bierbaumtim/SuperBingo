@@ -46,7 +46,9 @@ class CardScrollView extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.all(12),
                   child: Material(
-                    child: Text('You´ve finished'),
+                    child: Text(
+                      'Du bist fertig. Warte bis alle ihre Karten abgelegt haben.',
+                    ),
                   ),
                 ),
               );

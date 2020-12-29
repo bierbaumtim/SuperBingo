@@ -4,11 +4,21 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:responsive_builder/responsive_builder.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:list_wheel_scroll_view_x/list_wheel_scroll_view_x.dart';
+
+import 'package:superbingo/constants/enums.dart';
+import 'package:superbingo/models/app_models/game.dart';
+import 'package:superbingo/models/app_models/player.dart';
+import 'package:superbingo/services/share_service/share_service_interface.dart';
+import 'package:superbingo/widgets/horizontal_card_listview.dart';
+import 'package:superbingo/widgets/play_card.dart';
 
 import '../bloc/blocs/current_game_bloc.dart';
 import '../bloc/blocs/interaction_bloc.dart';
-import '../bloc/events/current_game_events.dart';
+import '../bloc/events/current_game_events.dart'
+    show LeaveGame, DrawCard, StartGame, EndGame;
 import '../bloc/events/interaction_events.dart';
 import '../bloc/states/current_game_states.dart';
 import '../constants/ui_constants.dart';
@@ -96,269 +106,255 @@ class _GamePageState extends State<GamePage> {
         },
         cubit: currentGameBloc,
         builder: (context, state) {
-          String title;
+          String title, currentPlayerId;
           List<GameCard> playedCards, unplayedCards;
+          List<Player> player;
+
           if (state is CurrentGameLoaded) {
             title = state.game.name;
+            currentPlayerId = state.game.currentPlayerId;
             playedCards = state.game.playedCards;
             unplayedCards = state.game.unplayedCards;
+            player = state.game.players;
           } else if (state is CurrentGameWaitingForPlayer) {
             title = state.game.name;
+            currentPlayerId = state.game.currentPlayerId;
             playedCards = state.game.playedCards;
             unplayedCards = state.game.unplayedCards;
+            player = state.game.players;
           } else {
             title = 'Aktuelles Spiel';
-            playedCards = <GameCard>[];
-            unplayedCards = <GameCard>[];
+            currentPlayerId = '';
+            playedCards = <GameCard>[
+              GameCard(
+                id: '1',
+                color: CardColor.clover,
+                number: CardNumber.five,
+              ),
+            ];
+            unplayedCards = <GameCard>[
+              GameCard(
+                id: '1',
+                color: CardColor.clover,
+                number: CardNumber.five,
+              ),
+            ];
+            player = <Player>[];
           }
 
-          return LayoutBuilder(
-            builder: (context, constraints) => SlidingUpPanel(
-              controller: panelController,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(24),
-                topRight: Radius.circular(24),
-              ),
-              color: Theme.of(context).canvasColor,
-              minHeight: state is CurrentGameLoaded && state.game.isRunning
-                  ? constraints.maxHeight / 4
-                  : 0,
-              maxHeight: constraints.maxHeight - kToolbarHeight - 20,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              isDraggable: state is CurrentGameLoaded && state.game.isRunning,
-              panelSnapping: false,
-              panel: CardScrollView(),
-              body: Scaffold(
-                appBar: AppBar(
-                  backgroundColor: Colors.deepOrangeAccent,
-                  title: Text(title),
-                ),
-                // backgroundColor: Colors.deepOrangeAccent,
-                body: SafeArea(
-                  child: Stack(
-                    children: <Widget>[
-                      Center(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final innerConstraints = constraints * 0.8;
+          final baseChild = Stack(
+            children: <Widget>[
+              Center(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final innerConstraints = constraints * 0.8;
 
-                            return ConstrainedBox(
-                              constraints: innerConstraints,
-                              child: AspectRatio(
-                                aspectRatio: innerConstraints.maxHeight >=
-                                        innerConstraints.maxWidth
-                                    ? 0.675
-                                    : 2,
-                                child: CustomPaint(
-                                  painter: VirtualTablePainter(),
-                                  child: SizedBox.expand(
-                                    child: Stack(
-                                      children: <Widget>[
-                                        Positioned.fill(
-                                          child: PlayerAvatars(
-                                            player: (state is CurrentGameLoaded)
-                                                ? state.game.players
-                                                : [],
-                                            currentPlayerUid:
-                                                (state is CurrentGameLoaded)
-                                                    ? state.game.currentPlayerId
-                                                    : '',
-                                          ),
-                                        ),
-                                        Center(
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              CardStack(
-                                                type:
-                                                    CardStackType.unplayedCards,
-                                                cards: unplayedCards,
-                                                // cards: defaultCardDeck,
-                                              ),
-                                              SizedBox(
-                                                width:
-                                                    innerConstraints.maxWidth *
-                                                        0.1,
-                                              ),
-                                              CardStack(
-                                                type: CardStackType.playedCards,
-                                                cards: playedCards,
-                                                // cards: defaultCardDeck,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                    return ConstrainedBox(
+                      constraints: innerConstraints,
+                      child: AspectRatio(
+                        aspectRatio: innerConstraints.maxHeight >=
+                                innerConstraints.maxWidth
+                            ? 0.675
+                            : 2,
+                        child: CustomPaint(
+                          painter: VirtualTablePainter(),
+                          child: SizedBox.expand(
+                            child: Stack(
+                              children: <Widget>[
+                                Positioned.fill(
+                                  child: PlayerAvatars(
+                                    player: player,
+                                    currentPlayerUid: currentPlayerId,
                                   ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-
-                      // Positioned(
-                      //   top: 80,
-                      //   left: 76,
-                      //   right: 76,
-                      //   bottom: playerAvatarBottomPosition,
-                      //   child: Align(
-                      //     alignment: Alignment.topCenter,
-                      //     child: Row(
-                      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //       mainAxisSize: MainAxisSize.min,
-                      //       children: <Widget>[
-                      //         Expanded(
-                      //           child: CardStack(
-                      //             type: CardStackType.unplayedCards,
-                      //             cards: unplayedCards,
-                      //             // cards: defaultCardDeck,
-                      //           ),
-                      //         ),
-                      //         const SizedBox(width: 20),
-                      //         Expanded(
-                      //           child: CardStack(
-                      //             type: CardStackType.playedCards,
-                      //             cards: playedCards,
-                      //             // cards: defaultCardDeck,
-                      //           ),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
-
-                      // const CardHand(),
-
-                      // PlayerAvatars(
-                      //   player: (state is CurrentGameLoaded)
-                      //       ? state.game.players
-                      //       : [],
-                      //   currentPlayerUid: (state is CurrentGameLoaded)
-                      //       ? state.game.currentPlayerId
-                      //       : '',
-                      // ),
-
-                      // Positioned(
-                      //   bottom: MediaQuery.of(context).size.height / 3,
-                      //   right: 8,
-                      //   child: FloatingActionButton(
-                      //     backgroundColor: Colors.orange,
-                      //     onPressed: () {},
-                      //     child: Icon(Icons.flag),
-                      //   ),
-                      // ),
-                      if (state is CurrentGameWaitingForPlayer) ...[
-                        IgnorePointer(
-                          child: SizedBox.expand(),
-                        ),
-                        BackdropFilter(
-                          filter: ImageFilter.blur(
-                            sigmaX: 5,
-                            sigmaY: 5,
-                          ),
-                          child: SizedBox.expand(
-                            child: Center(
-                              child: Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Column(
+                                Center(
+                                  child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
-                                      if (state.self.isHost)
-                                        RaisedButton(
-                                          onPressed: () {
-                                            print('Tapped');
-                                            // currentGameBloc.add(
-                                            //   StartGame(
-                                            //     gameId: state.game.gameID,
-                                            //     self: state.self,
-                                            //   ),
-                                            // );
-                                          },
-                                          child: const Text('Spiel starten'),
-                                        )
-                                      else
-                                        const Text(
-                                          'Warten auf weitere Spieler...',
-                                        ),
+                                      CardStack(
+                                        type: CardStackType.unplayedCards,
+                                        cards: unplayedCards,
+                                        // cards: defaultCardDeck,
+                                      ),
+                                      SizedBox(
+                                        width: innerConstraints.maxWidth * 0.1,
+                                      ),
+                                      CardStack(
+                                        type: CardStackType.playedCards,
+                                        cards: playedCards,
+                                        // cards: defaultCardDeck,
+                                      ),
                                     ],
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ),
-                      ],
-                      if (state is CurrentGameLoaded &&
-                          state.game.isCompleted) ...[
-                        if (state.self.isHost)
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            top: MediaQuery.of(context).size.height * 0.55,
-                            bottom: 12,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  const Text('Das Spiel vorbei.'),
-                                  const SizedBox(height: 12),
-                                  RaisedButton.icon(
-                                    onPressed: () {},
-                                    label: const Text('Spiel neustarten'),
-                                    icon: const Icon(Icons.refresh),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  RaisedButton.icon(
-                                    onPressed: () =>
-                                        currentGameBloc.add(EndGame()),
-                                    label: const Text('Spiel beenden'),
-                                    icon: const Icon(Icons.close),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        else
-                          Positioned(
-                            top: MediaQuery.of(context).size.height * 0.55,
-                            left: 0,
-                            right: 0,
-                            bottom: 12,
-                            child: const Center(
-                              child: Text('Das Spiel vorbei.'),
-                            ),
-                          ),
-                      ],
-                      if (showCallBingoButton)
-                        Positioned(
-                          top: playerAvatarBottomPosition,
-                          left: 0,
-                          right: 0,
-                          child: Center(
-                            child: RaisedButton(
-                              onPressed: () {
-                                setState(() {
-                                  showCallBingoButton = false;
-                                });
-                                context.read<InteractionBloc>().add(
-                                      isSuperBingo
-                                          ? CallSuperBingo()
-                                          : CallBingo(),
-                                    );
-                              },
-                              child: Text(
-                                'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+                      ),
+                    );
+                  },
                 ),
               ),
+
+              // const CardHand(),
+
+              // Positioned(
+              //   bottom: MediaQuery.of(context).size.height / 3,
+              //   right: 8,
+              //   child: FloatingActionButton(
+              //     backgroundColor: Colors.orange,
+              //     onPressed: () {},
+              //     child: Icon(Icons.flag),
+              //   ),
+              // ),
+              if (state is CurrentGameWaitingForPlayer) ...[
+                IgnorePointer(
+                  child: SizedBox.expand(),
+                ),
+                _LobbyOverlay(
+                  self: state.self,
+                  game: state.game,
+                ),
+              ],
+              if (state is CurrentGameLoaded && state.game.isCompleted) ...[
+                _CompletedGameOverlay(
+                  game: state.game,
+                  self: state.self,
+                ),
+              ],
+            ],
+          );
+
+          return ScreenTypeLayout.builder(
+            mobile: (context) => LayoutBuilder(
+              builder: (context, constraints) => SlidingUpPanel(
+                controller: panelController,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                color: Theme.of(context).canvasColor,
+                minHeight: state is CurrentGameLoaded && state.game.isRunning
+                    ? constraints.maxHeight / 4
+                    : 0,
+                maxHeight: constraints.maxHeight - kToolbarHeight - 20,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                isDraggable:
+                    true, // state is CurrentGameLoaded && state.game.isRunning,
+                panelSnapping: false,
+                panel: CardScrollView(),
+                body: Scaffold(
+                  appBar: AppBar(
+                    backgroundColor: Colors.deepOrangeAccent,
+                    title: Text(title),
+                  ),
+                  body: baseChild,
+                  floatingActionButton: isSuperBingo | true
+                      ? FloatingActionButton.extended(
+                          icon: Icon(Icons.volume_up),
+                          label: Text(
+                            'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
+                          ),
+                          onPressed: () {
+                            setState(() => showCallBingoButton = false);
+                            context.read<InteractionBloc>().add(
+                                  isSuperBingo ? CallSuperBingo() : CallBingo(),
+                                );
+                          },
+                        )
+                      : null,
+                ),
+              ),
+            ),
+            tablet: (context) => Scaffold(
+              appBar: AppBar(
+                backgroundColor: Colors.deepOrangeAccent,
+                title: Text(title),
+              ),
+              body: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: baseChild,
+                  ),
+                  const Divider(),
+                  SizedBox(
+                    height: 200 + 32.0,
+                    child: Builder(
+                      builder: (context) {
+                        if (state is CurrentGameLoaded) {
+                          if (state.self.cards.isEmpty) {
+                            if (state.self.finishPosition <= 0) {
+                              return Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    const Text(
+                                      'Nur weil du deine Karten versteckst hast du das Spiel nicht gewonnen.',
+                                    ),
+                                    const SizedBox(height: 8),
+                                    RaisedButton(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(25),
+                                      ),
+                                      onPressed: null,
+                                      child: const Text(
+                                        'Karten suchen...',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              return Padding(
+                                padding: EdgeInsets.all(12),
+                                child: Text(
+                                  'Du bist fertig. Warte bis alle ihre Karten abgelegt haben.',
+                                  textAlign: TextAlign.center,
+                                ),
+                              );
+                            }
+                          } else {
+                            return LayoutBuilder(
+                              builder: (context, constraints) => Padding(
+                                padding: EdgeInsets.fromLTRB(
+                                  constraints.maxWidth / 4,
+                                  0,
+                                  constraints.maxWidth / 4,
+                                  16,
+                                ),
+                                child: HorizontalCardList(
+                                  cards: state.self.cards,
+                                  cardHeight: constraints.maxHeight - 42,
+                                  cardWidth: (constraints.maxHeight - 42) *
+                                      (100 / 175),
+                                ),
+                              ),
+                            );
+                          }
+                        } else {
+                          return const SizedBox();
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              floatingActionButton: isSuperBingo | true
+                  ? FloatingActionButton.extended(
+                      icon: Icon(Icons.volume_up),
+                      label: Text(
+                        'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
+                      ),
+                      onPressed: () {
+                        setState(() => showCallBingoButton = false);
+                        context.read<InteractionBloc>().add(
+                              isSuperBingo ? CallSuperBingo() : CallBingo(),
+                            );
+                      },
+                    )
+                  : null,
             ),
           );
         },
@@ -387,6 +383,172 @@ class _GamePageState extends State<GamePage> {
       startingOverlay?.remove();
       startingOverlay = null;
     }
+  }
+}
+
+class _CompletedGameOverlay extends StatelessWidget {
+  final Player self;
+  final Game game;
+
+  const _CompletedGameOverlay({
+    Key key,
+    @required this.self,
+    @required this.game,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BackdropFilter(
+      filter: ImageFilter.blur(
+        sigmaX: 2,
+        sigmaY: 2,
+      ),
+      child: SizedBox.expand(
+        child: Center(
+          child: Builder(
+            builder: (context) {
+              if (self.isHost) {
+                return Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const Text('Das Spiel ist vorbei.'),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            RaisedButton.icon(
+                              onPressed: () {},
+                              label: const Text('Neues Spiel starten'),
+                              icon: const Icon(Icons.refresh),
+                            ),
+                            const SizedBox(width: 16),
+                            RaisedButton.icon(
+                              onPressed: () => context
+                                  .read<CurrentGameBloc>()
+                                  .add(EndGame()),
+                              label: const Text('Spiel beenden'),
+                              icon: const Icon(Icons.close),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return Card(
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(
+                      'Das Spiel ist vorbei.',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LobbyOverlay extends StatelessWidget {
+  const _LobbyOverlay({
+    Key key,
+    @required this.self,
+    @required this.game,
+  }) : super(key: key);
+
+  final Player self;
+  final Game game;
+
+  @override
+  Widget build(BuildContext context) {
+    return BackdropFilter(
+      filter: ImageFilter.blur(
+        sigmaX: 2,
+        sigmaY: 2,
+      ),
+      child: SizedBox.expand(
+        child: Center(
+          child: Builder(
+            builder: (context) {
+              if (self.isHost) {
+                return Card(
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const Text(
+                          'Warten auf weitere Spieler...',
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            RaisedButton(
+                              onPressed: () async => IShareService().share(
+                                game.link,
+                              ),
+                              child: const Text(
+                                'Link teilen',
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            RaisedButton(
+                              onPressed: () {
+                                context.read<CurrentGameBloc>().add(
+                                      StartGame(
+                                        gameId: game.gameID,
+                                        self: self,
+                                      ),
+                                    );
+                              },
+                              child: const Text(
+                                'Spiel starten',
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                return Card(
+                  elevation: 4,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const CircularProgressIndicator.adaptive(),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Warten auf weitere Spieler...',
+                          style: Theme.of(context).textTheme.bodyText1.copyWith(
+                                fontSize: 24,
+                              ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ),
+    );
   }
 }
 

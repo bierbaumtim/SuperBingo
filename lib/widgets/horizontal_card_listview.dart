@@ -17,8 +17,16 @@ class HorizontalCardList extends StatelessWidget {
   /// Liste der Karten die angezeigt werden sollen
   final List<GameCard> cards;
 
+  final double cardHeight;
+  final double cardWidth;
+
   /// {@macro horizontalcardlist}
-  const HorizontalCardList({Key key, this.cards}) : super(key: key);
+  const HorizontalCardList({
+    Key key,
+    this.cards,
+    this.cardHeight = 175,
+    this.cardWidth = 100,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +36,7 @@ class HorizontalCardList extends StatelessWidget {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: SizedBox(
-          height: 175,
+          height: cardHeight ?? 175,
           child: ListView.builder(
             itemBuilder: (context, index) => PlayCard(
               card: cards.elementAt(index),
@@ -46,6 +54,9 @@ class HorizontalCardList extends StatelessWidget {
                     .read<CurrentGameBloc>()
                     .add(game_events.PlayCard(card, allowedCardColor));
               },
+              height: cardHeight,
+              width: cardWidth,
+              isFlipped: false,
             ),
             itemCount: cards.length,
             scrollDirection: Axis.horizontal,
