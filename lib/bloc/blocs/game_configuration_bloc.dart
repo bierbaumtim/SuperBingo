@@ -76,7 +76,6 @@ class GameConfigurationBloc
       _gameLink = game.link;
       _gameLinkSink.add(_gameLink);
 
-
       await networkService.updateGameData(
         <String, dynamic>{
           'id': _gameId,

@@ -308,7 +308,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Future<void> _leaveGame() async {
     try {
       final game = _currentGame;
-      await gameSub.cancel();
+      await gameSub?.cancel();
       final nextPlayer = _self.getNextPlayer(game.players);
       game.removePlayer(_self);
       if (_self.isHost) {

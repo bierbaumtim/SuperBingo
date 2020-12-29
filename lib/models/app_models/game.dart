@@ -268,7 +268,7 @@ class Game with EquatableMixin {
   }
 
   String _fillGameId(String nGameId) {
-    if (gameID != null && gameID.isNotEmpty) {
+    if (nGameId != null && nGameId.isNotEmpty) {
       return nGameId;
     }
     return gameID;
