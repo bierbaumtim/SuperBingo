@@ -143,8 +143,8 @@ class _NewGamePageState extends State<NewGamePage> {
                           hintText: 'Gib eine Zahl zwischen 4-8 an',
                         ),
                         validator: (text) {
-                          final parsedAmount = text.toInt() ?? 0;
-                          if (text.isEmpty || parsedAmount > 2) {
+                          final parsedAmount = int.tryParse(text) ?? 0;
+                          if (text.isEmpty || parsedAmount >= 2) {
                             return null;
                           } else if (parsedAmount < 2 || parsedAmount > 6) {
                             return 'Es nur Zahlen zwischen 2 und 6 erlaubt';
@@ -152,7 +152,7 @@ class _NewGamePageState extends State<NewGamePage> {
                             return 'Es sind nur Zahlen erlaubt';
                           }
                         },
-                        onSaved: (text) => maxPlayer = text.toInt() ?? 6,
+                        onSaved: (text) => maxPlayer = int.tryParse(text) ?? 6,
                         onEditingComplete: _node.nextFocus,
                         enabled: !isDisabled,
                       ),
@@ -166,7 +166,7 @@ class _NewGamePageState extends State<NewGamePage> {
                           labelText: 'Anzahl der Kartendecks',
                         ),
                         validator: (text) {
-                          final parsedAmount = text.toInt() ?? 0;
+                          final parsedAmount = int.tryParse(text) ?? 0;
                           if (text.isEmpty || parsedAmount > 0) {
                             return null;
                           } else {
@@ -174,7 +174,7 @@ class _NewGamePageState extends State<NewGamePage> {
                           }
                         },
                         onEditingComplete: _node.unfocus,
-                        onSaved: (text) => cardAmount = text.toInt() ?? 1,
+                        onSaved: (text) => cardAmount = int.tryParse(text) ?? 1,
                         enabled: !isDisabled,
                       ),
                       const SizedBox(height: 8),
