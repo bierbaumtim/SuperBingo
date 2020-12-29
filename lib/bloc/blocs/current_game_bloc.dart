@@ -129,6 +129,16 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           yield PlayerLeaved(leavedPlayer);
         }
       }
+
+      if (_previousGame.allowedCardColor != event.game.allowedCardColor) {
+        if (event.game.playedCardStack.last.number == CardNumber.jack ||
+            event.game.playedCardStack.last.number == CardNumber.joker) {
+          yield UserChangedAllowedCardColor(event.game.allowedCardColor);
+        } else {
+          yield const UserChangedAllowedCardColor(null);
+        }
+      }
+
       switch (event.game.state) {
         case GameState.finished:
           add(EndGame());

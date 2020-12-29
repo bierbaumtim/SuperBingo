@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 
 import 'package:equatable/equatable.dart';
 
+import '../../constants/enums.dart';
 import '../../models/app_models/game.dart';
 import '../../models/app_models/player.dart';
 
@@ -96,4 +97,14 @@ class WaitForBingoCall extends CurrentGameState {
 
   @override
   List get props => super.props..add(isSuperBingo);
+}
+
+/// State, um Overlay anzuzeigen, welche Farbe gewünscht wurde.
+class UserChangedAllowedCardColor extends CurrentGameState {
+  final CardColor cardColor;
+
+  const UserChangedAllowedCardColor(this.cardColor);
+
+  @override
+  List<Object> get props => super.props..add(cardColor);
 }

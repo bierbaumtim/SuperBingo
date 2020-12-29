@@ -75,3 +75,20 @@ enum SpecialRule {
   /// nächste Spieler muss 2 Karten ziehen
   plusTwo
 }
+
+extension CardColorX on CardColor {
+  String toReadableString() {
+    switch (this) {
+      case CardColor.clover:
+        return 'Kreuz';
+      case CardColor.diamond:
+        return 'Karo';
+      case CardColor.heart:
+        return 'Herz';
+      case CardColor.spade:
+        return 'Pik';
+      default:
+        return '';
+    }
+  }
+}

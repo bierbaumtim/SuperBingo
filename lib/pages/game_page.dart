@@ -1,6 +1,9 @@
+import 'dart:async';
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -19,6 +22,7 @@ import '../models/app_models/card.dart';
 import '../models/app_models/game.dart';
 import '../models/app_models/player.dart';
 import '../services/share_service/share_service_interface.dart';
+import '../utils/card_utils.dart';
 import '../utils/dialogs.dart';
 import '../widgets/avatars/player_avatars.dart';
 import '../widgets/card_scroll_view.dart';
@@ -32,7 +36,7 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  OverlayEntry startingOverlay;
+  OverlayEntry startingOverlay, timerOverlay, allowCardColorOverlay;
   bool showCallBingoButton, isSuperBingo;
   PanelController panelController;
 
@@ -47,6 +51,8 @@ class _GamePageState extends State<GamePage> {
   @override
   void dispose() {
     hideStartingOverlay();
+    hideTimerOverlay();
+    hideAllowedCardColorOverlay();
     super.dispose();
   }
 
@@ -83,17 +89,28 @@ class _GamePageState extends State<GamePage> {
           } else if (state is CurrentGameFinished) {
             Navigator.of(context).pop();
           } else if (state is WaitForBingoCall) {
-            panelController.close();
+            if (panelController.isAttached) {
+              panelController.close();
+            }
             setState(() {
               showCallBingoButton = true;
               isSuperBingo = state.isSuperBingo;
             });
+            showTimerOverlay(duration: const Duration(seconds: 4));
             await Future.delayed(const Duration(seconds: 4), () {
               if (showCallBingoButton) {
+                hideTimerOverlay();
                 setState(() => showCallBingoButton = false);
                 currentGameBloc.add(const DrawCard());
               }
             });
+            hideTimerOverlay();
+          } else if (state is UserChangedAllowedCardColor) {
+            if (state.cardColor == null) {
+              hideAllowedCardColorOverlay();
+            } else {
+              showAllowedCardColorOverlay(state.cardColor);
+            }
           } else {
             hideStartingOverlay();
           }
@@ -262,7 +279,7 @@ class _GamePageState extends State<GamePage> {
             ),
             tablet: (context) => Scaffold(
               appBar: AppBar(
-                backgroundColor: Colors.deepOrangeAccent,
+                // backgroundColor: Colors.deepOrangeAccent,
                 title: Text(title),
               ),
               body: Column(
@@ -376,6 +393,112 @@ class _GamePageState extends State<GamePage> {
       startingOverlay?.remove();
       startingOverlay = null;
     }
+  }
+
+  void showTimerOverlay({Duration duration}) {
+    timerOverlay = OverlayEntry(
+      builder: (context) => Align(
+        alignment: const Alignment(0.0, -0.865),
+        child: Card(
+          elevation: 4,
+          color: Colors.redAccent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: TimerText(
+              duration: duration,
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(timerOverlay);
+  }
+
+  void hideTimerOverlay() {
+    if (timerOverlay != null) {
+      timerOverlay?.remove();
+      timerOverlay = null;
+    }
+  }
+
+  void showAllowedCardColorOverlay(CardColor color) {
+    allowCardColorOverlay = OverlayEntry(
+      builder: (context) => Align(
+        alignment: const Alignment(0.0, -0.9),
+        child: Card(
+          elevation: 4,
+          color: Colors.redAccent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  getIconByCardColor(color),
+                  size: 28,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  '${color.toReadableString()} wurde sich gewünscht',
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(allowCardColorOverlay);
+  }
+
+  void hideAllowedCardColorOverlay() {
+    if (allowCardColorOverlay != null) {
+      allowCardColorOverlay?.remove();
+      allowCardColorOverlay = null;
+    }
+  }
+}
+
+class TimerText extends StatefulWidget {
+  const TimerText({
+    Key key,
+    this.duration,
+  }) : super(key: key);
+
+  final Duration duration;
+
+  @override
+  _TimerTextState createState() => _TimerTextState();
+}
+
+class _TimerTextState extends State<TimerText> {
+  Timer timer;
+  int remainingSeconds;
+
+  @override
+  void initState() {
+    super.initState();
+    remainingSeconds = widget.duration.inSeconds;
+    SchedulerBinding.instance.addPostFrameCallback(
+      (_) => timer = Timer.periodic(
+        widget.duration,
+        (_) => setState(
+          () => math.min(0, remainingSeconds--),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('$remainingSeconds Seconds');
   }
 }
 
