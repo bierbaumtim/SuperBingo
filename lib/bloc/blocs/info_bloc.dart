@@ -34,7 +34,7 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       await _loginUserAnonymous(forceLogin: true);
       final playerId = await userUid;
       InformationStorage.instance.playerId = playerId;
-      if (playerId != null) {
+      if (playerId != null && playerName.isNotEmpty) {
         yield InfosLoaded(
           playerName: playerName,
           playerId: playerId,
