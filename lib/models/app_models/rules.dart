@@ -36,16 +36,27 @@ class Rules {
     if (!game.isJokerOrJackAllowed && card.rule == SpecialRule.joker) {
       return 'Du darfst keine zwei Joker/Buben aufeinander legen!';
     }
-    if (game.allowedCardColor != null && game.allowedCardColor != card.color) {
-      return 'Der letzte Spieler hat sich ${game.allowedCardColor.toReadableString()} gewünscht. Du darfst diese Karte daher nicht legen!';
+    
+    if (game.allowedCardColor != null) {
+      if (game.allowedCardColor != card.color) {
+        return 'Der letzte Spieler hat sich ${game.allowedCardColor.toReadableString()} gewünscht. Du darfst diese Karte daher nicht legen!';
+      } else {
+        return null;
+      }
     }
-    if (game.allowedCardNumber != null &&
-        game.allowedCardNumber != card.number) {
-      return 'Du darfst nur ${game.allowedCardNumber.toReadableString(withArticle: true)} legen.';
+
+    if (game.allowedCardNumber != null) {
+      if (game.allowedCardNumber != card.number) {
+        return 'Du darfst nur ${game.allowedCardNumber.toReadableString(withArticle: true)} legen.';
+      } else {
+        return null;
+      }
     }
+
     if (game.cardDrawAmount > 1 && card.number != CardNumber.seven) {
       return 'Du musst ${game.cardDrawAmount} Karten ziehen!';
     }
+    
     if (!isCardAllowed(card, game.topCard)) {
       return 'Du darfst diese Karte nicht legen!';
     }
