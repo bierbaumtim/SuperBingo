@@ -27,6 +27,10 @@ Game _$GameFromJson(Map<String, dynamic> json) {
     state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
         GameState.waitingForPlayer,
     message: json['message'] as String ?? '',
+    allowedCardNumber:
+        _$enumDecodeNullable(_$CardNumberEnumMap, json['allowedCardNumber']),
+    playerOrder:
+        (json['playerOrder'] as List)?.map((e) => e as String)?.toList() ?? [],
   );
 }
 
@@ -43,8 +47,10 @@ Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
       'currentPlayerId': instance.currentPlayerId,
       'state': _$GameStateEnumMap[instance.state],
       'allowedCardColor': _$CardColorEnumMap[instance.allowedCardColor],
+      'allowedCardNumber': _$CardNumberEnumMap[instance.allowedCardNumber],
       'isJokerOrJackAllowed': instance.isJokerOrJackAllowed,
       'message': instance.message,
+      'playerOrder': instance.playerOrder,
     };
 
 T _$enumDecode<T>(
@@ -92,4 +98,17 @@ const _$GameStateEnumMap = {
   GameState.active: 'active',
   GameState.gameCompleted: 'gameCompleted',
   GameState.finished: 'finished',
+};
+
+const _$CardNumberEnumMap = {
+  CardNumber.five: 'five',
+  CardNumber.six: 'six',
+  CardNumber.seven: 'seven',
+  CardNumber.eight: 'eight',
+  CardNumber.nine: 'nine',
+  CardNumber.jack: 'jack',
+  CardNumber.queen: 'queen',
+  CardNumber.king: 'king',
+  CardNumber.ace: 'ace',
+  CardNumber.joker: 'joker',
 };
