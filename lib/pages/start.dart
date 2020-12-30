@@ -343,15 +343,15 @@ class _StartPageState extends State<StartPage> {
     return true;
   }
 
-  String messageByJoiningState(JoiningState state) {
-    if (state == JoiningState.dataIssue) {
-      return 'Beim erstellen des Spiels ist ein Fehler aufgetreten. Du kannst diesem Spiel daher nicht beitreten.';
-    } else if (state == JoiningState.playerAlreadyJoined) {
-      return 'Beim Verlassen des Spiels ist ein Fehler aufgetreten. Du kannst diesem Spiel daher nicht erneut beitreten.';
-    } else {
-      return 'Aufgrund eines Fehler kannst du dem Spiel nicht beitreten. Versuche es bitte später erneut.';
-    }
-  }
+  // String messageByJoiningState(JoiningState state) {
+  //   if (state == JoiningState.dataIssue) {
+  //     return 'Beim erstellen des Spiels ist ein Fehler aufgetreten. Du kannst diesem Spiel daher nicht beitreten.';
+  //   } else if (state == JoiningState.playerAlreadyJoined) {
+  //     return 'Beim Verlassen des Spiels ist ein Fehler aufgetreten. Du kannst diesem Spiel daher nicht erneut beitreten.';
+  //   } else {
+  //     return 'Aufgrund eines Fehler kannst du dem Spiel nicht beitreten. Versuche es bitte später erneut.';
+  //   }
+  // }
 
   void showJoiningOverlay(BuildContext context) {
     _joiningOverlay = OverlayEntry(

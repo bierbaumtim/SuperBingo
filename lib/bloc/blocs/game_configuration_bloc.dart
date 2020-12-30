@@ -58,7 +58,7 @@ class GameConfigurationBloc
     try {
       if (!Connection.instance.hasConnection) {
         yield const GameCreationFailed(
-          'Es besteht keine Internetverbindung. Bitte versuche es erneut, wenn du wieder mit Internet verbunden bist.',
+          'Es besteht keine Internetverbindung. Bitte versuche es erneut, wenn du wieder mit dem Internet verbunden bist.',
         );
         yield WaitingGameConfigInput();
         return;
@@ -131,6 +131,9 @@ class GameConfigurationBloc
       playedCardStack: Queue<GameCard>(),
       players: <Player>[
         _self,
+      ],
+      playerOrder: [
+        _self.id,
       ],
       isPublic: isPublic,
       cardAmount: decksAmount * defaultCardDeck.length,
