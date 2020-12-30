@@ -37,7 +37,7 @@ class Rules {
       return 'Du darfst keine zwei Joker/Buben aufeinander legen!';
     }
     if (game.allowedCardColor != null && game.allowedCardColor != card.color) {
-      return 'Der letzte Spieler hat sich eine andere Farbe gewünscht. Du darfst diese Karte daher nicht legen!';
+      return 'Der letzte Spieler hat sich ${game.allowedCardColor.toReadableString()} gewünscht. Du darfst diese Karte daher nicht legen!';
     }
     if (game.allowedCardNumber != null &&
         game.allowedCardNumber != card.number) {
