@@ -220,6 +220,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       var shouldYieldWaitForBingo = false, isSuperBingo = false;
 
       if (message == null) {
+        final game = _currentGame;
+        
         int cardDrawAmount;
         bool isJokerOrJackAllowed;
         List<String> playerOrder;
@@ -229,7 +231,6 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           isSuperBingo = _self.cards.length - 1 == 0;
         }
         _self.cards.removeWhere((c) => c == event.card);
-        final game = _currentGame;
         switch (event.card.rule) {
           case SpecialRule.reverse:
             playerOrder = game.reversePlayerOrder();
@@ -245,11 +246,12 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           default:
             isJokerOrJackAllowed = true;
             game.allowedCardColor = null;
+            playerOrder = game.playerOrder;
             break;
         }
 
         Player nextPlayer;
-        nextPlayer = _self.getNextPlayer(game.playerOrder, game.players);
+        nextPlayer = _self.getNextPlayer(playerOrder, game.players);
 
         /// Beim einer 8(Aussetzen) prüfen, ob der nächste Spieler
         /// auch eine 8(Aussetzen) hat. Wenn ja, wird er nicht übersprungen,
@@ -258,10 +260,9 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           if (nextPlayer.cards.any((c) => c.number == CardNumber.eight)) {
             game.allowedCardNumber = CardNumber.eight;
           } else {
-            nextPlayer = _self.getNextPlayer(
+            nextPlayer = nextPlayer.getNextPlayer(
               game.playerOrder,
               game.players,
-              skipNextPlayer: true,
             );
             game.allowedCardNumber = null;
           }
@@ -269,9 +270,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
         game.playedCardStack.add(event.card);
         game.updatePlayer(_self);
+
         if (game.playedCardStack.length >= 15 && _self.isHost) {
           game.cleanUpCardStacks();
         }
+
         final filledGame = game.copyWith(
           currentPlayerId: nextPlayer?.id,
           players: game.players,

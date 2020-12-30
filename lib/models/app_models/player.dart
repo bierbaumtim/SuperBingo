@@ -110,6 +110,12 @@ class Player with EquatableMixin {
     final activePlayer =
         player.where((player) => player.finishPosition == 0).toList();
 
+    /// Eine 8(Aussetzen) hat bei 2 Spielern
+    /// die gleiche Auswirkung wie Aussetzen
+    if (skipNextPlayer && activePlayer.length == 2) {
+      return this;
+    }
+
     final activePlayerIds = playerOrder
         .where(
           (p) => activePlayer.any((ap) => ap.id == p),
@@ -119,7 +125,7 @@ class Player with EquatableMixin {
     var index = activePlayerIds?.indexWhere((p) => p == id) ?? -1;
     index = skipNextPlayer ? index + 2 : index + 1;
     if (index > activePlayerIds.length - 1) {
-      index = 0;
+      index -= activePlayerIds.length;
     }
     final nextId = activePlayerIds.elementAtOrNull(index) ?? '--empty--';
 
