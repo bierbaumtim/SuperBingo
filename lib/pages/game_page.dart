@@ -167,6 +167,7 @@ class _GamePageState extends State<GamePage> {
                                 ),
                                 Center(
                                   child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       CardStack(
