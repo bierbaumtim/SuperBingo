@@ -112,223 +112,226 @@ class _StartPageState extends State<StartPage> {
               ),
           ],
         ),
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            final joinGameCardHeight = constraints.maxHeight * (2 / 3) - 32;
-            final newGameCardHeight = constraints.maxHeight * (1 / 3) - 32;
+        body: SafeArea(
+          top: false,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final joinGameCardHeight = constraints.maxHeight * (2 / 3) - 32;
+              final newGameCardHeight = constraints.maxHeight * (1 / 3) - 32;
 
-            return Center(
-              child: ConstrainedBox(
-                constraints: constraints.copyWith(maxWidth: 600),
-                child: Column(
-                  children: <Widget>[
-                    Card(
-                      margin: const EdgeInsets.all(16),
-                      clipBehavior: Clip.antiAlias,
-                      color: Colors.orangeAccent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: SizedBox(
-                        height: joinGameCardHeight,
-                        child: InkWell(
-                          onTap: () async =>
-                              Navigator.of(context).pushNamed('/join_game'),
-                          child: Padding(
-                            padding: EdgeInsets.all(
-                                math.max(16, joinGameCardHeight * 0.05)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.stretch,
-                                    children: <Widget>[
-                                      Text(
-                                        'Spiel beitreten',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headline3
-                                            .copyWith(
-                                              color: Colors.white,
-                                              fontFamily: 'Roboto',
-                                              fontWeight: FontWeight.bold,
-                                            ),
+              return Center(
+                child: ConstrainedBox(
+                  constraints: constraints.copyWith(maxWidth: 600),
+                  child: Column(
+                    children: <Widget>[
+                      Card(
+                        margin: const EdgeInsets.all(16),
+                        clipBehavior: Clip.antiAlias,
+                        color: Colors.orangeAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: SizedBox(
+                          height: joinGameCardHeight,
+                          child: InkWell(
+                            onTap: () async =>
+                                Navigator.of(context).pushNamed('/join_game'),
+                            child: Padding(
+                              padding: EdgeInsets.all(
+                                  math.max(16, joinGameCardHeight * 0.05)),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
+                                      children: <Widget>[
+                                        Text(
+                                          'Spiel beitreten',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline3
+                                              .copyWith(
+                                                color: Colors.white,
+                                                fontFamily: 'Roboto',
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        StreamBuilder<List<Game>>(
+                                          initialData: const [],
+                                          stream:
+                                              publicGamesBloc.publicGamesStream,
+                                          builder: (context, snapshot) {
+                                            final gameCount = snapshot.hasData
+                                                ? snapshot.data.length
+                                                : 0;
+
+                                            return Text(
+                                              '$gameCount offene Spiele verfügbar',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .subtitle1
+                                                  .copyWith(
+                                                    color: Colors.white
+                                                        .withOpacity(.7),
+                                                  ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        left: 56,
+                                        bottom: 16,
                                       ),
-                                      const SizedBox(height: 8),
-                                      StreamBuilder<List<Game>>(
-                                        initialData: const [],
-                                        stream:
-                                            publicGamesBloc.publicGamesStream,
-                                        builder: (context, snapshot) {
-                                          final gameCount = snapshot.hasData
-                                              ? snapshot.data.length
-                                              : 0;
+                                      child: LayoutBuilder(
+                                        builder: (context, constraints) {
+                                          final cardHeight = math.min(
+                                            constraints.maxHeight * 0.9,
+                                            300.0,
+                                          );
+                                          final cardWidth = cardHeight *
+                                              (100 /
+                                                  175); // Use default size to calculate new size while preserving the aspectratio
 
-                                          return Text(
-                                            '$gameCount offene Spiele verfügbar',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .subtitle1
-                                                .copyWith(
-                                                  color: Colors.white
-                                                      .withOpacity(.7),
+                                          return Stack(
+                                            alignment: Alignment.bottomLeft,
+                                            children: <Widget>[
+                                              Builder(
+                                                builder: (_) {
+                                                  final rotationValues =
+                                                      getRotationAngles(0, 3);
+
+                                                  return PlayCard(
+                                                    elevation: 2,
+                                                    isFlipped: false,
+                                                    onCardTap: (_) {},
+                                                    card: GameCard(
+                                                      color: CardColor.heart,
+                                                      number: CardNumber.seven,
+                                                      id: '',
+                                                    ),
+                                                    angle:
+                                                        rotationValues['angle'],
+                                                    rotationAngle: rotationValues[
+                                                        'rotation'],
+                                                    rotationYOffset: 100,
+                                                    height: cardHeight,
+                                                    width: cardWidth,
+                                                  );
+                                                },
+                                              ),
+                                              Builder(
+                                                builder: (_) {
+                                                  final rotationValues =
+                                                      getRotationAngles(2, 3);
+
+                                                  return PlayCard(
+                                                    elevation: 2,
+                                                    isFlipped: false,
+                                                    onCardTap: (_) {},
+                                                    card: GameCard(
+                                                      color: CardColor.diamond,
+                                                      number: CardNumber.nine,
+                                                      id: '',
+                                                    ),
+                                                    angle:
+                                                        rotationValues['angle'],
+                                                    rotationAngle: rotationValues[
+                                                        'rotation'],
+                                                    rotationYOffset: 100,
+                                                    height: cardHeight,
+                                                    width: cardWidth,
+                                                  );
+                                                },
+                                              ),
+                                              PlayCard(
+                                                elevation: 3,
+                                                isFlipped: false,
+                                                onCardTap: (_) {},
+                                                card: GameCard(
+                                                  color: CardColor.clover,
+                                                  number: CardNumber.eight,
+                                                  id: '',
                                                 ),
+                                                height: cardHeight,
+                                                width: cardWidth,
+                                              ),
+                                            ],
                                           );
                                         },
                                       ),
-                                    ],
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 56,
-                                      bottom: 16,
-                                    ),
-                                    child: LayoutBuilder(
-                                      builder: (context, constraints) {
-                                        final cardHeight = math.min(
-                                          constraints.maxHeight * 0.9,
-                                          300.0,
-                                        );
-                                        final cardWidth = cardHeight *
-                                            (100 /
-                                                175); // Use default size to calculate new size while preserving the aspectratio
-
-                                        return Stack(
-                                          alignment: Alignment.bottomLeft,
-                                          children: <Widget>[
-                                            Builder(
-                                              builder: (_) {
-                                                final rotationValues =
-                                                    getRotationAngles(0, 3);
-
-                                                return PlayCard(
-                                                  elevation: 2,
-                                                  isFlipped: false,
-                                                  onCardTap: (_) {},
-                                                  card: GameCard(
-                                                    color: CardColor.heart,
-                                                    number: CardNumber.seven,
-                                                    id: '',
-                                                  ),
-                                                  angle:
-                                                      rotationValues['angle'],
-                                                  rotationAngle: rotationValues[
-                                                      'rotation'],
-                                                  rotationYOffset: 100,
-                                                  height: cardHeight,
-                                                  width: cardWidth,
-                                                );
-                                              },
-                                            ),
-                                            Builder(
-                                              builder: (_) {
-                                                final rotationValues =
-                                                    getRotationAngles(2, 3);
-
-                                                return PlayCard(
-                                                  elevation: 2,
-                                                  isFlipped: false,
-                                                  onCardTap: (_) {},
-                                                  card: GameCard(
-                                                    color: CardColor.diamond,
-                                                    number: CardNumber.nine,
-                                                    id: '',
-                                                  ),
-                                                  angle:
-                                                      rotationValues['angle'],
-                                                  rotationAngle: rotationValues[
-                                                      'rotation'],
-                                                  rotationYOffset: 100,
-                                                  height: cardHeight,
-                                                  width: cardWidth,
-                                                );
-                                              },
-                                            ),
-                                            PlayCard(
-                                              elevation: 3,
-                                              isFlipped: false,
-                                              onCardTap: (_) {},
-                                              card: GameCard(
-                                                color: CardColor.clover,
-                                                number: CardNumber.eight,
-                                                id: '',
-                                              ),
-                                              height: cardHeight,
-                                              width: cardWidth,
-                                            ),
-                                          ],
-                                        );
-                                      },
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Card(
-                      margin: const EdgeInsets.all(16),
-                      clipBehavior: Clip.antiAlias,
-                      color: Colors.greenAccent,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: SizedBox(
-                        height: newGameCardHeight,
-                        child: InkWell(
-                          onTap: () async {
-                            if (await _checkPlayer(context)) {
-                              await Navigator.of(context)
-                                  .pushNamed('/new_game');
-                              BlocProvider.of<GameConfigurationBloc>(context)
-                                  .add(ResetGameConfiguration());
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: <Widget>[
-                                Text(
-                                  'Neues Spiel',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headline3
-                                      .copyWith(
-                                        color: Colors.white,
-                                        fontFamily: 'Roboto',
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Starte dein eigenes Spiel',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .subtitle1
-                                      .copyWith(
-                                        color: Colors.white.withOpacity(.7),
-                                      ),
-                                ),
-                              ],
+                      Card(
+                        margin: const EdgeInsets.all(16),
+                        clipBehavior: Clip.antiAlias,
+                        color: Colors.greenAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: SizedBox(
+                          height: newGameCardHeight,
+                          child: InkWell(
+                            onTap: () async {
+                              if (await _checkPlayer(context)) {
+                                await Navigator.of(context)
+                                    .pushNamed('/new_game');
+                                BlocProvider.of<GameConfigurationBloc>(context)
+                                    .add(ResetGameConfiguration());
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: <Widget>[
+                                  Text(
+                                    'Neues Spiel',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline3
+                                        .copyWith(
+                                          color: Colors.white,
+                                          fontFamily: 'Roboto',
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    'Starte dein eigenes Spiel',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .subtitle1
+                                        .copyWith(
+                                          color: Colors.white.withOpacity(.7),
+                                        ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
