@@ -484,10 +484,12 @@ class _TimerTextState extends State<TimerText> {
     remainingSeconds = widget.duration.inSeconds;
     SchedulerBinding.instance.addPostFrameCallback(
       (_) => timer = Timer.periodic(
-        widget.duration,
+        const Duration(seconds: 1),
         (_) {
           if (remainingSeconds > 0) {
             setState(() => remainingSeconds--);
+          } else {
+            timer?.cancel();
           }
         },
       ),
