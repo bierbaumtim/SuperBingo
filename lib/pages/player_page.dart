@@ -55,7 +55,7 @@ class _PlayerPageState extends State<PlayerPage> {
       appBar: AppBar(
         title: const Text('Neuer Spieler'),
       ),
-      body: ListView(
+      body: Column(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(8.0),
