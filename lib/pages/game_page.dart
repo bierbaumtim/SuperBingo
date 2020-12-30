@@ -708,6 +708,7 @@ class VirtualTablePainter extends CustomPainter {
     canvas.drawPath(basePath, basePaint);
     canvas.drawPath(borderPath, borderPaint);
     canvas.drawPath(upperPath, basePaint);
+    canvas.drawShadow(basePath, Colors.black, 4, false);
   }
 
   Path _buildVerticalTableBaseShape(Size size) {
