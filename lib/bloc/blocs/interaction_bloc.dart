@@ -28,19 +28,21 @@ class InteractionBloc extends Bloc<InteractionEvent, InteractionState> {
   }
 
   Stream<InteractionState> _mapCallBingoToState(CallBingo event) async* {
-    final game = networkService.currentGame;
+    var game = networkService.currentGame;
     final self = Player.getPlayerFromList(
       game.players,
       InformationStorage.instance.playerId,
     );
-    game.message = '${self.name} hat nur noch eine Karte!';
+    game = game.copyWith(
+      message: '${self.name} hat nur noch eine Karte!',
+    );
     await networkService.updateGameData(game);
   }
 
   Stream<InteractionState> _mapCallSuperBingoToState(
     CallSuperBingo event,
   ) async* {
-    final game = networkService.currentGame;
+    var game = networkService.currentGame;
     final self = Player.getPlayerFromList(
       game.players,
       InformationStorage.instance.playerId,
@@ -57,7 +59,9 @@ class InteractionBloc extends Bloc<InteractionEvent, InteractionState> {
     }
 
     game.updatePlayer(self.copyWith(finishPosition: playerFinishPosition));
-    game.message = '${self.name} ist fertig !';
+    game = game.copyWith(
+      message: '${self.name} ist fertig !',
+    );
     await networkService.updateGameData(game);
   }
 }

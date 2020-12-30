@@ -81,7 +81,7 @@ class Game with EquatableMixin {
   ///
   /// Default: 1
   @JsonKey(name: 'cardDrawAmount', defaultValue: 1)
-  int cardDrawAmount;
+  final int cardDrawAmount;
 
   /// Konfiguration, unter welchem Namen das Spiel sichtbar sein soll. Kann auch zur Suche eines Spiels genutzt werden.
   @JsonKey(name: 'name', defaultValue: 'SuperBingo')
@@ -104,13 +104,25 @@ class Game with EquatableMixin {
   @JsonKey(name: 'allowedCardColor')
   CardColor allowedCardColor;
 
+  /// Erlaubtes Kartensymbol.
+  /// Wird gesetzt wenn man eine 8(Aussetzen) gelegt hat
+  /// und der nächste Spieler auch eine 8(Aussetzen) auf der Hand hat.
+  @JsonKey(name: 'allowedCardNumber')
+  CardNumber allowedCardNumber;
+
   /// Parameter ob ein Bube oder Joker gelegt werden darf.
   /// Wird gesetzt wenn ein Bube oder Joker genutzt wurde.
   @JsonKey(name: 'isJokerOrJackAllowed', defaultValue: true)
-  bool isJokerOrJackAllowed;
+  final bool isJokerOrJackAllowed;
 
   @JsonKey(name: 'message', defaultValue: '')
-  String message;
+  final String message;
+
+  /// Reihenfolge der Spieler
+  /// Es werden nur die IDs der Spieler gespeichert,
+  /// um die Datenmenge zu gering wie möglich zu halten.
+  @JsonKey(name: 'playerOrder', defaultValue: <String>[])
+  final List<String> playerOrder;
 
   /// {@macro game}
   Game({
@@ -128,6 +140,8 @@ class Game with EquatableMixin {
     this.isJokerOrJackAllowed,
     this.state = GameState.waitingForPlayer,
     this.message,
+    this.allowedCardNumber,
+    this.playerOrder,
   }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from(<GameCard>[]);
 
   /// Oberste Karte des Stapels der gespielten Karten
@@ -156,9 +170,12 @@ class Game with EquatableMixin {
     String currentPlayerId,
     GameState state,
     CardColor allowedCardColor,
+    CardNumber allowedCardNumber,
     List<Player> players,
     Queue<GameCard> playedCardStack,
     Queue<GameCard> unplayedCardStack,
+    String message,
+    List<String> playerOrder,
   }) =>
       Game(
         name: name ?? this.name,
@@ -174,6 +191,9 @@ class Game with EquatableMixin {
         state: state ?? this.state,
         isJokerOrJackAllowed: isJokerOrJackAllowed ?? this.isJokerOrJackAllowed,
         allowedCardColor: allowedCardColor ?? this.allowedCardColor,
+        allowedCardNumber: allowedCardNumber ?? this.allowedCardNumber,
+        message: message ?? this.message,
+        playerOrder: playerOrder ?? this.playerOrder,
       );
 
   /// Wandelt ein [Game]-Object in eine Datenbank-kompatible Map um
@@ -209,12 +229,14 @@ class Game with EquatableMixin {
     if ([GameState.waitingForPlayer, GameState.created].contains(state) &&
         !players.contains(player)) {
       players.add(player);
+      playerOrder.add(player.id);
     }
   }
 
   /// Löscht den `player` aus der List der Spieler `players`
   void removePlayer(Player player) {
     players.removeWhere((p) => p.id == player.id);
+    playerOrder.remove(player.id);
     if (!players.contains(player)) {
       final playerCards = player.cards..shuffle();
       unplayedCardStack.addAll(playerCards);
@@ -239,7 +261,7 @@ class Game with EquatableMixin {
   }
 
   /// dreht die Spielrichtung um
-  List<Player> reversePlayerOrder() => players.reversed.toList();
+  List<String> reversePlayerOrder() => playerOrder.reversed.toList();
 
   void cleanUpCardStacks() {
     final activeCards = playedCardStack.toList().reversed.toList();

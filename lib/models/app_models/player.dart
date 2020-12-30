@@ -97,16 +97,20 @@ class Player with EquatableMixin {
   ///
   /// Ist der Index gleich dem Ende der Liste, wird der Index wieder auf 0 gesetzt.
   Player getNextPlayer(
+    List<String> playerOrder,
     List<Player> player, {
     String playerId,
     bool skipNextPlayer = false,
   }) {
     final id = playerId ?? this.id;
     assert(player != null);
+    assert(playerOrder != null);
     assert(id != null);
+
     final activePlayer =
         player.filter((player) => player.finishPosition == 0).toList();
-    var index = activePlayer?.indexWhere((p) => p.id == id) ?? -1;
+
+    var index = playerOrder?.indexWhere((p) => p == id) ?? -1;
     index = skipNextPlayer ? index + 2 : index + 1;
     if (index > activePlayer.length - 1) {
       index = 0;

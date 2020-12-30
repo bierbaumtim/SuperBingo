@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -74,17 +72,7 @@ class _GamePageState extends State<GamePage> {
       },
       child: BlocConsumer<CurrentGameBloc, CurrentGameState>(
         listener: (context, state) async {
-          if (state is PlayerJoined && mounted) {
-            showSimpleNotification(
-              Text('${state.player?.name} ist dem Spiel beigetreten.'),
-              foreground: Colors.white,
-            );
-          } else if (state is PlayerLeaved && mounted) {
-            showSimpleNotification(
-              Text('${state.player?.name} hat das Spiel verlassen.'),
-              foreground: Colors.white,
-            );
-          } else if (state is CurrentGameStarting && mounted) {
+          if (state is CurrentGameStarting && mounted) {
             showStartingOverlay(context);
           } else if (state is CurrentGameFinished) {
             Navigator.of(context).pop();

@@ -69,26 +69,6 @@ class CurrentGameStartingFailed extends CurrentGameState {}
 /// Spieleseite geschlossen wird.
 class CurrentGameFinished extends CurrentGameState {}
 
-/// State, um den Beitritt eines Spielers zu einem Spiel darzustellen
-class PlayerJoined extends CurrentGameState {
-  final Player player;
-
-  const PlayerJoined(this.player);
-
-  @override
-  List<Object> get props => super.props..add(player);
-}
-
-/// State, um das Verlassen eines Spielers aus einem Spiel darzustellen
-class PlayerLeaved extends CurrentGameState {
-  final Player player;
-
-  const PlayerLeaved(this.player);
-
-  @override
-  List<Object> get props => super.props..add(player);
-}
-
 /// State, um Countdown für Bingo/SuperBingo Call zu starten.
 class WaitForBingoCall extends CurrentGameState {
   final bool isSuperBingo;

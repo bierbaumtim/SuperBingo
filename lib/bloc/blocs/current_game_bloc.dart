@@ -118,7 +118,12 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         );
 
         if (joinedPlayer != null) {
-          yield PlayerJoined(joinedPlayer);
+          DialogInformationService.instance.showNotification(
+            NotificationType.information,
+            config: NotificationConfiguration(
+              content: '${joinedPlayer.name} ist dem Spiel beigetreten.',
+            ),
+          );
         }
       } else if (_previousGame.players.length > event.game.players.length) {
         final leavedPlayer = getDiffInPlayerLists(
@@ -126,7 +131,12 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           event.game.players,
         );
         if (leavedPlayer != null) {
-          yield PlayerLeaved(leavedPlayer);
+          DialogInformationService.instance.showNotification(
+            NotificationType.information,
+            config: NotificationConfiguration(
+              content: '${leavedPlayer.name} hat das Spiel verlassen.',
+            ),
+          );
         }
       }
 
@@ -200,6 +210,12 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       var shouldYieldWaitForBingo = false, isSuperBingo = false;
 
       if (message == null) {
+        int cardDrawAmount;
+        bool isJokerOrJackAllowed;
+        CardColor allowedCardColor;
+        CardNumber allowedCardNumber;
+        List<String> playerOrder;
+
         if (_self.cards.length - 1 <= 1) {
           shouldYieldWaitForBingo = true;
           isSuperBingo = _self.cards.length - 1 == 0;
@@ -208,34 +224,38 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         final game = _currentGame;
         switch (event.card.rule) {
           case SpecialRule.reverse:
-            game.players = game.reversePlayerOrder();
+            playerOrder = game.reversePlayerOrder();
             break;
           case SpecialRule.plusTwo:
-            game.cardDrawAmount =
+            cardDrawAmount =
                 game.cardDrawAmount == 1 ? 2 : game.cardDrawAmount + 2;
             break;
           case SpecialRule.joker:
-            game.isJokerOrJackAllowed = false;
-            game.allowedCardColor = event.allowedCardColor;
+            isJokerOrJackAllowed = false;
+            allowedCardColor = event.allowedCardColor;
             break;
           default:
-            game.isJokerOrJackAllowed = true;
-            game.allowedCardColor = null;
+            isJokerOrJackAllowed = true;
+            allowedCardColor = null;
             break;
         }
 
         Player nextPlayer;
-        nextPlayer = _self.getNextPlayer(game.players);
+        nextPlayer = _self.getNextPlayer(game.playerOrder, game.players);
 
         /// Beim einer 8(Aussetzen) prüfen, ob der nächste Spieler
         /// auch eine 8(Aussetzen) hat. Wenn ja, wird er nicht übersprungen,
         /// wenn nein, ist der Spieler nach ihm an der Reihe.
-        if (event.card.rule == SpecialRule.skip &&
-            !nextPlayer.cards.any((c) => c.number == CardNumber.eight)) {
-          nextPlayer = _self.getNextPlayer(
-            game.players,
-            skipNextPlayer: true,
-          );
+        if (event.card.rule == SpecialRule.skip) {
+          if (!nextPlayer.cards.any((c) => c.number == CardNumber.eight)) {
+            nextPlayer = _self.getNextPlayer(
+              game.playerOrder,
+              game.players,
+              skipNextPlayer: true,
+            );
+          } else {
+            allowedCardNumber = CardNumber.eight;
+          }
         }
 
         game.playedCardStack.add(event.card);
@@ -246,6 +266,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         final filledGame = game.copyWith(
           currentPlayerId: nextPlayer?.id,
           players: game.players,
+          allowedCardColor: allowedCardColor,
+          allowedCardNumber: allowedCardNumber,
+          isJokerOrJackAllowed: isJokerOrJackAllowed,
+          cardDrawAmount: cardDrawAmount,
+          playerOrder: playerOrder,
         );
 
         if (shouldYieldWaitForBingo) {
@@ -270,20 +295,25 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     var game = _currentGame;
     if (game.isRunning) {
       if (game.currentPlayerId == _self.id) {
-        game.isJokerOrJackAllowed = true;
-        game.allowedCardColor = null;
         _self = Player.getPlayerFromList(game.players, _self.id);
         for (var i = 0; i < game.cardDrawAmount; i++) {
           final card = game.unplayedCardStack.removeFirst();
           _self.cards.add(card);
         }
         if (game.cardDrawAmount <= 2) {
-          final nextPlayer = _self.getNextPlayer(game.players);
+          final nextPlayer = _self.getNextPlayer(
+            game.playerOrder,
+            game.players,
+          );
           if (nextPlayer != null) {
             game = game.copyWith(currentPlayerId: nextPlayer.id);
           }
         }
-        game.cardDrawAmount = 1;
+        game.allowedCardColor = null;
+        game = game.copyWith(
+          cardDrawAmount: 1,
+          isJokerOrJackAllowed: true,
+        );
         game.updatePlayer(_self);
         await networkService.updateGameData(game);
       } else {
@@ -328,7 +358,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     try {
       final game = _currentGame;
       await gameSub?.cancel();
-      final nextPlayer = _self.getNextPlayer(game.players);
+      final nextPlayer = _self.getNextPlayer(
+        game.playerOrder,
+        game.players,
+      );
       game.removePlayer(_self);
       if (_self.isHost) {
         if (game.players.isNotEmpty) {
