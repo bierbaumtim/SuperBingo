@@ -149,6 +149,16 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         }
       }
 
+      if (_previousGame.message != event.game.message &&
+          event.game.message != null) {
+        DialogInformationService.instance.showNotification(
+          NotificationType.content,
+          config: NotificationConfiguration(
+            content: event.game.message,
+          ),
+        );
+      }
+
       switch (event.game.state) {
         case GameState.finished:
           add(EndGame());
