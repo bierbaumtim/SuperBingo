@@ -108,14 +108,25 @@ class Player with EquatableMixin {
     assert(id != null);
 
     final activePlayer =
-        player.filter((player) => player.finishPosition == 0).toList();
+        player.where((player) => player.finishPosition == 0).toList();
 
-    var index = playerOrder?.indexWhere((p) => p == id) ?? -1;
+    final activePlayerIds = playerOrder
+        .where(
+          (p) => activePlayer.any((ap) => ap.id == p),
+        )
+        .toList();
+
+    var index = activePlayerIds?.indexWhere((p) => p == id) ?? -1;
     index = skipNextPlayer ? index + 2 : index + 1;
-    if (index > activePlayer.length - 1) {
+    if (index > activePlayerIds.length - 1) {
       index = 0;
     }
-    return activePlayer.elementAtOrNull(index);
+    final nextId = activePlayerIds.elementAtOrNull(index) ?? '--empty--';
+
+    return activePlayer.firstWhere(
+      (p) => p.id == nextId,
+      orElse: () => null,
+    );
   }
 
   /// Ruft den Spieler mit der `playerId` aus der `player` Liste.

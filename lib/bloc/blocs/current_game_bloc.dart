@@ -222,8 +222,6 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       if (message == null) {
         int cardDrawAmount;
         bool isJokerOrJackAllowed;
-        CardColor allowedCardColor;
-        CardNumber allowedCardNumber;
         List<String> playerOrder;
 
         if (_self.cards.length - 1 <= 1) {
@@ -242,11 +240,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
             break;
           case SpecialRule.joker:
             isJokerOrJackAllowed = false;
-            allowedCardColor = event.allowedCardColor;
+            game.allowedCardColor = event.allowedCardColor;
             break;
           default:
             isJokerOrJackAllowed = true;
-            allowedCardColor = null;
+            game.allowedCardColor = null;
             break;
         }
 
@@ -257,14 +255,15 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         /// auch eine 8(Aussetzen) hat. Wenn ja, wird er nicht übersprungen,
         /// wenn nein, ist der Spieler nach ihm an der Reihe.
         if (event.card.rule == SpecialRule.skip) {
-          if (!nextPlayer.cards.any((c) => c.number == CardNumber.eight)) {
+          if (nextPlayer.cards.any((c) => c.number == CardNumber.eight)) {
+            game.allowedCardNumber = CardNumber.eight;
+          } else {
             nextPlayer = _self.getNextPlayer(
               game.playerOrder,
               game.players,
               skipNextPlayer: true,
             );
-          } else {
-            allowedCardNumber = CardNumber.eight;
+            game.allowedCardNumber = null;
           }
         }
 
@@ -276,8 +275,6 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         final filledGame = game.copyWith(
           currentPlayerId: nextPlayer?.id,
           players: game.players,
-          allowedCardColor: allowedCardColor,
-          allowedCardNumber: allowedCardNumber,
           isJokerOrJackAllowed: isJokerOrJackAllowed,
           cardDrawAmount: cardDrawAmount,
           playerOrder: playerOrder,
