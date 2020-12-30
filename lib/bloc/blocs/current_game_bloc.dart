@@ -215,16 +215,15 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
   Stream<CurrentGameState> _mapPlayCardToState(PlayCard event) async* {
     try {
-      final currentState = state;
       final message = Rules.checkRules(_currentGame, event.card, _playerId);
       var shouldYieldWaitForBingo = false, isSuperBingo = false;
 
       if (message == null) {
         final game = _currentGame;
-        
+
         int cardDrawAmount;
-        bool isJokerOrJackAllowed;
-        List<String> playerOrder;
+        var isJokerOrJackAllowed = true;
+        var playerOrder = game.playerOrder;
 
         if (_self.cards.length - 1 <= 1) {
           shouldYieldWaitForBingo = true;
@@ -246,12 +245,22 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           default:
             isJokerOrJackAllowed = true;
             game.allowedCardColor = null;
-            playerOrder = game.playerOrder;
             break;
         }
 
-        Player nextPlayer;
-        nextPlayer = _self.getNextPlayer(playerOrder, game.players);
+        game.playedCardStack.add(event.card);
+        game.updatePlayer(_self);
+
+        if (game.playedCardStack.length >= 15 && _self.isHost) {
+          game.cleanUpCardStacks();
+        }
+
+        yield CurrentGameLoaded(
+          game: game,
+          self: _self,
+        );
+
+        var nextPlayer = _self.getNextPlayer(playerOrder, game.players);
 
         /// Beim einer 8(Aussetzen) prüfen, ob der nächste Spieler
         /// auch eine 8(Aussetzen) hat. Wenn ja, wird er nicht übersprungen,
@@ -268,13 +277,6 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           }
         }
 
-        game.playedCardStack.add(event.card);
-        game.updatePlayer(_self);
-
-        if (game.playedCardStack.length >= 15 && _self.isHost) {
-          game.cleanUpCardStacks();
-        }
-
         final filledGame = game.copyWith(
           currentPlayerId: nextPlayer?.id,
           players: game.players,
@@ -285,7 +287,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
         if (shouldYieldWaitForBingo) {
           yield WaitForBingoCall(isSuperBingo: isSuperBingo);
-          yield currentState;
+          yield CurrentGameLoaded(
+            game: game,
+            self: _self,
+          );
         }
         await networkService.updateGameData(filledGame);
       } else {
