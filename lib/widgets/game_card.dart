@@ -19,6 +19,7 @@ class GameCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: const EdgeInsets.all(8),
       child: ListTile(
         title: Text(game?.name ?? ''),
         subtitle: Text(
@@ -48,13 +49,14 @@ class GameCard extends StatelessWidget {
       ),
     );
   }
-}
 
-Future<bool> _checkPlayer(BuildContext context) async {
-  if (context.read<InfoBloc>().state is! InfosLoaded) {
-    final result =
-        await Navigator.of(context).pushNamed('/user_page') as String;
-    return result != null && result.isNotEmpty;
+  Future<bool> _checkPlayer(BuildContext context) async {
+    if (context.read<InfoBloc>().state is! InfosLoaded) {
+      final result =
+          await Navigator.of(context).pushNamed('/user_page') as String;
+      return result != null && result.isNotEmpty;
+    }
+    return true;
   }
-  return true;
+  
 }
