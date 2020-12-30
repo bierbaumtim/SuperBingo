@@ -39,6 +39,10 @@ class Rules {
     if (game.allowedCardColor != null && game.allowedCardColor != card.color) {
       return 'Der letzte Spieler hat sich eine andere Farbe gewünscht. Du darfst diese Karte daher nicht legen!';
     }
+    if (game.allowedCardNumber != null &&
+        game.allowedCardNumber != card.number) {
+      return 'Du darfst nur ${game.allowedCardNumber.toReadableString(withArticle: true)} legen.';
+    }
     if (game.cardDrawAmount > 1 && card.number != CardNumber.seven) {
       return 'Du musst ${game.cardDrawAmount} Karten ziehen!';
     }

@@ -92,3 +92,32 @@ extension CardColorX on CardColor {
     }
   }
 }
+
+extension CardNumberX on CardNumber {
+  String toReadableString({bool withArticle = false}) {
+    switch (this) {
+      case CardNumber.ace:
+        return '${withArticle ? 'ein ' : ''}Ass';
+      case CardNumber.king:
+        return '${withArticle ? 'einen ' : ''}König';
+      case CardNumber.queen:
+        return '${withArticle ? 'eine ' : ''}Dame';
+      case CardNumber.jack:
+        return '${withArticle ? 'einen ' : ''}Bube';
+      case CardNumber.joker:
+        return '${withArticle ? 'einen ' : ''}Joker';
+      case CardNumber.nine:
+        return '${withArticle ? 'eine ' : ''}9';
+      case CardNumber.eight:
+        return '${withArticle ? 'eine ' : ''}8';
+      case CardNumber.seven:
+        return '${withArticle ? 'eine ' : ''}7';
+      case CardNumber.six:
+        return '${withArticle ? 'eine ' : ''}6';
+      case CardNumber.five:
+        return '${withArticle ? 'eine ' : ''}5';
+      default:
+        return '';
+    }
+  }
+}
