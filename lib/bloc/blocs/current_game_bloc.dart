@@ -315,6 +315,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           final card = game.unplayedCardStack.removeFirst();
           _self.cards.add(card);
         }
+        _self.cards.sort((a, b) => a.compareTo(b));
         if (game.cardDrawAmount <= 2) {
           final nextPlayer = _self.getNextPlayer(
             game.playerOrder,
