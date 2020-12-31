@@ -11,7 +11,7 @@ part 'card.g.dart';
 /// Datenhaltungsklasse für eine Spielkarte
 /// {@endtemplate}
 @JsonSerializable(explicitToJson: true)
-class GameCard extends Equatable {
+class GameCard extends Equatable implements Comparable<GameCard> {
   /// ID der Karte.
   ///
   /// Einzigartig pro Spiel
@@ -76,4 +76,15 @@ class GameCard extends Equatable {
 
   @override
   bool get stringify => true;
+
+  @override
+  int compareTo(GameCard other) {
+    final colorOrder = color.compareTo(other.color);
+
+    if (colorOrder == 0) {
+      return number.compareTo(other.number);
+    }
+
+    return colorOrder;
+  }
 }

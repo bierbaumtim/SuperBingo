@@ -91,6 +91,27 @@ extension CardColorX on CardColor {
         return '';
     }
   }
+
+  int get comparableValue {
+    switch (this) {
+      case CardColor.clover:
+        return 4;
+      // Pik
+      case CardColor.spade:
+        return 3;
+      // Herz
+      case CardColor.heart:
+        return 1;
+      // Karo
+      case CardColor.diamond:
+      default:
+        return 0;
+    }
+  }
+
+  int compareTo(CardColor other) {
+    return other.comparableValue - comparableValue;
+  }
 }
 
 extension CardNumberX on CardNumber {
@@ -119,5 +140,36 @@ extension CardNumberX on CardNumber {
       default:
         return '';
     }
+  }
+
+  int get comparableValue {
+    switch (this) {
+      case CardNumber.joker:
+        return 14;
+      case CardNumber.ace:
+        return 13;
+      case CardNumber.king:
+        return 12;
+      case CardNumber.queen:
+        return 11;
+      case CardNumber.jack:
+        return 10;
+      case CardNumber.nine:
+        return 9;
+      case CardNumber.eight:
+        return 8;
+      case CardNumber.seven:
+        return 7;
+      case CardNumber.six:
+        return 6;
+      case CardNumber.five:
+        return 5;
+      default:
+        return 0;
+    }
+  }
+
+  int compareTo(CardNumber other) {
+    return other.comparableValue - comparableValue;
   }
 }
