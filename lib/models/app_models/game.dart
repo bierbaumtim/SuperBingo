@@ -21,15 +21,23 @@ class Game with EquatableMixin {
   bool get stringify => true;
 
   @override
-  List<Object> get props => [
+  List<Object> get props => <Object>[
+        gameID,
         playedCardStack,
         unplayedCardStack,
         players,
-        isPublic,
-        maxPlayer,
         name,
+        maxPlayer,
+        isPublic,
+        cardAmount,
         currentPlayerId,
+        cardDrawAmount,
+        allowedCardColor,
+        isJokerOrJackAllowed,
         state,
+        message,
+        allowedCardNumber,
+        playerOrder,
       ];
 
   /// Stapel der gespielten Karten
