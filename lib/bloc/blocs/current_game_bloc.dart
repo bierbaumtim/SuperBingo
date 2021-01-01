@@ -260,25 +260,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           self: _self,
         );
 
-        var nextPlayer = _self.getNextPlayer(playerOrder, game.players);
-
-        /// Beim einer 8(Aussetzen) prüfen, ob der nächste Spieler
-        /// auch eine 8(Aussetzen) hat. Wenn ja, wird er nicht übersprungen,
-        /// wenn nein, ist der Spieler nach ihm an der Reihe.
-        if (event.card.rule == SpecialRule.skip) {
-          if (nextPlayer.cards.any((c) => c.number == CardNumber.eight)) {
-            game.allowedCardNumber = CardNumber.eight;
-          } else {
-            nextPlayer = nextPlayer.getNextPlayer(
-              game.playerOrder,
-              game.players,
-            );
-            game.allowedCardNumber = null;
-          }
-        }
+        final nextPlayerId = game.getNextPlayerId();
 
         final filledGame = game.copyWith(
-          currentPlayerId: nextPlayer?.id,
+          currentPlayerId: nextPlayerId,
           players: game.players,
           isJokerOrJackAllowed: isJokerOrJackAllowed,
           cardDrawAmount: cardDrawAmount,
@@ -317,13 +302,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         }
         _self.cards.sort((a, b) => a.compareTo(b));
         if (game.cardDrawAmount <= 2) {
-          final nextPlayer = _self.getNextPlayer(
-            game.playerOrder,
-            game.players,
-          );
-          if (nextPlayer != null) {
-            game = game.copyWith(currentPlayerId: nextPlayer.id);
-          }
+          final nextPlayerId = game.getNextPlayerId();
+          game = game.copyWith(currentPlayerId: nextPlayerId);
         }
         game.allowedCardColor = null;
         game = game.copyWith(
@@ -374,10 +354,6 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     try {
       final game = _currentGame;
       await gameSub?.cancel();
-      final nextPlayer = _self.getNextPlayer(
-        game.playerOrder,
-        game.players,
-      );
       game.removePlayer(_self);
       if (_self.isHost) {
         if (game.players.isNotEmpty) {
@@ -387,7 +363,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           return;
         }
       }
-      game.currentPlayerId = nextPlayer?.id ?? game.players.firstOrNull()?.id;
+      final nextPlayerId = game.getNextPlayerId();
+      game.currentPlayerId = nextPlayerId ?? game.players.firstOrNull()?.id;
       await networkService.updateGameData(game);
     } on dynamic catch (e, s) {
       await LogService.instance.recordError(e, s);

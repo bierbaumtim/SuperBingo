@@ -281,6 +281,91 @@ class Game with EquatableMixin {
     unplayedCardStack.addAll(cards);
   }
 
+  /// Ruft den Index des Spielers mit der `playerId`,
+  /// erhöht dann den Index und gibt den Spieler an diesem
+  /// Index zurück.
+  ///
+  /// Ist der Index größer als der höchste Index der Liste,
+  /// wird vom Anfang der Liste mit der Differenz weitergemacht.
+  String getNextPlayerId({
+    SpecialRule rule,
+  }) {
+    String _nextId(
+      List<String> playerOrder,
+      int index,
+    ) {
+      var nextIndex = index;
+      if (index > playerOrder.lastIndex) {
+        nextIndex -= playerOrder.length;
+      }
+      return playerOrder.elementAt(nextIndex);
+    }
+
+    Player _nextPlayer(
+      List<Player> player,
+      List<String> playerOrder,
+      int index,
+    ) {
+      return player.firstWhere(
+        (p) => p.id == _nextId(playerOrder, index),
+      );
+    }
+
+    assert(playerOrder != null);
+
+    final activePlayer =
+        players.where((player) => player.finishPosition == 0).toList();
+
+    final activePlayerOrder = playerOrder
+        .where(
+          (p) => activePlayer.any((ap) => ap.id == p),
+        )
+        .toList();
+
+    final nextIndex = activePlayerOrder.indexWhere(
+          (p) => p == currentPlayerId,
+        ) +
+        1;
+
+    var nextId = _nextId(activePlayerOrder, nextIndex);
+
+    if (rule != null) {
+      switch (rule) {
+        case SpecialRule.skip:
+
+          /// Beim einer 8(Aussetzen) prüfen, ob der nächste Spieler
+          /// auch eine 8(Aussetzen) hat. Wenn ja, wird er nicht übersprungen,
+          /// wenn nein, ist der Spieler nach ihm an der Reihe.
+          final nextPlayer =
+              _nextPlayer(activePlayer, activePlayerOrder, nextIndex);
+          if (nextPlayer.cards.any((c) => c.number == CardNumber.eight)) {
+            allowedCardNumber = CardNumber.eight;
+          } else {
+            allowedCardNumber = null;
+
+            if (activePlayer.length == 2) {
+              return currentPlayerId;
+            } else {
+              nextId = _nextId(activePlayerOrder, nextIndex + 1);
+            }
+          }
+          break;
+        case SpecialRule.reverse:
+
+          /// Eine 9(Richtungswechsel) hat bei 2 Spielern
+          /// die gleiche Auswirkung wie Aussetzen
+          if (activePlayer.length == 2) {
+            return currentPlayerId;
+          }
+          break;
+        default:
+          break;
+      }
+    }
+
+    return nextId;
+  }
+
   /// Wandelt cardStacks in Datenbank-kompatible Listen von [GameCard] Map Repräsentationen um
   static List<Map<String, dynamic>> stackToJson(Queue<GameCard> stack) {
     return stack?.toList()?.map((gc) => gc.toJson())?.toList() ??

@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:supercharged/supercharged.dart';
 
 import '../../services/information_storage.dart';
 import 'card.dart';
@@ -89,50 +88,6 @@ class Player with EquatableMixin {
     for (var i = 0; i < amount; i++) {
       drawCard(cardStack.removeFirst());
     }
-  }
-
-  /// Ruft den Index des Spielers mit der `playerId`,
-  /// erhöht dann den Index und gibt den Spieler an diesem
-  /// Index zurück.
-  ///
-  /// Ist der Index gleich dem Ende der Liste, wird der Index wieder auf 0 gesetzt.
-  Player getNextPlayer(
-    List<String> playerOrder,
-    List<Player> player, {
-    String playerId,
-    bool skipNextPlayer = false,
-  }) {
-    final id = playerId ?? this.id;
-    assert(player != null);
-    assert(playerOrder != null);
-    assert(id != null);
-
-    final activePlayer =
-        player.where((player) => player.finishPosition == 0).toList();
-
-    /// Eine 8(Aussetzen) hat bei 2 Spielern
-    /// die gleiche Auswirkung wie Aussetzen
-    if (skipNextPlayer && activePlayer.length == 2) {
-      return this;
-    }
-
-    final activePlayerIds = playerOrder
-        .where(
-          (p) => activePlayer.any((ap) => ap.id == p),
-        )
-        .toList();
-
-    var index = activePlayerIds?.indexWhere((p) => p == id) ?? -1;
-    index = skipNextPlayer ? index + 2 : index + 1;
-    if (index > activePlayerIds.length - 1) {
-      index -= activePlayerIds.length;
-    }
-    final nextId = activePlayerIds.elementAtOrNull(index) ?? '--empty--';
-
-    return activePlayer.firstWhere(
-      (p) => p.id == nextId,
-      orElse: () => null,
-    );
   }
 
   /// Ruft den Spieler mit der `playerId` aus der `player` Liste.
