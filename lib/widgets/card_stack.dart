@@ -67,6 +67,10 @@ class _CardStackState extends State<CardStack> {
 
   @override
   Widget build(BuildContext context) {
+    if (cards.isEmpty) {
+      return const SizedBox();
+    }
+    
     return Stack(
       children: cards.map<Widget>(
         (c) {

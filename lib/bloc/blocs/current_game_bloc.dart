@@ -173,6 +173,9 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           yield CurrentGameLoaded(
             game: event.game,
             self: _self,
+            canDrawCards:
+                event.game.playedCardStack.last.rule != SpecialRule.plusTwo &&
+                    event.game.cardDrawAmount == 1,
           );
       }
     } on dynamic catch (e, s) {

@@ -20,6 +20,7 @@ abstract class CurrentGameState extends Equatable {
 
 /// {@template currentgameloaded}
 /// Das Spiel ist fertig geladen und hält das aktuelle Game Objekt,
+/// das clientseitige Player Objekt und weitere Kennzeichen
 /// um die UI zu aktualisieren.
 /// {@mendtemplate}
 class CurrentGameLoaded extends CurrentGameState {
@@ -29,10 +30,15 @@ class CurrentGameLoaded extends CurrentGameState {
   /// Client-abhängiges Player Object
   final Player self;
 
+  /// Steuert, ob ein Spieler eine Karten aus
+  /// der Kartenhand ablegen darf oder nicht.
+  final bool canDrawCards;
+
   /// {@macro currentgameloaded}
   const CurrentGameLoaded({
     @required this.game,
     @required this.self,
+    this.canDrawCards = true,
   });
 
   @override
@@ -40,6 +46,7 @@ class CurrentGameLoaded extends CurrentGameState {
     ..addAll([
       game,
       self,
+      canDrawCards,
     ]);
 }
 

@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -56,6 +57,11 @@ class PlayCard extends StatelessWidget {
   /// Callback, wenn auf die Spielkarte gedrückt wird
   final OnCardTap onCardTap;
 
+  /// Konfiguration, ob diese Karte gelegt werden darf.
+  /// Steuert, ob ein entsprechendes Overlay über der Karte angezeigt wird
+  /// und ob ein Tap, entsprechend behandelt oder irgnoriert wird.
+  final bool canDraw;
+
   const PlayCard({
     Key key,
     @required this.card,
@@ -67,6 +73,7 @@ class PlayCard extends StatelessWidget {
     this.elevation = 0,
     this.isFlipped = true,
     this.shouldPaint = true,
+    this.canDraw = true,
     @required this.onCardTap,
   }) : super(key: key);
 
@@ -79,15 +86,18 @@ class PlayCard extends StatelessWidget {
       } else {
         paint = _ActivePaint(
           card: card,
+          canDraw: canDraw,
         );
       }
     } else {
-      paint = Container();
+      paint = const SizedBox();
     }
 
     final child = GestureDetector(
       onTap: () {
-        onCardTap?.call(card);
+        if (canDraw) {
+          onCardTap?.call(card);
+        }
       },
       child: Card(
         elevation: elevation,
@@ -95,6 +105,7 @@ class PlayCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(15),
         ),
         color: Colors.white,
+        clipBehavior: Clip.antiAlias,
         child: SizedBox(
           height: height,
           width: width,
@@ -127,9 +138,11 @@ class _ActivePaint extends StatelessWidget {
   const _ActivePaint({
     Key key,
     @required this.card,
+    this.canDraw = true,
   }) : super(key: key);
 
   final GameCard card;
+  final bool canDraw;
 
   @override
   Widget build(BuildContext context) {
@@ -211,6 +224,32 @@ class _ActivePaint extends StatelessWidget {
             flip: true,
           ),
         ),
+        if (!canDraw)
+          Container(
+            color: Colors.black38,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 4.0),
+                      child: Text(
+                        'Du kannst diese Karte nicht legen',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

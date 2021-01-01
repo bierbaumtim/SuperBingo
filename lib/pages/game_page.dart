@@ -152,7 +152,7 @@ class _GamePageState extends State<GamePage> {
                       child: AspectRatio(
                         aspectRatio: innerConstraints.maxHeight >=
                                 innerConstraints.maxWidth
-                            ? 0.675
+                            ? 0.575
                             : 2,
                         child: CustomPaint(
                           painter: VirtualTablePainter(),
@@ -324,17 +324,25 @@ class _GamePageState extends State<GamePage> {
                           } else {
                             return LayoutBuilder(
                               builder: (context, constraints) => Padding(
-                                padding: EdgeInsets.fromLTRB(
-                                  constraints.maxWidth / 4,
-                                  0,
-                                  constraints.maxWidth / 4,
-                                  16,
+                                padding: getValueForScreenType<EdgeInsets>(
+                                  context: context,
+                                  mobile:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                  tablet:
+                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                  desktop: EdgeInsets.fromLTRB(
+                                    constraints.maxWidth / 10,
+                                    0,
+                                    constraints.maxWidth / 10,
+                                    16,
+                                  ),
                                 ),
                                 child: HorizontalCardList(
                                   cards: state.self.cards,
                                   cardHeight: constraints.maxHeight - 42,
                                   cardWidth: (constraints.maxHeight - 42) *
                                       (100 / 175),
+                                  canDrawCards: state.canDrawCards,
                                 ),
                               ),
                             );
@@ -678,39 +686,44 @@ class VirtualTablePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final basePaint = Paint()..color = Colors.blueAccent;
-    final borderPaint = Paint()..color = Colors.black.withOpacity(0.1);
+    final innerBorderPaint = Paint()..color = Colors.black.withOpacity(0.1);
+    final outerBorderPaint = Paint()
+      ..color = Colors.orangeAccent
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5;
+
     Path basePath, borderPath, upperPath;
 
     if (size.width >= size.height) {
       basePath = _buildHorizontalTableBaseShape(size);
       borderPath = _buildHorizontalTableBaseShape(
-        Size(size.width * 0.95, size.height * 0.9),
+        size * 0.975,
       ).shift(
-        Offset(size.width * 0.025, size.height * 0.05),
+        Offset(size.width * 0.0125, size.height * 0.0125),
       );
       upperPath = _buildHorizontalTableBaseShape(
-        Size(size.width * 0.925, size.height * 0.85),
+        size * 0.95,
       ).shift(
-        Offset(size.width * 0.0375, size.height * 0.075),
+        Offset(size.width * 0.025, size.height * 0.025),
       );
     } else {
       basePath = _buildVerticalTableBaseShape(size);
       borderPath = _buildVerticalTableBaseShape(
-        Size(size.width * 0.9, size.height * 0.95),
+        size * 0.975,
       ).shift(
-        Offset(size.width * 0.05, size.height * 0.025),
+        Offset(size.width * 0.0125, size.height * 0.0125),
       );
       upperPath = _buildVerticalTableBaseShape(
-        Size(size.width * 0.85, size.height * 0.925),
+        size * 0.95,
       ).shift(
-        Offset(size.width * 0.075, size.height * 0.0375),
+        Offset(size.width * 0.025, size.height * 0.025),
       );
     }
-
+    canvas.drawShadow(basePath, Colors.black87, 4, false);
     canvas.drawPath(basePath, basePaint);
-    canvas.drawPath(borderPath, borderPaint);
+    canvas.drawPath(borderPath, innerBorderPaint);
     canvas.drawPath(upperPath, basePaint);
-    canvas.drawShadow(basePath, Colors.black, 4, false);
+    canvas.drawPath(basePath, outerBorderPaint);
   }
 
   Path _buildVerticalTableBaseShape(Size size) {
@@ -718,36 +731,18 @@ class VirtualTablePainter extends CustomPainter {
     final endsRadius = (size.height - innerHeight) / 2;
 
     return Path()
-      ..addRect(
-        Rect.fromLTWH(
-          0,
-          endsRadius,
-          size.width,
-          innerHeight,
-        ),
+      ..moveTo(size.width, endsRadius)
+      ..relativeLineTo(0, innerHeight)
+      ..relativeArcToPoint(
+        Offset(-size.width, 0),
+        radius: Radius.elliptical(size.width / 2, endsRadius),
       )
-      ..arcTo(
-        Rect.fromLTWH(
-          0,
-          0,
-          size.width,
-          2 * endsRadius,
-        ),
-        0,
-        270,
-        true,
+      ..relativeLineTo(0, -innerHeight)
+      ..relativeArcToPoint(
+        Offset(size.width, 0),
+        radius: Radius.elliptical(size.width / 2, endsRadius),
       )
-      ..arcTo(
-        Rect.fromLTWH(
-          0,
-          size.height - (2 * endsRadius),
-          size.width,
-          2 * endsRadius,
-        ),
-        0,
-        270,
-        true,
-      );
+      ..close();
   }
 
   Path _buildHorizontalTableBaseShape(Size size) {
@@ -761,35 +756,16 @@ class VirtualTablePainter extends CustomPainter {
     // debugPrint('========= Painter =========');
 
     return Path()
-      ..addRect(
-        Rect.fromLTWH(
-          endsRadius,
-          0,
-          innerWidth,
-          size.height,
-        ),
+      ..moveTo(endsRadius, 0)
+      ..relativeLineTo(innerWidth, 0)
+      ..relativeArcToPoint(
+        Offset(0, size.height),
+        radius: Radius.circular(endsRadius),
       )
-      ..arcTo(
-        Rect.fromLTWH(
-          0,
-          0,
-          2 * endsRadius,
-          size.height,
-        ),
-        0,
-        270,
-        false,
-      )
-      ..arcTo(
-        Rect.fromLTWH(
-          size.width - (2 * endsRadius),
-          0,
-          2 * endsRadius,
-          size.height,
-        ),
-        -90,
-        180,
-        true,
+      ..relativeLineTo(-innerWidth, 0)
+      ..relativeArcToPoint(
+        Offset(0, -size.height),
+        radius: Radius.circular(endsRadius),
       )
       ..close();
   }

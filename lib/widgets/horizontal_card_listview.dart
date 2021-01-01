@@ -17,8 +17,14 @@ class HorizontalCardList extends StatelessWidget {
   /// Liste der Karten die angezeigt werden sollen
   final List<GameCard> cards;
 
+  /// Konfiguration der PlayCard, die hier hochgereicht wird.
   final double cardHeight;
+  
+  /// Konfiguration der PlayCard, die hier hochgereicht wird.
   final double cardWidth;
+
+  /// Konfiguration der PlayCard, die hier hochgereicht wird.
+  final bool canDrawCards;
 
   /// {@macro horizontalcardlist}
   const HorizontalCardList({
@@ -26,6 +32,7 @@ class HorizontalCardList extends StatelessWidget {
     this.cards,
     this.cardHeight = 175,
     this.cardWidth = 100,
+    this.canDrawCards = true,
   }) : super(key: key);
 
   @override
@@ -57,6 +64,7 @@ class HorizontalCardList extends StatelessWidget {
               height: cardHeight,
               width: cardWidth,
               isFlipped: false,
+              canDraw: canDrawCards,
             ),
             itemCount: cards.length,
             scrollDirection: Axis.horizontal,
