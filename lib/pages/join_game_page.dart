@@ -9,7 +9,6 @@ import '../bloc/blocs/join_game_bloc.dart';
 import '../bloc/blocs/open_games_bloc.dart';
 import '../bloc/events/join_game_events.dart';
 import '../bloc/states/join_game_states.dart';
-import '../constants/enums.dart';
 import '../models/app_models/game.dart';
 import '../services/network_service/network_service_interface.dart';
 import '../widgets/game_card.dart';
@@ -136,16 +135,6 @@ class _JoinGamePageState extends State<JoinGamePage> {
       ),
     );
   }
-
-  // String messageByJoiningState(JoiningState state) {
-  //   if (state == JoiningState.dataIssue) {
-  //     return 'Beim erstellen des Spiels ist ein Fehler aufgetreten. Du kannst diesem Spiel daher nicht beitreten.';
-  //   } else if (state == JoiningState.playerAlreadyJoined) {
-  //     return 'Beim Verlassen des Spiels ist ein Fehler aufgetreten. Du kannst diesem Spiel daher nicht erneut beitreten.';
-  //   } else {
-  //     return 'Aufgrund eines Fehler kannst du dem Spiel nicht beitreten. Versuche es bitte später erneut.';
-  //   }
-  // }
 
   void showJoiningOverlay(BuildContext context) {
     _joiningOverlay = OverlayEntry(
