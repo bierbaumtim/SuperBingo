@@ -76,8 +76,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         }
       }
     } on dynamic catch (e, s) {
-      await LogService.instance.recordError(e, s);
       yield CurrentGameStartingFailed();
+      await LogService.instance.recordError(e, s);
     }
   }
 
@@ -141,8 +141,9 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       }
 
       if (_previousGame.allowedCardColor != event.game.allowedCardColor) {
-        if (event.game.playedCardStack.last.number == CardNumber.jack ||
-            event.game.playedCardStack.last.number == CardNumber.joker) {
+        if (event.game.playedCardStack.isNotEmpty &&
+            (event.game.playedCardStack.last.number == CardNumber.jack ||
+                event.game.playedCardStack.last.number == CardNumber.joker)) {
           yield UserChangedAllowedCardColor(event.game.allowedCardColor);
         } else {
           yield const UserChangedAllowedCardColor(null);
@@ -173,9 +174,9 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           yield CurrentGameLoaded(
             game: event.game,
             self: _self,
-            canDrawCards:
+            canDrawCards: event.game.playedCardStack.isNotEmpty &&
                 event.game.playedCardStack.last.rule != SpecialRule.plusTwo &&
-                    event.game.cardDrawAmount == 1,
+                event.game.cardDrawAmount == 1,
           );
       }
     } on dynamic catch (e, s) {
