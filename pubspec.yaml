@@ -23,7 +23,7 @@ dependencies:
   flutter_secure_storage: ^3.3.5 # no null-safety
 
   firebase_core: ^0.7.0 # null-safety with ^0.8.0-nullsafety.0
-  firebase_auth: ^0.20.0+1 # no null-safety
+  firebase_auth: ^0.20.0+1 # null-safety with ^0.21.0-nullsafety.0
   firebase_crashlytics: ^0.4.0+1 # no null-safety
   cloud_firestore: ^0.16.0 # no null-safety
   cloud_firestore_mocks: ^0.6.0 # no null-safety
