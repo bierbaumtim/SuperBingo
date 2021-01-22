@@ -57,7 +57,7 @@ class Game with EquatableMixin {
   Queue<GameCard> unplayedCardStack;
 
   /// List der Spieler
-  @JsonKey(name: 'players')
+  @JsonKey(name: 'players', defaultValue: <Player>[])
   List<Player> players;
 
   /// Konfiguration, ob das Spiel öffentlich sichtbar sein soll

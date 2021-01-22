@@ -12,9 +12,10 @@ Game _$GameFromJson(Map<String, dynamic> json) {
     playedCardStack: Game.stackFromJson(json['playedCards'] as List),
     unplayedCardStack: Game.stackFromJson(json['unplayedCards'] as List),
     players: (json['players'] as List)
-        ?.map((e) =>
-            e == null ? null : Player.fromJson(e as Map<String, dynamic>))
-        ?.toList(),
+            ?.map((e) =>
+                e == null ? null : Player.fromJson(e as Map<String, dynamic>))
+            ?.toList() ??
+        [],
     name: json['name'] as String ?? 'SuperBingo',
     maxPlayer: json['maxPlayer'] as int ?? 6,
     isPublic: json['isPublic'] as bool ?? true,
