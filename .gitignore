@@ -82,6 +82,7 @@ pubspec.lock
 android/key.properties
 web/init_firebase.js
 lib/constants/firestore_data.dart
+lib/constants/version.dart
 
 # 
 _windows/
