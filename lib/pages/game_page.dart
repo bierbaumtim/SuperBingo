@@ -342,7 +342,7 @@ class _GamePageState extends State<GamePage> {
                                   cardHeight: constraints.maxHeight - 42,
                                   cardWidth: (constraints.maxHeight - 42) *
                                       (100 / 175),
-                                  canDrawCards: state.canDrawCards,
+                                  canDrawCards: state.game.canDrawCards,
                                 ),
                               ),
                             );

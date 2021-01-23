@@ -166,6 +166,15 @@ class Game with EquatableMixin {
 
   String get link => 'superbingo://id:$gameID';
 
+  /// Steuert, ob ein Spieler eine Karten aus
+  /// der Kartenhand ablegen darf oder nicht.
+  bool get canDrawCards {
+    if (playedCardStack.isEmpty) return true;
+
+    return playedCardStack.last.rule != SpecialRule.plusTwo &&
+        cardDrawAmount == 1;
+  }
+
   /// Überschreibt aktuelles Object mit bestimmten neuen Werten
   Game copyWith({
     String name,
