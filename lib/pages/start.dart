@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
-import 'package:superbingo/constants/version.dart';
 
 import '../bloc/blocs/current_game_bloc.dart';
 import '../bloc/blocs/game_configuration_bloc.dart';
@@ -21,9 +20,11 @@ import '../bloc/states/game_states.dart';
 import '../bloc/states/info_states.dart';
 import '../bloc/states/join_game_states.dart';
 import '../constants/enums.dart';
+import '../constants/version.dart';
 import '../models/app_models/card.dart';
 import '../models/app_models/game.dart';
 import '../utils/card_utils.dart';
+import '../utils/version_utils.dart';
 import '../widgets/loading_widget.dart';
 import '../widgets/play_card.dart';
 
@@ -351,13 +352,23 @@ class _StartPageState extends State<StartPage> {
                   );
                 },
               ),
-              const Positioned(
-                bottom: 0,
-                right: 0,
+              Positioned(
+                bottom: 4,
+                right: 4,
                 child: Card(
                   child: Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Text(kAppVersion),
+                    padding: const EdgeInsets.all(4),
+                    child: FutureBuilder<bool>(
+                      future: checkIfAppWasUpdated,
+                      builder: (context, snapshot) {
+                        var version = kAppVersion;
+                        if (snapshot.hasData && snapshot.data) {
+                          version = "$version - Updated";
+                        }
+
+                        return Text(version);
+                      },
+                    ),
                   ),
                 ),
               ),
