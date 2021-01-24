@@ -169,6 +169,8 @@ class Game with EquatableMixin {
   /// Steuert, ob ein Spieler eine Karten aus
   /// der Kartenhand ablegen darf oder nicht.
   bool get canDrawCards {
+    return true;
+    
     if (playedCardStack.isEmpty) return true;
 
     return playedCardStack.last.rule != SpecialRule.plusTwo &&
