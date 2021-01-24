@@ -145,19 +145,19 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         }
       }
 
-      if (_previousGame.allowedCardColor != event.game.allowedCardColor) {
-        print('AllowedCardColor changed: ${event.game.allowedCardColor}');
-        yield UserChangedAllowedCardColor(event.game.allowedCardColor);
-        // if (event.game.playedCardStack.isNotEmpty &&
-        //     (event.game.playedCardStack.last.number == CardNumber.jack ||
-        //         event.game.playedCardStack.last.number == CardNumber.joker)) {
-        //   print('AllowedCardColor changed: ${event.game.allowedCardColor}');
-        //   yield UserChangedAllowedCardColor(event.game.allowedCardColor);
-        // } else {
-        //   print('AllowedCardColor changed: null');
-        //   yield const UserChangedAllowedCardColor(null);
-        // }
-      }
+      // if (_previousGame.allowedCardColor != event.game.allowedCardColor) {
+      print('AllowedCardColor changed: ${event.game.allowedCardColor}');
+      yield UserChangedAllowedCardColor(event.game.allowedCardColor);
+      // if (event.game.playedCardStack.isNotEmpty &&
+      //     (event.game.playedCardStack.last.number == CardNumber.jack ||
+      //         event.game.playedCardStack.last.number == CardNumber.joker)) {
+      //   print('AllowedCardColor changed: ${event.game.allowedCardColor}');
+      //   yield UserChangedAllowedCardColor(event.game.allowedCardColor);
+      // } else {
+      //   print('AllowedCardColor changed: null');
+      //   yield const UserChangedAllowedCardColor(null);
+      // }
+      // }
 
       if (_previousGame.message != event.game.message &&
           event.game.message != null) {
@@ -189,9 +189,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           );
       }
 
-      print(
-        'Game Equality check: ${_currentGame != (state as CurrentGameLoaded).game}',
-      );
+      if (state is CurrentGameLoaded) {
+        print(
+          'Game Equality check: ${_currentGame != (state as CurrentGameLoaded).game}',
+        );
+      }
       print('State Equality check: ${currentState != state}');
     } on dynamic catch (e, s) {
       await LogService.instance.recordError(e, s);
@@ -215,6 +217,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
   Stream<CurrentGameState> _mapEndGameToState(EndGame event) async* {
     await gameSub.cancel();
+    await networkService.cancelSubscription();
     if (_self.isHost) {
       await networkService.updateGameData(
         <String, dynamic>{
@@ -245,12 +248,14 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         switch (event.card.rule) {
           case SpecialRule.reverse:
             game.reversePlayerOrder();
+            game.allowedCardColor = null;
             break;
           case SpecialRule.plusTwo:
             game = game.copyWith(
               cardDrawAmount:
                   game.cardDrawAmount == 1 ? 2 : game.cardDrawAmount + 2,
             );
+            game.allowedCardColor = null;
             break;
           case SpecialRule.joker:
             game.copyWith(
@@ -335,7 +340,6 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         _self.cards.sort((a, b) => a.compareTo(b));
 
         game.getNextPlayerId();
-        game.allowedCardColor = null;
         game = game.copyWith(
           cardDrawAmount: 1,
           isJokerOrJackAllowed: true,
@@ -398,6 +402,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     try {
       final game = _currentGame;
       await gameSub?.cancel();
+      await networkService.cancelSubscription();
       game.removePlayer(_self);
       if (_self.isHost) {
         if (game.players.isNotEmpty) {
