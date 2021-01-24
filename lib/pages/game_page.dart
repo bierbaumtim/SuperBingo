@@ -11,7 +11,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../bloc/blocs/current_game_bloc.dart';
 import '../bloc/blocs/interaction_bloc.dart';
 import '../bloc/events/current_game_events.dart'
-    show LeaveGame, DrawCard, StartGame, EndGame;
+    show LeaveGame, DrawPenaltyCard, StartGame, EndGame;
 import '../bloc/events/interaction_events.dart';
 import '../bloc/states/current_game_states.dart';
 import '../constants/enums.dart';
@@ -86,7 +86,7 @@ class _GamePageState extends State<GamePage> {
             await Future.delayed(const Duration(seconds: 4), () {
               if (showCallBingoButton) {
                 setState(() => showCallBingoButton = false);
-                context.read<CurrentGameBloc>().add(const DrawCard());
+                context.read<CurrentGameBloc>().add(DrawPenaltyCard());
               }
             });
             hideTimerOverlay();
@@ -253,6 +253,7 @@ class _GamePageState extends State<GamePage> {
                           ),
                           onPressed: () {
                             setState(() => showCallBingoButton = false);
+                            hideTimerOverlay();
                             context.read<InteractionBloc>().add(
                                   isSuperBingo ? CallSuperBingo() : CallBingo(),
                                 );
@@ -360,6 +361,7 @@ class _GamePageState extends State<GamePage> {
                       ),
                       onPressed: () {
                         setState(() => showCallBingoButton = false);
+                        hideTimerOverlay();
                         context.read<InteractionBloc>().add(
                               isSuperBingo ? CallSuperBingo() : CallBingo(),
                             );
@@ -427,6 +429,10 @@ class _GamePageState extends State<GamePage> {
   }
 
   void showAllowedCardColorOverlay(CardColor color) {
+    if (allowCardColorOverlay != null) {
+      hideAllowedCardColorOverlay();
+    }
+
     allowCardColorOverlay = OverlayEntry(
       builder: (context) => Align(
         alignment: const Alignment(0.0, -0.9),
