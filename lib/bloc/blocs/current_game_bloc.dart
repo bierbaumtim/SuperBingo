@@ -146,15 +146,17 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       }
 
       if (_previousGame.allowedCardColor != event.game.allowedCardColor) {
-        if (event.game.playedCardStack.isNotEmpty &&
-            (event.game.playedCardStack.last.number == CardNumber.jack ||
-                event.game.playedCardStack.last.number == CardNumber.joker)) {
-          print('AllowedCardColor changed: ${event.game.allowedCardColor}');
-          yield UserChangedAllowedCardColor(event.game.allowedCardColor);
-        } else {
-          print('AllowedCardColor changed: null');
-          yield const UserChangedAllowedCardColor(null);
-        }
+        print('AllowedCardColor changed: ${event.game.allowedCardColor}');
+        yield UserChangedAllowedCardColor(event.game.allowedCardColor);
+        // if (event.game.playedCardStack.isNotEmpty &&
+        //     (event.game.playedCardStack.last.number == CardNumber.jack ||
+        //         event.game.playedCardStack.last.number == CardNumber.joker)) {
+        //   print('AllowedCardColor changed: ${event.game.allowedCardColor}');
+        //   yield UserChangedAllowedCardColor(event.game.allowedCardColor);
+        // } else {
+        //   print('AllowedCardColor changed: null');
+        //   yield const UserChangedAllowedCardColor(null);
+        // }
       }
 
       if (_previousGame.message != event.game.message &&
@@ -167,6 +169,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           ),
         );
       }
+
+      final currentState = state;
 
       switch (event.game.state) {
         case GameState.finished:
@@ -184,6 +188,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
             self: _self,
           );
       }
+
+      print(
+        'Game Equality check: ${_currentGame != (state as CurrentGameLoaded).game}',
+      );
+      print('State Equality check: ${currentState != state}');
     } on dynamic catch (e, s) {
       await LogService.instance.recordError(e, s);
     }
@@ -225,6 +234,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   }
 
   Stream<CurrentGameState> _mapPlayCardToState(PlayCard event) async* {
+    print('=========== PlayCard started ===========');
     try {
       final message = Rules.checkRules(_currentGame, event.card, _playerId);
       var shouldYieldWaitForBingo = false, isSuperBingo = false;
@@ -270,11 +280,6 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           game.cleanUpCardStacks();
         }
 
-        yield CurrentGameLoaded(
-          game: game,
-          self: _self,
-        );
-
         /// Nächsten Spieler nur ermitteln,
         /// wenn das Spiel nachdem legen der Karte nicht beendet ist.
         if (!(isSuperBingo && game.predictEnd(self: _self))) {
@@ -282,6 +287,18 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
             rule: event.card.rule,
           );
         }
+
+        final currentState = state;
+
+        yield CurrentGameLoaded(
+          game: game,
+          self: _self,
+        );
+
+        print(
+          'Game Equality check: ${_currentGame != (state as CurrentGameLoaded).game}',
+        );
+        print('State Equality check: ${currentState != state}');
 
         if (shouldYieldWaitForBingo) {
           yield WaitForBingoCall(isSuperBingo: isSuperBingo);
@@ -302,6 +319,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     } on dynamic catch (e, s) {
       await LogService.instance.recordError(e, s);
     }
+
+    print('=========== PlayCard ended ===========');
   }
 
   Stream<CurrentGameState> _mapDrawCardToState(DrawCard event) async* {
@@ -314,10 +333,8 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           _self.cards.add(card);
         }
         _self.cards.sort((a, b) => a.compareTo(b));
-        if (game.cardDrawAmount <= 2) {
-          final nextPlayerId = game.getNextPlayerId();
-          game = game.copyWith(currentPlayerId: nextPlayerId);
-        }
+
+        game.getNextPlayerId();
         game.allowedCardColor = null;
         game = game.copyWith(
           cardDrawAmount: 1,
@@ -325,8 +342,6 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         );
         game.updatePlayer(_self);
         await networkService.updateGameData(game);
-
-        
       } else {
         DialogInformationService.instance.showNotification(
           NotificationType.error,
