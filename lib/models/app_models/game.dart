@@ -130,7 +130,7 @@ class Game with EquatableMixin {
   /// Es werden nur die IDs der Spieler gespeichert,
   /// um die Datenmenge zu gering wie möglich zu halten.
   @JsonKey(name: 'playerOrder', defaultValue: <String>[])
-  final List<String> playerOrder;
+  List<String> playerOrder;
 
   /// {@macro game}
   Game({
@@ -173,6 +173,24 @@ class Game with EquatableMixin {
 
     return playedCardStack.last.rule != SpecialRule.plusTwo &&
         cardDrawAmount == 1;
+  }
+
+  /// Prüft, ob das Spiele beendet ist bzw. sein wird.
+  /// Beispiel: Legt bei 2 Spielern Spieler A die letzte Karte,
+  /// ist das Spiel beendet und Spieler B muss nicht als nächster
+  /// Spieler ermittelt werden.
+  bool predictEnd({
+    Player self,
+  }) {
+    final effectivePlayer = players.where(
+      (p) => self != null ? p.id == self.id : true,
+    );
+
+    if (players.length == 2 && effectivePlayer.length == 1) {
+      return true;
+    } else {
+      return effectivePlayer.every((p) => p.finishPosition >= 1);
+    }
   }
 
   /// Überschreibt aktuelles Object mit bestimmten neuen Werten
@@ -276,7 +294,9 @@ class Game with EquatableMixin {
   }
 
   /// dreht die Spielrichtung um
-  List<String> reversePlayerOrder() => playerOrder.reversed.toList();
+  void reversePlayerOrder() {
+    playerOrder = playerOrder.reversed.toList();
+  }
 
   void cleanUpCardStacks() {
     final activeCards = playedCardStack.toList().reversed.toList();
@@ -371,6 +391,8 @@ class Game with EquatableMixin {
           break;
       }
     }
+
+    currentPlayerId = nextId;
 
     return nextId;
   }
