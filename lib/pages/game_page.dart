@@ -56,8 +56,6 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentGameBloc = BlocProvider.of<CurrentGameBloc>(context);
-
     return WillPopScope(
       onWillPop: () async {
         hideStartingOverlay();
@@ -66,7 +64,7 @@ class _GamePageState extends State<GamePage> {
           content: 'Willst du wirklich das Spiel verlassen?',
         );
         if (result) {
-          currentGameBloc.add(LeaveGame());
+          context.read<CurrentGameBloc>().add(LeaveGame());
         }
         return Future(() => result);
       },
@@ -88,7 +86,7 @@ class _GamePageState extends State<GamePage> {
             await Future.delayed(const Duration(seconds: 4), () {
               if (showCallBingoButton) {
                 setState(() => showCallBingoButton = false);
-                currentGameBloc.add(const DrawCard());
+                context.read<CurrentGameBloc>().add(const DrawCard());
               }
             });
             hideTimerOverlay();
@@ -102,7 +100,6 @@ class _GamePageState extends State<GamePage> {
             hideStartingOverlay();
           }
         },
-        cubit: currentGameBloc,
         builder: (context, state) {
           String title, currentPlayerId;
           List<GameCard> playedCards, unplayedCards;
