@@ -17,7 +17,13 @@ part 'player.g.dart';
 @JsonSerializable(explicitToJson: true)
 class Player with EquatableMixin {
   @override
-  List<Object> get props => [id, name, cards, isHost];
+  List<Object> get props => [
+        id,
+        name,
+        cards,
+        isHost,
+        finishPosition,
+      ];
 
   /// ID des Spielers.
   ///
