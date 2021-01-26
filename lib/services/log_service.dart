@@ -9,7 +9,18 @@ class LogService {
 
   factory LogService() => instance;
 
-  LogService._();
+  LogService._() {
+    _disabled = false;
+  }
+
+  bool _disabled;
+
+  // ignore: use_setters_to_change_properties,avoid_positional_boolean_parameters
+  @visibleForTesting
+  // ignore: avoid_positional_boolean_parameters
+  void setDisabled(bool disabled) {
+    _disabled = disabled;
+  }
 
   Future<void> recordError(
     dynamic exception,
@@ -18,6 +29,7 @@ class LogService {
     Iterable<DiagnosticsNode> information,
     bool printDetails,
   }) {
+    if (_disabled) return Future.value();
     if (isDesktop || kIsWeb) {
       debugPrint(exception.toString());
       debugPrintStack(stackTrace: stackTrace);
@@ -34,6 +46,7 @@ class LogService {
   }
 
   Future<void> recordFlutterError(FlutterErrorDetails flutterErrorDetails) {
+    if (_disabled) return Future.value();
     if (isDesktop || kIsWeb) {
       FlutterError.dumpErrorToConsole(flutterErrorDetails);
       return Future.value();

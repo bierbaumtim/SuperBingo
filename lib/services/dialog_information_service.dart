@@ -7,12 +7,25 @@ class DialogInformationService {
 
   factory DialogInformationService() => instance;
 
-  DialogInformationService._();
+  DialogInformationService._() {
+    _disabled = false;
+  }
+
+  bool _disabled;
+
+  // ignore: use_setters_to_change_properties,avoid_positional_boolean_parameters
+  @visibleForTesting
+  // ignore: avoid_positional_boolean_parameters
+  void setDisabled(bool disabled) {
+    _disabled = disabled;
+  }
 
   void showNotification(
     NotificationType type, {
     NotificationConfiguration config,
   }) {
+    if (_disabled) return;
+    
     Color background, foreground;
     EdgeInsets padding;
     Widget leading;
