@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
 
-import '../constants/enums.dart';
+import '../../constants/enums.dart';
 
 class CardColorDecisionCard extends StatefulWidget {
   const CardColorDecisionCard({

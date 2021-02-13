@@ -6,7 +6,9 @@ import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:superbingo/widgets/game/horizontal_card_listview.dart';
+import 'package:superbingo/widgets/game/mobile_card_hand.dart';
+import 'package:superbingo/widgets/virtual_table_painter.dart';
 
 import '../bloc/blocs/current_game_bloc.dart';
 import '../bloc/blocs/interaction_bloc.dart';
@@ -15,7 +17,6 @@ import '../bloc/events/current_game_events.dart'
 import '../bloc/events/interaction_events.dart';
 import '../bloc/states/current_game_states.dart';
 import '../constants/enums.dart';
-import '../constants/ui_constants.dart';
 import '../models/app_models/card.dart';
 import '../models/app_models/game.dart';
 import '../models/app_models/player.dart';
@@ -23,9 +24,7 @@ import '../services/share_service/share_service_interface.dart';
 import '../utils/card_utils.dart';
 import '../utils/dialogs.dart';
 import '../widgets/avatars/player_avatars.dart';
-import '../widgets/card_scroll_view.dart';
-import '../widgets/card_stack.dart';
-import '../widgets/horizontal_card_listview.dart';
+import '../widgets/game/card_stack.dart';
 import '../widgets/loading_widget.dart';
 
 class GamePage extends StatefulWidget {
@@ -36,14 +35,12 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   OverlayEntry startingOverlay, timerOverlay, allowCardColorOverlay;
   bool showCallBingoButton, isSuperBingo;
-  PanelController panelController;
 
   @override
   void initState() {
     super.initState();
     showCallBingoButton = false;
     isSuperBingo = false;
-    panelController = PanelController();
   }
 
   @override
@@ -75,9 +72,6 @@ class _GamePageState extends State<GamePage> {
           } else if (state is CurrentGameFinished) {
             Navigator.of(context).pop();
           } else if (state is WaitForBingoCall) {
-            if (panelController.isAttached) {
-              panelController.close();
-            }
             setState(() {
               showCallBingoButton = true;
               isSuperBingo = state.isSuperBingo;
@@ -224,43 +218,38 @@ class _GamePageState extends State<GamePage> {
 
           return ScreenTypeLayout.builder(
             mobile: (context) => LayoutBuilder(
-              builder: (context, constraints) => SlidingUpPanel(
-                controller: panelController,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
+              builder: (context, constraints) => Scaffold(
+                appBar: AppBar(
+                  backgroundColor: Colors.deepOrangeAccent,
+                  title: Text(title),
                 ),
-                color: Theme.of(context).canvasColor,
-                minHeight: state is CurrentGameLoaded && state.game.isRunning
-                    ? constraints.maxHeight / 4
-                    : 0,
-                maxHeight: constraints.maxHeight - kToolbarHeight - 20,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                isDraggable: state is CurrentGameLoaded && state.game.isRunning,
-                panelSnapping: false,
-                panel: CardScrollView(),
-                body: Scaffold(
-                  appBar: AppBar(
-                    backgroundColor: Colors.deepOrangeAccent,
-                    title: Text(title),
-                  ),
-                  body: baseChild,
-                  floatingActionButton: showCallBingoButton
-                      ? FloatingActionButton.extended(
-                          icon: const Icon(Icons.volume_up),
-                          label: Text(
-                            'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
-                          ),
-                          onPressed: () {
-                            setState(() => showCallBingoButton = false);
-                            hideTimerOverlay();
-                            context.read<InteractionBloc>().add(
-                                  isSuperBingo ? CallSuperBingo() : CallBingo(),
-                                );
-                          },
-                        )
-                      : null,
+                body: Column(
+                  children: <Widget>[
+                    Expanded(child: baseChild),
+                    _CardArea(
+                      state: state,
+                      showCallBingoButton: showCallBingoButton,
+                      cardHand: (cards) => MobileCardHand(
+                        cards: cards,
+                      ),
+                    ),
+                  ],
                 ),
+                floatingActionButton: showCallBingoButton
+                    ? FloatingActionButton.extended(
+                        icon: const Icon(Icons.volume_up),
+                        label: Text(
+                          'Rufe ${isSuperBingo ? 'SuperBingo' : 'Bingo'}',
+                        ),
+                        onPressed: () {
+                          setState(() => showCallBingoButton = false);
+                          hideTimerOverlay();
+                          context.read<InteractionBloc>().add(
+                                isSuperBingo ? CallSuperBingo() : CallBingo(),
+                              );
+                        },
+                      )
+                    : null,
               ),
             ),
             tablet: (context) => Scaffold(
@@ -276,79 +265,31 @@ class _GamePageState extends State<GamePage> {
                   const Divider(),
                   SizedBox(
                     height: 200 + 32.0,
-                    child: Builder(
-                      builder: (context) {
-                        if (state is CurrentGameLoaded) {
-                          if (state.self.cards.isEmpty) {
-                            if (showCallBingoButton) {
-                              return const Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Text(
-                                  'Vergiss nicht Superbingo zu rufen!',
-                                  textAlign: TextAlign.center,
-                                ),
-                              );
-                            } else if (state.self.finishPosition <= 0) {
-                              return Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    const Text(
-                                      'Nur weil du deine Karten versteckst hast du das Spiel nicht gewonnen.',
-                                    ),
-                                    const SizedBox(height: 8),
-                                    RaisedButton(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                      onPressed: null,
-                                      child: const Text(
-                                        'Karten suchen...',
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            } else {
-                              return const Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Text(
-                                  'Du bist fertig. Warte bis alle ihre Karten abgelegt haben.',
-                                  textAlign: TextAlign.center,
-                                ),
-                              );
-                            }
-                          } else {
-                            return LayoutBuilder(
-                              builder: (context, constraints) => Padding(
-                                padding: getValueForScreenType<EdgeInsets>(
-                                  context: context,
-                                  mobile:
-                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                                  tablet:
-                                      const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                                  desktop: EdgeInsets.fromLTRB(
-                                    constraints.maxWidth / 10,
-                                    0,
-                                    constraints.maxWidth / 10,
-                                    16,
-                                  ),
-                                ),
-                                child: HorizontalCardList(
-                                  cards: state.self.cards,
-                                  cardHeight: constraints.maxHeight - 42,
-                                  cardWidth: (constraints.maxHeight - 42) *
-                                      (100 / 175),
-                                  canDrawCards: state.game.canDrawCards,
-                                ),
-                              ),
-                            );
-                          }
-                        } else {
-                          return const SizedBox();
-                        }
-                      },
+                    child: _CardArea(
+                      state: state,
+                      showCallBingoButton: showCallBingoButton,
+                      cardHand: (cards) => LayoutBuilder(
+                        builder: (context, constraints) => Padding(
+                          padding: getValueForScreenType<EdgeInsets>(
+                            context: context,
+                            mobile: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                            tablet: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                            desktop: EdgeInsets.fromLTRB(
+                              constraints.maxWidth / 10,
+                              0,
+                              constraints.maxWidth / 10,
+                              16,
+                            ),
+                          ),
+                          child: HorizontalCardList(
+                            cards: cards,
+                            cardHeight: constraints.maxHeight - 42,
+                            cardWidth:
+                                (constraints.maxHeight - 42) * (100 / 175),
+                            // canDrawCards: state.game.canDrawCards,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -685,97 +626,70 @@ class _LobbyOverlay extends StatelessWidget {
   }
 }
 
-class VirtualTablePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final basePaint = Paint()..color = Colors.blueAccent;
-    final innerBorderPaint = Paint()..color = Colors.black.withOpacity(0.1);
-    final outerBorderPaint = Paint()
-      ..color = Colors.orangeAccent
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5;
+class _CardArea extends StatelessWidget {
+  final CurrentGameState state;
+  final Widget Function(List<GameCard> cards) cardHand;
+  final bool showCallBingoButton;
 
-    Path basePath, borderPath, upperPath;
-
-    if (size.width >= size.height) {
-      basePath = _buildHorizontalTableBaseShape(size);
-      borderPath = _buildHorizontalTableBaseShape(
-        size * 0.975,
-      ).shift(
-        Offset(size.width * 0.0125, size.height * 0.0125),
-      );
-      upperPath = _buildHorizontalTableBaseShape(
-        size * 0.95,
-      ).shift(
-        Offset(size.width * 0.025, size.height * 0.025),
-      );
-    } else {
-      basePath = _buildVerticalTableBaseShape(size);
-      borderPath = _buildVerticalTableBaseShape(
-        size * 0.975,
-      ).shift(
-        Offset(size.width * 0.0125, size.height * 0.0125),
-      );
-      upperPath = _buildVerticalTableBaseShape(
-        size * 0.95,
-      ).shift(
-        Offset(size.width * 0.025, size.height * 0.025),
-      );
-    }
-    canvas.drawShadow(basePath, Colors.black87, 4, false);
-    canvas.drawPath(basePath, basePaint);
-    canvas.drawPath(borderPath, innerBorderPaint);
-    canvas.drawPath(upperPath, basePaint);
-    canvas.drawPath(basePath, outerBorderPaint);
-  }
-
-  Path _buildVerticalTableBaseShape(Size size) {
-    final innerHeight = size.height * kTableInnerSizeFactor;
-    final endsRadius = (size.height - innerHeight) / 2;
-
-    return Path()
-      ..moveTo(size.width, endsRadius)
-      ..relativeLineTo(0, innerHeight)
-      ..relativeArcToPoint(
-        Offset(-size.width, 0),
-        radius: Radius.elliptical(size.width / 2, endsRadius),
-      )
-      ..relativeLineTo(0, -innerHeight)
-      ..relativeArcToPoint(
-        Offset(size.width, 0),
-        radius: Radius.elliptical(size.width / 2, endsRadius),
-      )
-      ..close();
-  }
-
-  Path _buildHorizontalTableBaseShape(Size size) {
-    final innerWidth = size.width * kTableInnerSizeFactor;
-    final endsRadius = (size.width - innerWidth) / 2;
-
-    // debugPrint('========= Painter =========');
-    // debugPrint('Size: $size');
-    // debugPrint('InnerWidth: $innerWidth');
-    // debugPrint('CalcWidth: ${innerWidth + 2 * endsRadius}');
-    // debugPrint('========= Painter =========');
-
-    return Path()
-      ..moveTo(endsRadius, 0)
-      ..relativeLineTo(innerWidth, 0)
-      ..relativeArcToPoint(
-        Offset(0, size.height),
-        radius: Radius.circular(endsRadius),
-      )
-      ..relativeLineTo(-innerWidth, 0)
-      ..relativeArcToPoint(
-        Offset(0, -size.height),
-        radius: Radius.circular(endsRadius),
-      )
-      ..close();
-  }
+  const _CardArea({
+    Key key,
+    @required this.state,
+    @required this.cardHand,
+    this.showCallBingoButton = false,
+  }) : super(key: key);
 
   @override
-  bool shouldRepaint(VirtualTablePainter oldDelegate) => false;
-
-  @override
-  bool shouldRebuildSemantics(VirtualTablePainter oldDelegate) => false;
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (context) {
+        if (state is CurrentGameLoaded) {
+          if ((state as CurrentGameLoaded).self.cards.isEmpty) {
+            if (showCallBingoButton) {
+              return const Padding(
+                padding: EdgeInsets.all(12),
+                child: Text(
+                  'Vergiss nicht Superbingo zu rufen!',
+                  textAlign: TextAlign.center,
+                ),
+              );
+            } else if ((state as CurrentGameLoaded).self.finishPosition <= 0) {
+              return Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Text(
+                      'Nur weil du deine Karten versteckst hast du das Spiel nicht gewonnen.',
+                    ),
+                    const SizedBox(height: 8),
+                    RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      onPressed: null,
+                      child: const Text(
+                        'Karten suchen...',
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return const Padding(
+                padding: EdgeInsets.all(12),
+                child: Text(
+                  'Du bist fertig. Warte bis alle ihre Karten abgelegt haben.',
+                  textAlign: TextAlign.center,
+                ),
+              );
+            }
+          } else {
+            return cardHand((state as CurrentGameLoaded).self.cards);
+          }
+        } else {
+          return const SizedBox();
+        }
+      },
+    );
+  }
 }

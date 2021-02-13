@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 
 import 'package:vector_math/vector_math.dart' show radians;
 
-import '../constants/typedefs.dart';
-import '../constants/ui_constants.dart';
-import '../models/app_models/card.dart';
-import '../utils/card_utils.dart';
+import '../../constants/typedefs.dart';
+import '../../constants/ui_constants.dart';
+import '../../models/app_models/card.dart';
+import '../../utils/card_utils.dart';
 import 'card_back_custom_painter.dart';
 import 'card_number_color.dart';
 import 'inner_card_icons.dart';

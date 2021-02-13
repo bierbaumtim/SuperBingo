@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/blocs/current_game_bloc.dart';
-import '../bloc/states/current_game_states.dart';
-import '../constants/enums.dart';
+import '../../bloc/blocs/current_game_bloc.dart';
+import '../../bloc/states/current_game_states.dart';
+import '../../constants/enums.dart';
 import 'horizontal_card_listview.dart';
 
 class CardScrollView extends StatelessWidget {

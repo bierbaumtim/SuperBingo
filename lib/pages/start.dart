@@ -26,7 +26,7 @@ import '../models/app_models/game.dart';
 import '../utils/card_utils.dart';
 import '../utils/version_utils.dart';
 import '../widgets/loading_widget.dart';
-import '../widgets/play_card.dart';
+import '../widgets/play_card/play_card.dart';
 
 /// Startseite
 ///

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:vector_math/vector_math.dart' show radians;
 
-import '../constants/enums.dart';
-import '../utils/card_utils.dart';
+import '../../constants/enums.dart';
+import '../../utils/card_utils.dart';
 
 class CardNumberColor extends StatelessWidget {
   const CardNumberColor({

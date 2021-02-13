@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../constants/enums.dart';
-import '../utils/card_utils.dart';
+import '../../constants/enums.dart';
+import '../../utils/card_utils.dart';
 
 class InnerCardIcons extends StatelessWidget {
   /// Farbe der Spielkarte
