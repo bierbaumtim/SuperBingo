@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/blocs/current_game_bloc.dart';
 import '../../bloc/states/current_game_states.dart';
 import '../../utils/list_utils.dart';
-import '../game_card/play_card.dart';
+import '../play_card/play_card.dart';
 
 /// {@template cardhand}
 /// Dieses Widget bildet die aufgefächerten Karten eines Spielers nach.

@@ -8,7 +8,7 @@ import 'package:vector_math/vector_math.dart' show radians;
 import '../../bloc/blocs/current_game_bloc.dart';
 import '../../bloc/events/current_game_events.dart' show DrawCard;
 import '../../models/app_models/card.dart';
-import '../game_card/play_card.dart';
+import '../play_card/play_card.dart';
 
 enum CardStackType {
   /// Stapel der gespielten Karten
