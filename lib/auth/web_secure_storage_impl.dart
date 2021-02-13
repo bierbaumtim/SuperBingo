@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -46,11 +47,35 @@ class WebSecureStorage implements ISecureStorage {
   @override
   Future<void> write({String key, String value}) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(key, base64Encode(value.codeUnits));
+    await prefs.setString(key, _encodeValue(value));
+  }
+
+  String _encodeValue(String value) {
+    try {
+      final gzip = GZipCodec();
+      final zippedRawValue = gzip.encode(value.codeUnits);
+      final base64Value = base64Encode(zippedRawValue);
+      return String.fromCharCodes(
+        gzip.encode(base64Value.codeUnits),
+      );
+    } on Object catch (_) {
+      return value;
+    }
   }
 
   String _decodeValue(String value) {
-    return String.fromCharCodes(base64Decode(value));
+    try {
+      final gzip = GZipCodec();
+      final decodedBase64Value = gzip.decode(value.codeUnits);
+      final zippedRawValue = base64Decode(
+        String.fromCharCodes(decodedBase64Value),
+      );
+      return String.fromCharCodes(
+        gzip.decode(zippedRawValue),
+      );
+    } catch (e) {
+      return value;
+    }
   }
 }
 
