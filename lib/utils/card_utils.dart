@@ -1,6 +1,5 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:community_material_icon/community_material_icon.dart';
 
 import '../constants/enums.dart';
 import 'list_utils.dart';
@@ -11,13 +10,13 @@ IconData getIconByCardColor(CardColor color) {
 
   switch (color) {
     case CardColor.clover:
-      return CommunityMaterialIcons.cards_club;
+      return CupertinoIcons.suit_club_fill;
     case CardColor.heart:
-      return CommunityMaterialIcons.cards_heart;
+      return CupertinoIcons.suit_heart_fill;
     case CardColor.diamond:
-      return CommunityMaterialIcons.cards_diamond;
+      return CupertinoIcons.suit_diamond_fill;
     case CardColor.spade:
-      return CommunityMaterialIcons.cards_spade;
+      return CupertinoIcons.suit_spade_fill;
     default:
       return Icons.error;
   }
@@ -72,7 +71,7 @@ bool isNumberCard(CardNumber number) =>
     number == CardNumber.eight ||
     number == CardNumber.nine;
 
- Map<String, double> getRotationAngles(int index, int length) {
+Map<String, double> getRotationAngles(int index, int length) {
   var angle = 160 / length;
   double rotationAngle;
   if (angle >= 50) angle = 20;

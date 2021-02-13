@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -8,7 +9,6 @@ import 'package:superbingo/utils/list_utils.dart';
 import 'package:superbingo/utils/ui_utils.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:community_material_icon/community_material_icon.dart';
 
 void main() {
   group('Utils tests ->', () {
@@ -162,25 +162,25 @@ void main() {
         test('CardColor.clover', () {
           final iconData = getIconByCardColor(CardColor.clover);
 
-          expect(iconData, CommunityMaterialIcons.cards_club);
+          expect(iconData, CupertinoIcons.suit_club_fill);
         });
 
         test('CardColor.heart', () {
           final iconData = getIconByCardColor(CardColor.heart);
 
-          expect(iconData, CommunityMaterialIcons.cards_heart);
+          expect(iconData, CupertinoIcons.suit_heart_fill);
         });
 
         test('CardColor.diamond', () {
           final iconData = getIconByCardColor(CardColor.diamond);
 
-          expect(iconData, CommunityMaterialIcons.cards_diamond);
+          expect(iconData, CupertinoIcons.suit_diamond_fill);
         });
 
         test('CardColor.spade', () {
           final iconData = getIconByCardColor(CardColor.spade);
 
-          expect(iconData, CommunityMaterialIcons.cards_spade);
+          expect(iconData, CupertinoIcons.suit_spade_fill);
         });
       });
 

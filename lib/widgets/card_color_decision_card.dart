@@ -1,6 +1,5 @@
+import 'package:flutter/cupertino.dart' show CupertinoIcons;
 import 'package:flutter/material.dart';
-
-import 'package:community_material_icon/community_material_icon.dart';
 
 import '../constants/enums.dart';
 
@@ -43,7 +42,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   value: CardColor.clover,
                   groupValue: color,
                   title: const Text('Kreuz'),
-                  secondary: const Icon(CommunityMaterialIcons.cards_club),
+                  secondary: const Icon(CupertinoIcons.suit_club_fill),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
@@ -52,7 +51,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   value: CardColor.spade,
                   groupValue: color,
                   title: const Text('Pik'),
-                  secondary: const Icon(CommunityMaterialIcons.cards_spade),
+                  secondary: const Icon(CupertinoIcons.suit_spade_fill),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
@@ -61,7 +60,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   value: CardColor.heart,
                   groupValue: color,
                   title: const Text('Herz'),
-                  secondary: const Icon(CommunityMaterialIcons.cards_heart),
+                  secondary: const Icon(CupertinoIcons.suit_heart_fill),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
@@ -70,12 +69,12 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   value: CardColor.diamond,
                   groupValue: color,
                   title: const Text('Karo'),
-                  secondary: const Icon(CommunityMaterialIcons.cards_diamond),
+                  secondary: const Icon(CupertinoIcons.suit_diamond_fill),
                   onChanged: (value) => setState(() => color = value),
                   activeColor: selectedColor,
                 ),
                 const SizedBox(height: 24),
-                RaisedButton(
+                ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(color),
                   child: const Text('Wünschen'),
                 ),
