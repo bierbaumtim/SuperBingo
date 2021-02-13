@@ -170,7 +170,7 @@ class Game with EquatableMixin {
   /// der Kartenhand ablegen darf oder nicht.
   bool get canDrawCards {
     return true;
-    
+
     if (playedCardStack.isEmpty) return true;
 
     return playedCardStack.last.rule != SpecialRule.plusTwo &&
@@ -185,7 +185,7 @@ class Game with EquatableMixin {
     Player self,
   }) {
     final effectivePlayer = players.where(
-      (p) => self != null ? p.id == self.id : true,
+      (p) => self == null || p.id == self.id,
     );
 
     if (players.length == 2 && effectivePlayer.length == 1) {
