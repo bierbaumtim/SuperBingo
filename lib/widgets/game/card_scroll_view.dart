@@ -27,9 +27,13 @@ class CardScrollView extends StatelessWidget {
                           'Nur weil du deine Karten versteckst hast du das Spiel nicht gewonnen.',
                         ),
                         const SizedBox(height: 8),
-                        RaisedButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            shape: MaterialStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                            ),
                           ),
                           onPressed: null,
                           child: const Text(

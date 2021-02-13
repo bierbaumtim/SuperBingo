@@ -6,9 +6,6 @@ import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_builder/responsive_builder.dart';
-import 'package:superbingo/widgets/game/horizontal_card_listview.dart';
-import 'package:superbingo/widgets/game/mobile_card_hand.dart';
-import 'package:superbingo/widgets/virtual_table_painter.dart';
 
 import '../bloc/blocs/current_game_bloc.dart';
 import '../bloc/blocs/interaction_bloc.dart';
@@ -25,7 +22,10 @@ import '../utils/card_utils.dart';
 import '../utils/dialogs.dart';
 import '../widgets/avatars/player_avatars.dart';
 import '../widgets/game/card_stack.dart';
+import '../widgets/game/horizontal_card_listview.dart';
+import '../widgets/game/mobile_card_hand.dart';
 import '../widgets/loading_widget.dart';
+import '../widgets/virtual_table_painter.dart';
 
 class GamePage extends StatefulWidget {
   @override
@@ -494,13 +494,13 @@ class _CompletedGameOverlay extends StatelessWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            RaisedButton.icon(
+                            ElevatedButton.icon(
                               onPressed: () {},
                               label: const Text('Neues Spiel starten'),
                               icon: const Icon(Icons.refresh),
                             ),
                             const SizedBox(width: 16),
-                            RaisedButton.icon(
+                            ElevatedButton.icon(
                               onPressed: () => context
                                   .read<CurrentGameBloc>()
                                   .add(EndGame()),
@@ -569,7 +569,7 @@ class _LobbyOverlay extends StatelessWidget {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            RaisedButton(
+                            ElevatedButton(
                               onPressed: () async => IShareService().share(
                                 game.link,
                               ),
@@ -578,7 +578,7 @@ class _LobbyOverlay extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 16),
-                            RaisedButton(
+                            ElevatedButton(
                               onPressed: () {
                                 context.read<CurrentGameBloc>().add(
                                       StartGame(
@@ -662,9 +662,13 @@ class _CardArea extends StatelessWidget {
                       'Nur weil du deine Karten versteckst hast du das Spiel nicht gewonnen.',
                     ),
                     const SizedBox(height: 8),
-                    RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                    ElevatedButton(
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all<OutlinedBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                        ),
                       ),
                       onPressed: null,
                       child: const Text(

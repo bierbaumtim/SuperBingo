@@ -17,8 +17,12 @@ class Dialogs {
         title: Text(title),
         content: Text(content),
         actions: <Widget>[
-          RaisedButton(
-            color: Colors.deepOrange,
+          ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(
+                Colors.deepOrange,
+              ),
+            ),
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Ok',
@@ -51,7 +55,7 @@ class Dialogs {
         title: Text(title),
         content: Text(content),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
               yesText ?? 'Ja',
@@ -60,8 +64,12 @@ class Dialogs {
                   ),
             ),
           ),
-          RaisedButton(
-            color: Colors.deepOrange,
+          ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(
+                Colors.deepOrange,
+              ),
+            ),
             onPressed: () => Navigator.pop(context, false),
             child: Text(
               noText ?? 'Nein',

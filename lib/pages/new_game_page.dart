@@ -188,9 +188,13 @@ class _NewGamePageState extends State<NewGamePage> {
                       if (isValid)
                         Padding(
                           padding: const EdgeInsets.only(top: 25),
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40),
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all<OutlinedBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(40),
+                                ),
+                              ),
                             ),
                             onPressed: () {
                               gameBloc.add(CreateGame(
@@ -206,9 +210,13 @@ class _NewGamePageState extends State<NewGamePage> {
                       if (showStartGame && !isValid) ...[
                         Padding(
                           padding: const EdgeInsets.only(top: 25),
-                          child: RaisedButton(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(40),
+                          child: ElevatedButton(
+                            style: ButtonStyle(
+                              shape: MaterialStateProperty.all<OutlinedBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(40),
+                                ),
+                              ),
                             ),
                             onPressed: () => Navigator.of(context)
                                 .pushReplacementNamed('/game'),
@@ -223,9 +231,14 @@ class _NewGamePageState extends State<NewGamePage> {
 
                             return Padding(
                               padding: const EdgeInsets.only(top: 25),
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(40),
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                  shape:
+                                      MaterialStateProperty.all<OutlinedBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(40),
+                                    ),
+                                  ),
                                 ),
                                 onPressed: canShare
                                     ? () async => IShareService().share(

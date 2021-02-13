@@ -7,8 +7,8 @@ import '../../bloc/events/current_game_events.dart' as game_events;
 import '../../constants/enums.dart';
 import '../../models/app_models/card.dart';
 import '../../routes/blur_overlay_route.dart';
-import 'card_color_decision_card.dart';
 import '../game_card/play_card.dart';
+import 'card_color_decision_card.dart';
 
 ///{@template horizontalcardlist}
 /// Erzeugt ein ListView, mit der `scrollDirection` `Axis.horizontal` und den `cards`.

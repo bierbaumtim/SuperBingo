@@ -25,8 +25,17 @@ class GameCard extends StatelessWidget {
         subtitle: Text(
           '${game?.players?.length ?? 0}/${game?.maxPlayer} Player',
         ),
-        trailing: RaisedButton(
-          color: Colors.deepOrangeAccent,
+        trailing: ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(
+              Colors.deepOrangeAccent,
+            ),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+            ),
+          ),
           onPressed: () async {
             if (await _checkPlayer(context)) {
               context.read<JoinGameBloc>().add(
@@ -36,9 +45,6 @@ class GameCard extends StatelessWidget {
                   );
             }
           },
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
-          ),
           child: Text(
             'join',
             style: Theme.of(context).textTheme.bodyText2.copyWith(
@@ -58,5 +64,4 @@ class GameCard extends StatelessWidget {
     }
     return true;
   }
-  
 }
