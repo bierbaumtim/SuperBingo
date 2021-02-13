@@ -1,8 +1,6 @@
 import 'package:meta/meta.dart';
 
-import 'secure_storage_impl_stub.dart'
-    if (dart.library.io) 'io_secure_storage_impl.dart'
-    if (dart.library.html) 'web_secure_storage_impl.dart';
+import 'web_secure_storage_impl.dart';
 
 abstract class ISecureStorage {
   Future<void> write({
