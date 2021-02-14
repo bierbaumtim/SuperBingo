@@ -115,7 +115,6 @@ class _StartPageState extends State<StartPage> {
           ],
         ),
         body: SafeArea(
-          top: false,
           child: Stack(
             children: <Widget>[
               LayoutBuilder(
