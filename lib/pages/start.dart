@@ -119,10 +119,9 @@ class _StartPageState extends State<StartPage> {
             children: <Widget>[
               LayoutBuilder(
                 builder: (context, constraints) {
-                  final joinGameCardHeight =
-                      constraints.maxHeight * (2 / 3) - 32;
-                  final newGameCardHeight =
-                      constraints.maxHeight * (1 / 3) - 32;
+                  final height = constraints.maxHeight - 64;
+                  final joinGameCardHeight = height * (2 / 3);
+                  final newGameCardHeight = height * (1 / 3);
 
                   return Center(
                     child: ConstrainedBox(
