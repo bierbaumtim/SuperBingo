@@ -19,12 +19,13 @@ class NewGamePage extends StatefulWidget {
 class _NewGamePageState extends State<NewGamePage> {
   final _formKey = GlobalKey<FormState>();
   final FocusScopeNode _node = FocusScopeNode();
-  TextEditingController _playerAmountController, _cardDecksAmountController;
-  bool isValid, isPublic, showStartGame, isDisabled;
-  OverlayEntry _gameCreationOverlay;
+  late TextEditingController _playerAmountController,
+      _cardDecksAmountController;
+  late bool isValid, isPublic, showStartGame, isDisabled;
+  OverlayEntry? _gameCreationOverlay;
 
-  String name;
-  int maxPlayer, cardAmount;
+  String? name;
+  int? maxPlayer, cardAmount;
 
   @override
   void initState() {
@@ -41,8 +42,8 @@ class _NewGamePageState extends State<NewGamePage> {
   @override
   void dispose() {
     hideGameCreationOverlay();
-    _playerAmountController?.dispose();
-    _cardDecksAmountController?.dispose();
+    _playerAmountController.dispose();
+    _cardDecksAmountController.dispose();
     super.dispose();
   }
 
@@ -75,7 +76,7 @@ class _NewGamePageState extends State<NewGamePage> {
       child: WillPopScope(
         onWillPop: () async {
           if (showStartGame) {
-            final result = await Dialogs.showDecisionDialog<bool>(
+            final result = await Dialogs.showDecisionDialog(
               context,
               content:
                   'Wenn du diese Seite jetzt verlässt, wird dein grade erstelltes Spiel gelöscht. '
@@ -97,8 +98,8 @@ class _NewGamePageState extends State<NewGamePage> {
                 onPressed: !isDisabled
                     ? () {
                         _node.unfocus();
-                        if (_formKey.currentState.validate()) {
-                          _formKey.currentState.save();
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
                           setState(() => isValid = true);
                         }
                       }
@@ -124,7 +125,7 @@ class _NewGamePageState extends State<NewGamePage> {
                           labelText: 'Name',
                           hintText: 'Gib den Spiel einen Namen',
                         ),
-                        validator: (text) => text.isNotEmpty
+                        validator: (text) => text!.isNotEmpty
                             ? null
                             : 'Bitte gib den Namen des Spiels ein',
                         onEditingComplete: _node.nextFocus,
@@ -142,7 +143,7 @@ class _NewGamePageState extends State<NewGamePage> {
                           hintText: 'Gib eine Zahl zwischen 4-8 an',
                         ),
                         validator: (text) {
-                          final parsedAmount = int.tryParse(text) ?? 0;
+                          final parsedAmount = int.tryParse(text!) ?? 0;
                           if (text.isEmpty || parsedAmount >= 2) {
                             return null;
                           } else if (parsedAmount < 2 || parsedAmount > 6) {
@@ -151,7 +152,7 @@ class _NewGamePageState extends State<NewGamePage> {
                             return 'Es sind nur Zahlen erlaubt';
                           }
                         },
-                        onSaved: (text) => maxPlayer = int.tryParse(text) ?? 6,
+                        onSaved: (text) => maxPlayer = int.tryParse(text!) ?? 6,
                         onEditingComplete: _node.nextFocus,
                         enabled: !isDisabled,
                       ),
@@ -165,7 +166,7 @@ class _NewGamePageState extends State<NewGamePage> {
                           labelText: 'Anzahl der Kartendecks',
                         ),
                         validator: (text) {
-                          final parsedAmount = int.tryParse(text) ?? 0;
+                          final parsedAmount = int.tryParse(text!) ?? 0;
                           if (text.isEmpty || parsedAmount > 0) {
                             return null;
                           } else {
@@ -173,7 +174,8 @@ class _NewGamePageState extends State<NewGamePage> {
                           }
                         },
                         onEditingComplete: _node.unfocus,
-                        onSaved: (text) => cardAmount = int.tryParse(text) ?? 1,
+                        onSaved: (text) =>
+                            cardAmount = int.tryParse(text!) ?? 1,
                         enabled: !isDisabled,
                       ),
                       const SizedBox(height: 8),
@@ -181,7 +183,7 @@ class _NewGamePageState extends State<NewGamePage> {
                         title: const Text('Öffentliches Spiel'),
                         value: isPublic,
                         onChanged: (value) => !isDisabled
-                            ? setState(() => isPublic = value)
+                            ? setState(() => isPublic = value!)
                             : null,
                         activeColor: Colors.deepOrange,
                       ),
@@ -199,9 +201,9 @@ class _NewGamePageState extends State<NewGamePage> {
                             onPressed: () {
                               gameBloc.add(CreateGame(
                                 isPublic: isPublic,
-                                maxPlayer: maxPlayer,
-                                name: name,
-                                decksAmount: cardAmount,
+                                maxPlayer: maxPlayer!,
+                                name: name!,
+                                decksAmount: cardAmount!,
                               ));
                             },
                             child: const Text('Spiel erstellen'),
@@ -227,7 +229,7 @@ class _NewGamePageState extends State<NewGamePage> {
                           stream: gameBloc.gameLinkStream,
                           builder: (context, snapshot) {
                             final canShare =
-                                snapshot.hasData && snapshot.data.isNotEmpty;
+                                snapshot.hasData && snapshot.data!.isNotEmpty;
 
                             return Padding(
                               padding: const EdgeInsets.only(top: 25),
@@ -242,7 +244,7 @@ class _NewGamePageState extends State<NewGamePage> {
                                 ),
                                 onPressed: canShare
                                     ? () async => IShareService().share(
-                                          snapshot.data,
+                                          snapshot.data!,
                                           subject: 'SuperBingo Spieleinladung',
                                         )
                                     : null,
@@ -276,7 +278,7 @@ class _NewGamePageState extends State<NewGamePage> {
       ),
     );
 
-    Overlay.of(context).insert(_gameCreationOverlay);
+    Overlay.of(context)?.insert(_gameCreationOverlay!);
   }
 
   void hideGameCreationOverlay() {

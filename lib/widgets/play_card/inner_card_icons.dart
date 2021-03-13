@@ -6,12 +6,13 @@ import '../../utils/card_utils.dart';
 class InnerCardIcons extends StatelessWidget {
   /// Farbe der Spielkarte
   final CardColor color;
+
   /// Konfiguration, ob die Icons klein oder groß dargestellt werden sollen
   final bool isSmall;
 
   const InnerCardIcons({
-    Key key,
-    this.color,
+    Key? key,
+    required this.color,
     this.isSmall = true,
   }) : super(key: key);
 

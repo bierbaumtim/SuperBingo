@@ -9,12 +9,10 @@ class Loading extends StatelessWidget {
   final EdgeInsets padding;
 
   const Loading({
-    Key key,
+    Key? key,
     this.content = 'Laden',
     this.padding = const EdgeInsets.only(top: 8),
-  })  : assert(content != null),
-        assert(padding != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -30,10 +30,10 @@ class CreateGame extends GameConfigurationEvent {
 
   /// {@macro gameevents.creategame}
   const CreateGame({
-    this.name,
-    this.isPublic,
-    this.maxPlayer,
-    this.decksAmount,
+    required this.name,
+    this.isPublic = true,
+    this.maxPlayer = 6,
+    this.decksAmount = 1,
   });
 
   @override

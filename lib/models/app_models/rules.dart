@@ -17,7 +17,7 @@ class Rules {
   Rules._internal();
 
   /// Prüft ob die `card` auf die `topCard` gelegt werden darf.
-  static bool isCardAllowed(GameCard card, GameCard topCard) {
+  static bool isCardAllowed(GameCard card, GameCard? topCard) {
     if (topCard == null) {
       return true;
     } else if (card.color == topCard.color || card.number == topCard.number) {
@@ -39,17 +39,17 @@ class Rules {
     
     if (game.allowedCardColor != null) {
       if (game.allowedCardColor != card.color) {
-        return 'Der letzte Spieler hat sich ${game.allowedCardColor.toReadableString()} gewünscht. Du darfst diese Karte daher nicht legen!';
+        return 'Der letzte Spieler hat sich ${game.allowedCardColor!.toReadableString()} gewünscht. Du darfst diese Karte daher nicht legen!';
       } else {
-        return null;
+        return '';
       }
     }
 
     if (game.allowedCardNumber != null) {
       if (game.allowedCardNumber != card.number) {
-        return 'Du darfst nur ${game.allowedCardNumber.toReadableString(withArticle: true)} legen.';
+        return 'Du darfst nur ${game.allowedCardNumber!.toReadableString(withArticle: true)} legen.';
       } else {
-        return null;
+        return '';
       }
     }
 
@@ -61,6 +61,6 @@ class Rules {
       return 'Du darfst diese Karte nicht legen!';
     }
 
-    return null;
+    return '';
   }
 }

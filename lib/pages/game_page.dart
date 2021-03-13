@@ -33,8 +33,8 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  OverlayEntry startingOverlay, timerOverlay, allowCardColorOverlay;
-  bool showCallBingoButton, isSuperBingo;
+  OverlayEntry? startingOverlay, timerOverlay, allowCardColorOverlay;
+  late bool showCallBingoButton, isSuperBingo;
 
   @override
   void initState() {
@@ -56,7 +56,7 @@ class _GamePageState extends State<GamePage> {
     return WillPopScope(
       onWillPop: () async {
         hideStartingOverlay();
-        final result = await Dialogs.showDecisionDialog<bool>(
+        final result = await Dialogs.showDecisionDialog(
           context,
           content: 'Willst du wirklich das Spiel verlassen?',
         );
@@ -76,7 +76,7 @@ class _GamePageState extends State<GamePage> {
               showCallBingoButton = true;
               isSuperBingo = state.isSuperBingo;
             });
-            showTimerOverlay(duration: const Duration(seconds: 4));
+            showTimerOverlay();
             await Future.delayed(const Duration(seconds: 4), () {
               if (showCallBingoButton) {
                 setState(() => showCallBingoButton = false);
@@ -88,7 +88,7 @@ class _GamePageState extends State<GamePage> {
             if (state.cardColor == null) {
               hideAllowedCardColorOverlay();
             } else {
-              showAllowedCardColorOverlay(state.cardColor);
+              showAllowedCardColorOverlay(state.cardColor!);
             }
           } else {
             hideStartingOverlay();
@@ -329,7 +329,7 @@ class _GamePageState extends State<GamePage> {
       ),
     );
 
-    Overlay.of(context).insert(startingOverlay);
+    Overlay.of(context)?.insert(startingOverlay!);
   }
 
   void hideStartingOverlay() {
@@ -339,7 +339,9 @@ class _GamePageState extends State<GamePage> {
     }
   }
 
-  void showTimerOverlay({Duration duration}) {
+  void showTimerOverlay({
+    Duration duration = const Duration(seconds: 4),
+  }) {
     timerOverlay = OverlayEntry(
       builder: (context) => Align(
         alignment: const Alignment(0.0, -0.865),
@@ -359,7 +361,7 @@ class _GamePageState extends State<GamePage> {
       ),
     );
 
-    Overlay.of(context).insert(timerOverlay);
+    Overlay.of(context)?.insert(timerOverlay!);
   }
 
   void hideTimerOverlay() {
@@ -403,7 +405,7 @@ class _GamePageState extends State<GamePage> {
       ),
     );
 
-    Overlay.of(context).insert(allowCardColorOverlay);
+    Overlay.of(context)?.insert(allowCardColorOverlay!);
   }
 
   void hideAllowedCardColorOverlay() {
@@ -416,8 +418,8 @@ class _GamePageState extends State<GamePage> {
 
 class TimerText extends StatefulWidget {
   const TimerText({
-    Key key,
-    this.duration,
+    Key? key,
+    required this.duration,
   }) : super(key: key);
 
   final Duration duration;
@@ -427,14 +429,14 @@ class TimerText extends StatefulWidget {
 }
 
 class _TimerTextState extends State<TimerText> {
-  Timer timer;
-  int remainingSeconds;
+  Timer? timer;
+  late int remainingSeconds;
 
   @override
   void initState() {
     super.initState();
     remainingSeconds = widget.duration.inSeconds;
-    SchedulerBinding.instance.addPostFrameCallback(
+    SchedulerBinding.instance!.addPostFrameCallback(
       (_) => timer = Timer.periodic(
         const Duration(seconds: 1),
         (_) {
@@ -465,9 +467,9 @@ class _CompletedGameOverlay extends StatelessWidget {
   final Game game;
 
   const _CompletedGameOverlay({
-    Key key,
-    @required this.self,
-    @required this.game,
+    Key? key,
+    required this.self,
+    required this.game,
   }) : super(key: key);
 
   @override
@@ -535,9 +537,9 @@ class _CompletedGameOverlay extends StatelessWidget {
 
 class _LobbyOverlay extends StatelessWidget {
   const _LobbyOverlay({
-    Key key,
-    @required this.self,
-    @required this.game,
+    Key? key,
+    required this.self,
+    required this.game,
   }) : super(key: key);
 
   final Player self;
@@ -609,9 +611,10 @@ class _LobbyOverlay extends StatelessWidget {
                         const SizedBox(height: 16),
                         Text(
                           'Warten auf weitere Spieler...',
-                          style: Theme.of(context).textTheme.bodyText1.copyWith(
-                                fontSize: 24,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.bodyText1!.copyWith(
+                                    fontSize: 24,
+                                  ),
                         ),
                       ],
                     ),
@@ -632,9 +635,9 @@ class _CardArea extends StatelessWidget {
   final bool showCallBingoButton;
 
   const _CardArea({
-    Key key,
-    @required this.state,
-    @required this.cardHand,
+    Key? key,
+    required this.state,
+    required this.cardHand,
     this.showCallBingoButton = false,
   }) : super(key: key);
 

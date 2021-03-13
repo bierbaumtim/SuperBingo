@@ -13,8 +13,8 @@ class PlayerPage extends StatefulWidget {
 }
 
 class _PlayerPageState extends State<PlayerPage> {
-  String username;
-  TextEditingController controller;
+  late String username;
+  late TextEditingController controller;
 
   @override
   void initState() {

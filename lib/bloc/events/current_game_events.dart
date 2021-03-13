@@ -23,10 +23,17 @@ class StartGame extends CurrentGameEvent {
   final Player self;
 
   /// {@macro currentgameevents.startgame}
-  const StartGame({this.gameId, this.self});
+  const StartGame({
+    required this.gameId,
+    required this.self,
+  });
 
   @override
-  List<Object> get props => super.props..addAll([gameId, self]);
+  List<Object> get props => super.props
+    ..addAll([
+      gameId,
+      self,
+    ]);
 }
 
 /// {@template currentgameevents.opengamewaitinglobby}
@@ -41,8 +48,8 @@ class OpenGameWaitingLobby extends CurrentGameEvent {
 
   /// {@macro currentgameevents.opengamewaitinglobby}
   const OpenGameWaitingLobby({
-    this.gameId,
-    this.self,
+    required this.gameId,
+    required this.self,
   });
 
   @override
@@ -77,13 +84,17 @@ class PlayCard extends CurrentGameEvent {
   final GameCard card;
 
   /// gewünschte Kartenfarbe, wenn ein Bube/Joker gelegt wird
-  final CardColor allowedCardColor;
+  final CardColor? allowedCardColor;
 
   /// {@macro currentgameevents.playcard}
   const PlayCard(this.card, [this.allowedCardColor]);
 
   @override
-  List<Object> get props => super.props..addAll([card, allowedCardColor]);
+  List<Object> get props => super.props
+    ..addAll([
+      card,
+      if (allowedCardColor != null) allowedCardColor!,
+    ]);
 }
 
 /// {@template currentgameevents.pullcard}

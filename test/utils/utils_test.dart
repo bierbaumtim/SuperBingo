@@ -155,10 +155,6 @@ void main() {
 
     group('card utils tests ->', () {
       group('getIconByCardColor tests ->', () {
-        test('null assertion', () {
-          expect(() => getIconByCardColor(null), throwsAssertionError);
-        });
-
         test('CardColor.clover', () {
           final iconData = getIconByCardColor(CardColor.clover);
 
@@ -185,10 +181,6 @@ void main() {
       });
 
       group('getColorByCardColor tests ->', () {
-        test('null assertion', () {
-          expect(() => getColorByCardColor(null), throwsAssertionError);
-        });
-
         test('CardColor.diamond', () {
           final color = getColorByCardColor(CardColor.diamond);
 
@@ -215,10 +207,6 @@ void main() {
       });
 
       group('getTextByCardNumber tests ->', () {
-        test('null assertion', () {
-          expect(() => getTextByCardNumber(null), throwsAssertionError);
-        });
-
         test('CardNumber.ace', () {
           final text = getTextByCardNumber(CardNumber.ace);
 
@@ -336,10 +324,6 @@ void main() {
     });
 
     group('list utils tests ->', () {
-      test('null assertion', () {
-        expect(() => getMiddleIndex(null), throwsAssertionError);
-      });
-
       group('even length', () {
         test('length 2', () {
           final middle = getMiddleIndex(generateList(2));

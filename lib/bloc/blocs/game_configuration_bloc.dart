@@ -21,17 +21,19 @@ class GameConfigurationBloc
     extends Bloc<GameConfigurationEvent, GameConfigurationState> {
   final INetworkService networkService;
 
-  String _gameId;
-  String _gameLink;
-  Player _self;
+  late String _gameId;
+  late String _gameLink;
+  Player? _self;
 
   GameConfigurationBloc(this.networkService) : super(WaitingGameConfigInput()) {
     _gameLinkController = BehaviorSubject<String>();
+    _gameId = '';
+    _gameLink = '';
   }
 
   @override
   Future<void> close() async {
-    await _gameLinkController?.close();
+    await _gameLinkController.close();
     super.close();
   }
 
@@ -47,7 +49,7 @@ class GameConfigurationBloc
     }
   }
 
-  BehaviorSubject<String> _gameLinkController;
+  late BehaviorSubject<String> _gameLinkController;
   Sink<String> get _gameLinkSink => _gameLinkController.sink;
   Stream<String> get gameLinkStream => _gameLinkController.stream;
 
@@ -83,16 +85,16 @@ class GameConfigurationBloc
         _gameId,
       );
 
-      InformationStorage.instance.playerId = _self.id;
+      InformationStorage.instance.playerId = _self!.id;
       InformationStorage.instance.gameId = _gameId;
       InformationStorage.instance.gameLink = _gameLink;
 
       yield GameCreated(
         gameId: _gameId,
         gameLink: _gameLink,
-        self: _self,
+        self: _self!,
       );
-    } on dynamic catch (e, s) {
+    } on Object catch (e, s) {
       await LogService.instance.recordError(e, s);
       yield const GameCreationFailed(
         'Beim erstellen des Spiels ist ein Fehler aufgetreten.',
@@ -116,10 +118,10 @@ class GameConfigurationBloc
   }
 
   Future<Game> _createGame({
-    String name,
-    int decksAmount,
-    int maxPlayer,
-    bool isPublic,
+    required String name,
+    int decksAmount = 1,
+    int maxPlayer = 6,
+    bool isPublic = true,
   }) async {
     final username = await getUsername();
     _self = Player.create(username, isHost: true);
@@ -127,13 +129,14 @@ class GameConfigurationBloc
     final cardStack = _generateCardStack(decksAmount);
 
     final filledGame = Game(
+      gameID: 'default_id_created_not_updated',
       unplayedCardStack: cardStack,
       playedCardStack: Queue<GameCard>(),
       players: <Player>[
-        _self,
+        _self!,
       ],
       playerOrder: [
-        _self.id,
+        _self!.id,
       ],
       isPublic: isPublic,
       cardAmount: decksAmount * defaultCardDeck.length,
@@ -150,7 +153,7 @@ class GameConfigurationBloc
   Future<void> endGame() => networkService.deleteGame(_gameId);
 
   Queue<GameCard> _generateCardStack(int decks) {
-    final uuid = Uuid();
+    const uuid = Uuid();
     var cardDecks = List<GameCard>.from(defaultCardDeck);
     for (var i = 0; i < decks - 1; i++) {
       cardDecks.addAll(defaultCardDeck);

@@ -5,7 +5,7 @@ import '../../constants/enums.dart';
 
 class CardColorDecisionCard extends StatefulWidget {
   const CardColorDecisionCard({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -13,7 +13,7 @@ class CardColorDecisionCard extends StatefulWidget {
 }
 
 class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
-  CardColor color;
+  late CardColor color;
 
   @override
   void initState() {
@@ -43,7 +43,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   groupValue: color,
                   title: const Text('Kreuz'),
                   secondary: const Icon(CupertinoIcons.suit_club_fill),
-                  onChanged: (value) => setState(() => color = value),
+                  onChanged: (value) => setState(() => color = value!),
                   activeColor: selectedColor,
                 ),
                 RadioListTile<CardColor>(
@@ -52,7 +52,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   groupValue: color,
                   title: const Text('Pik'),
                   secondary: const Icon(CupertinoIcons.suit_spade_fill),
-                  onChanged: (value) => setState(() => color = value),
+                  onChanged: (value) => setState(() => color = value!),
                   activeColor: selectedColor,
                 ),
                 RadioListTile<CardColor>(
@@ -61,7 +61,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   groupValue: color,
                   title: const Text('Herz'),
                   secondary: const Icon(CupertinoIcons.suit_heart_fill),
-                  onChanged: (value) => setState(() => color = value),
+                  onChanged: (value) => setState(() => color = value!),
                   activeColor: selectedColor,
                 ),
                 RadioListTile<CardColor>(
@@ -70,7 +70,7 @@ class _CardColorDecisionCardState extends State<CardColorDecisionCard> {
                   groupValue: color,
                   title: const Text('Karo'),
                   secondary: const Icon(CupertinoIcons.suit_diamond_fill),
-                  onChanged: (value) => setState(() => color = value),
+                  onChanged: (value) => setState(() => color = value!),
                   activeColor: selectedColor,
                 ),
                 const SizedBox(height: 24),

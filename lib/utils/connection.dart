@@ -18,11 +18,14 @@ class Connection {
   /// {@macro connection}
   factory Connection() => instance;
 
-  Connection._internal();
+  Connection._internal() {
+    _hasConnection = false;
+    _currentConnectivityResult = ConnectivityResult.none;
+  }
 
-  StreamSubscription<ConnectivityResult> _connectivityListener;
-  bool _hasConnection;
-  ConnectivityResult _currentConnectivityResult;
+  StreamSubscription<ConnectivityResult>? _connectivityListener;
+  late bool _hasConnection;
+  late ConnectivityResult _currentConnectivityResult;
 
   ///
   bool get hasConnection => _hasConnection;
@@ -63,7 +66,7 @@ class Connection {
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
         return true;
       }
-    } on dynamic catch (e, s) {
+    } on Object catch (e, s) {
       debugPrint(e.toString());
       debugPrintStack(stackTrace: s);
       return false;
@@ -73,6 +76,6 @@ class Connection {
 
   /// Beendet die StreamSubscription auf Netzwerkänderungen
   void dispose() {
-    _connectivityListener.cancel();
+    _connectivityListener?.cancel();
   }
 }

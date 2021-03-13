@@ -6,8 +6,6 @@ import 'list_utils.dart';
 
 /// Gibt das zur `color` gehörende Icon zurück.
 IconData getIconByCardColor(CardColor color) {
-  assert(color != null);
-
   switch (color) {
     case CardColor.clover:
       return CupertinoIcons.suit_club_fill;
@@ -24,8 +22,6 @@ IconData getIconByCardColor(CardColor color) {
 
 /// Gibt die zur `color` gehörende Farbe zurück.
 Color getColorByCardColor(CardColor color) {
-  assert(color != null);
-
   if (color == CardColor.heart || color == CardColor.diamond) {
     return Colors.red;
   } else {
@@ -35,8 +31,6 @@ Color getColorByCardColor(CardColor color) {
 
 /// Gibt die Nummer/den Buchstaben zur `number` zugehörigen zurück.
 String getTextByCardNumber(CardNumber number) {
-  assert(number != null);
-
   switch (number) {
     case CardNumber.ace:
       return 'A';

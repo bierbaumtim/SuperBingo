@@ -23,8 +23,8 @@ class JoinGamePage extends StatefulWidget {
 }
 
 class _JoinGamePageState extends State<JoinGamePage> {
-  OverlayEntry _joiningOverlay;
-  TextEditingController linkController;
+  OverlayEntry? _joiningOverlay;
+  late TextEditingController linkController;
 
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
     final joinGameBloc = BlocProvider.of<JoinGameBloc>(context);
 
     return BlocListener<JoinGameBloc, JoinGameState>(
-      cubit: joinGameBloc,
+      bloc: joinGameBloc,
       listener: (context, state) {
         if (state is JoiningGame) {
           showJoiningOverlay(context);
@@ -97,7 +97,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
                 stream: publicGamesBloc.publicGamesStream,
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
-                    if (snapshot.data.isEmpty) {
+                    if (snapshot.data!.isEmpty) {
                       return const Center(
                         child: Text('Es sind keine offenen Spiele verfügbar.'),
                       );
@@ -105,9 +105,9 @@ class _JoinGamePageState extends State<JoinGamePage> {
                       return RefreshIndicator(
                         onRefresh: publicGamesBloc.getPublicGames,
                         child: ListView.builder(
-                          itemCount: snapshot.data.length,
+                          itemCount: snapshot.data!.length,
                           itemBuilder: (context, index) {
-                            final game = snapshot.data.elementAt(index);
+                            final game = snapshot.data!.elementAt(index);
 
                             return GameCard(game: game);
                           },
@@ -153,7 +153,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
       ),
     );
 
-    Overlay.of(context).insert(_joiningOverlay);
+    Overlay.of(context)?.insert(_joiningOverlay!);
   }
 
   void hideJoiningOverlay() {

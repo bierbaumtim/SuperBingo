@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -30,13 +28,13 @@ class GameCard extends Equatable implements Comparable<GameCard> {
 
   /// Kartenabhängige Regel
   @JsonKey(ignore: true)
-  final SpecialRule rule;
+  final SpecialRule? rule;
 
   /// {@macro gamecard}
   GameCard({
-    this.id,
-    @required this.color,
-    @required this.number,
+    required this.id,
+    required this.color,
+    required this.number,
   }) : rule = ruleFromNumber(number);
 
   /// Factory, um einen Datensatz in ein [GameCard]-Object umzuwandeln
@@ -47,7 +45,7 @@ class GameCard extends Equatable implements Comparable<GameCard> {
   Map<String, dynamic> toJson() => _$GameCardToJson(this);
 
   /// Ermittelt die Regel der Karte auf Basis der [CardNumber] `number`
-  static SpecialRule ruleFromNumber(CardNumber number) {
+  static SpecialRule? ruleFromNumber(CardNumber number) {
     switch (number) {
       case CardNumber.eight:
         return SpecialRule.skip;
@@ -72,7 +70,12 @@ class GameCard extends Equatable implements Comparable<GameCard> {
       );
 
   @override
-  List<Object> get props => <Object>[rule, color, number, id];
+  List<Object> get props => <Object>[
+        color,
+        number,
+        id,
+        if (rule != null) rule!,
+      ];
 
   @override
   bool get stringify => true;

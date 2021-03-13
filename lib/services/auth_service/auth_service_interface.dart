@@ -1,5 +1,5 @@
 abstract class IAuthService {
-  String get userId;
+  String? get userId;
   bool get isUserLoggedIn;
 
   Future<void> signInAnonymously();

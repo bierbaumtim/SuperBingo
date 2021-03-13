@@ -16,8 +16,8 @@ class JoinedGame extends JoinGameState {
   final Player self;
 
   const JoinedGame({
-    this.gameId,
-    this.self,
+    required this.gameId,
+    required this.self,
   });
 
   @override

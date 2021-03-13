@@ -8,37 +8,38 @@ part of 'game.dart';
 
 Game _$GameFromJson(Map<String, dynamic> json) {
   return Game(
-    gameID: json['id'] as String ?? '',
+    gameID: json['id'] as String? ?? '',
+    name: json['name'] as String? ?? 'SuperBingo',
     playedCardStack: Game.stackFromJson(json['playedCards'] as List),
     unplayedCardStack: Game.stackFromJson(json['unplayedCards'] as List),
-    players: (json['players'] as List)
-            ?.map((e) =>
-                e == null ? null : Player.fromJson(e as Map<String, dynamic>))
-            ?.toList() ??
+    players: (json['players'] as List<dynamic>?)
+            ?.map((e) => Player.fromJson(e as Map<String, dynamic>))
+            .toList() ??
         [],
-    name: json['name'] as String ?? 'SuperBingo',
-    maxPlayer: json['maxPlayer'] as int ?? 6,
-    isPublic: json['isPublic'] as bool ?? true,
-    cardAmount: json['cardAmount'] as int ?? 32,
-    currentPlayerId: json['currentPlayerId'] as String ?? '',
-    cardDrawAmount: json['cardDrawAmount'] as int ?? 1,
+    maxPlayer: json['maxPlayer'] as int? ?? 6,
+    isPublic: json['isPublic'] as bool? ?? true,
+    cardAmount: json['cardAmount'] as int? ?? 32,
+    currentPlayerId: json['currentPlayerId'] as String? ?? '',
+    cardDrawAmount: json['cardDrawAmount'] as int? ?? 1,
     allowedCardColor:
         _$enumDecodeNullable(_$CardColorEnumMap, json['allowedCardColor']),
-    isJokerOrJackAllowed: json['isJokerOrJackAllowed'] as bool ?? true,
+    isJokerOrJackAllowed: json['isJokerOrJackAllowed'] as bool? ?? true,
     state: _$enumDecodeNullable(_$GameStateEnumMap, json['state']) ??
         GameState.waitingForPlayer,
-    message: json['message'] as String ?? '',
+    message: json['message'] as String? ?? '',
     allowedCardNumber:
         _$enumDecodeNullable(_$CardNumberEnumMap, json['allowedCardNumber']),
-    playerOrder:
-        (json['playerOrder'] as List)?.map((e) => e as String)?.toList() ?? [],
+    playerOrder: (json['playerOrder'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList() ??
+        [],
   );
 }
 
 Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
       'playedCards': Game.stackToJson(instance.playedCardStack),
       'unplayedCards': Game.stackToJson(instance.unplayedCardStack),
-      'players': instance.players?.map((e) => e?.toJson())?.toList(),
+      'players': instance.players.map((e) => e.toJson()).toList(),
       'isPublic': instance.isPublic,
       'maxPlayer': instance.maxPlayer,
       'cardAmount': instance.cardAmount,
@@ -54,36 +55,41 @@ Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
       'playerOrder': instance.playerOrder,
     };
 
-T _$enumDecode<T>(
-  Map<T, dynamic> enumValues,
-  dynamic source, {
-  T unknownValue,
+K _$enumDecode<K, V>(
+  Map<K, V> enumValues,
+  Object? source, {
+  K? unknownValue,
 }) {
   if (source == null) {
-    throw ArgumentError('A value must be provided. Supported values: '
-        '${enumValues.values.join(', ')}');
+    throw ArgumentError(
+      'A value must be provided. Supported values: '
+      '${enumValues.values.join(', ')}',
+    );
   }
 
-  final value = enumValues.entries
-      .singleWhere((e) => e.value == source, orElse: () => null)
-      ?.key;
-
-  if (value == null && unknownValue == null) {
-    throw ArgumentError('`$source` is not one of the supported values: '
-        '${enumValues.values.join(', ')}');
-  }
-  return value ?? unknownValue;
+  return enumValues.entries.singleWhere(
+    (e) => e.value == source,
+    orElse: () {
+      if (unknownValue == null) {
+        throw ArgumentError(
+          '`$source` is not one of the supported values: '
+          '${enumValues.values.join(', ')}',
+        );
+      }
+      return MapEntry(unknownValue, enumValues.values.first);
+    },
+  ).key;
 }
 
-T _$enumDecodeNullable<T>(
-  Map<T, dynamic> enumValues,
+K? _$enumDecodeNullable<K, V>(
+  Map<K, V> enumValues,
   dynamic source, {
-  T unknownValue,
+  K? unknownValue,
 }) {
   if (source == null) {
     return null;
   }
-  return _$enumDecode<T>(enumValues, source, unknownValue: unknownValue);
+  return _$enumDecode<K, V>(enumValues, source, unknownValue: unknownValue);
 }
 
 const _$CardColorEnumMap = {

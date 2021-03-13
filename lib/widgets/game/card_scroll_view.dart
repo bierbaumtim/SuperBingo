@@ -12,7 +12,7 @@ class CardScrollView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CurrentGameBloc, CurrentGameState>(
       builder: (context, state) {
-        Widget child;
+        Widget child = const SizedBox();
 
         if (state is CurrentGameLoaded) {
           if (state.self.cards.isEmpty) {
@@ -110,7 +110,7 @@ class CardScrollView extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 18.0),
-            child ?? Container(),
+            child,
           ],
         );
       },

@@ -4,7 +4,7 @@ import 'share_service_interface.dart';
 
 class MobileShareService implements IShareService {
   @override
-  Future<void> share(String text, {String subject}) async =>
+  Future<void> share(String text, {String? subject}) async =>
       window.navigator.share(
         {
           'title': subject ?? 'Superbingo',

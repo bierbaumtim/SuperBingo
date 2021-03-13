@@ -50,20 +50,20 @@ class Player with EquatableMixin {
 
   /// {@macro player}
   Player({
-    this.id,
-    this.name,
+    required this.id,
+    required this.name,
     this.isHost = false,
     this.finishPosition = 0,
-    List<GameCard> cards,
+    List<GameCard>? cards,
   }) : cards = cards ?? <GameCard>[];
 
   /// Überschreibt aktuelles Object mit bestimmten neuen Werten
   Player copyWith({
-    String name,
-    int cardAmount,
-    int finishPosition,
-    List<GameCard> cards,
-    bool isHost,
+    String? name,
+    int? cardAmount,
+    int? finishPosition,
+    List<GameCard>? cards,
+    bool? isHost,
   }) =>
       Player(
         id: id,
@@ -98,14 +98,18 @@ class Player with EquatableMixin {
 
   /// Ruft den Spieler mit der `playerId` aus der `player` Liste.
   /// Ist keiner Vorhanden wird null zurückgegeben.
-  static Player getPlayerFromList(List<Player> player, String playerId) {
+  static Player? getPlayerFromList(List<Player> player, String playerId) {
     if (player.isEmpty) {
       // LogService.instance.log(
       //   '[getPlayerFromList] Player in Game are empty. Can cause problems.',
       // );
       return null;
     } else {
-      return player.firstWhere((p) => p.id == playerId, orElse: () => null);
+      try {
+        return player.firstWhere((p) => p.id == playerId);
+      } catch (e) {
+        return null;
+      }
     }
   }
 }

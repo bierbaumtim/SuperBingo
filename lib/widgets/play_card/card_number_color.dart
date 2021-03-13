@@ -7,9 +7,9 @@ import '../../utils/card_utils.dart';
 
 class CardNumberColor extends StatelessWidget {
   const CardNumberColor({
-    Key key,
-    this.color,
-    this.number,
+    Key? key,
+    required this.color,
+    required this.number,
     this.flip = false,
     this.isSmall = false,
   }) : super(key: key);

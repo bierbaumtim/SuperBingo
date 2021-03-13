@@ -8,20 +8,20 @@ import '../../services/network_service/network_service_interface.dart';
 class PublicGamesBloc {
   final INetworkService networkService;
 
-  StreamSubscription _gamesSub;
+  late StreamSubscription _gamesSub;
 
   PublicGamesBloc(this.networkService) {
     _publicGamesController = BehaviorSubject<List<Game>>();
     initListener();
   }
 
-  BehaviorSubject<List<Game>> _publicGamesController;
+  late BehaviorSubject<List<Game>> _publicGamesController;
 
-  Sink get _publicGamesSink => _publicGamesController.sink;
+  Sink<List<Game>> get _publicGamesSink => _publicGamesController.sink;
   Stream<List<Game>> get publicGamesStream => _publicGamesController.stream;
 
   Future<void> getPublicGames() async {
-    _publicGamesSink.add(null);
+    _publicGamesSink.add(<Game>[]);
     final games = await networkService.getPublicGames();
     _publicGamesController.sink.add(games);
   }
@@ -39,7 +39,7 @@ class PublicGamesBloc {
   }
 
   void dispose() {
-    _publicGamesController?.close();
-    _gamesSub?.cancel();
+    _publicGamesController.close();
+    _gamesSub.cancel();
   }
 }

@@ -13,7 +13,7 @@ class WebSecureStorage implements ISecureStorage {
   const WebSecureStorage._();
 
   @override
-  Future<void> delete({String key}) async {
+  Future<void> delete({required String key}) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(key);
   }
@@ -25,9 +25,9 @@ class WebSecureStorage implements ISecureStorage {
   }
 
   @override
-  Future<String> read({String key}) async {
+  Future<String> read({required String key}) async {
     final prefs = await SharedPreferences.getInstance();
-    return _decodeValue(prefs.getString(key));
+    return _decodeValue(prefs.getString(key) ?? '');
   }
 
   @override
@@ -36,7 +36,7 @@ class WebSecureStorage implements ISecureStorage {
     final keys = prefs.getKeys();
     final allStringValue = <String, String>{};
     for (final key in keys) {
-      final value = await prefs.get(key);
+      final value = prefs.get(key);
       if (value is String) {
         allStringValue.putIfAbsent(key, () => _decodeValue(value));
       }
@@ -45,7 +45,7 @@ class WebSecureStorage implements ISecureStorage {
   }
 
   @override
-  Future<void> write({String key, String value}) async {
+  Future<void> write({required String key, required String value}) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(key, _encodeValue(value));
   }

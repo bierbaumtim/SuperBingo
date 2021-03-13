@@ -63,18 +63,18 @@ class PlayCard extends StatelessWidget {
   final bool canDraw;
 
   const PlayCard({
-    Key key,
-    @required this.card,
-    this.angle,
-    this.rotationAngle,
-    this.rotationYOffset,
+    Key? key,
+    required this.card,
+    this.angle = 0,
+    this.rotationAngle = 0,
+    this.rotationYOffset = 25,
     this.height = 175,
     this.width = 100,
     this.elevation = 0,
     this.isFlipped = true,
     this.shouldPaint = true,
     this.canDraw = true,
-    @required this.onCardTap,
+    required this.onCardTap,
   }) : super(key: key);
 
   @override
@@ -96,7 +96,7 @@ class PlayCard extends StatelessWidget {
     final child = GestureDetector(
       onTap: () {
         if (canDraw) {
-          onCardTap?.call(card);
+          onCardTap(card);
         }
       },
       child: Card(
@@ -114,14 +114,14 @@ class PlayCard extends StatelessWidget {
       ),
     );
 
-    if (angle != null && rotationAngle != null) {
+    if (angle > 0 && rotationAngle > 0) {
       final rad = radians(angle);
 
       return Transform(
         transform: Matrix4.identity()
           ..translate(
             100 * math.cos(rad),
-            (100 * math.sin(rad)) + (rotationYOffset ?? 25),
+            (100 * math.sin(rad)) + rotationYOffset,
           ),
         child: Transform.rotate(
           angle: radians(rotationAngle),
@@ -136,8 +136,8 @@ class PlayCard extends StatelessWidget {
 
 class _ActivePaint extends StatelessWidget {
   const _ActivePaint({
-    Key key,
-    @required this.card,
+    Key? key,
+    required this.card,
     this.canDraw = true,
   }) : super(key: key);
 
@@ -256,7 +256,7 @@ class _ActivePaint extends StatelessWidget {
 }
 
 class _InactivePaint extends StatelessWidget {
-  const _InactivePaint({Key key}) : super(key: key);
+  const _InactivePaint({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

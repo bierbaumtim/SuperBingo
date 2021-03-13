@@ -44,7 +44,6 @@ PlayerAvatarCoordinates _getVerticalPositionCoordinates(
       } else {
         return positionVerticalRightTop(constraints);
       }
-      break;
     case 2:
       if (length == 3 || length == 4) {
         return positionVerticalBottomCenter(constraints);
@@ -53,7 +52,6 @@ PlayerAvatarCoordinates _getVerticalPositionCoordinates(
       } else {
         return positionVerticalRightCenter(constraints);
       }
-      break;
     case 3:
       if (length == 4) {
         return positionVerticalLeftCenter(constraints);
@@ -62,7 +60,6 @@ PlayerAvatarCoordinates _getVerticalPositionCoordinates(
       } else {
         return positionVerticalRightBottom(constraints);
       }
-      break;
     case 4:
       if (length == 5) {
         return positionVerticalLeftCenter(constraints);
@@ -71,21 +68,18 @@ PlayerAvatarCoordinates _getVerticalPositionCoordinates(
       } else {
         return positionVerticalBottomCenter(constraints);
       }
-      break;
     case 5:
       if (length == 6) {
         return positionVerticalLeftTop(constraints);
       } else {
         return positionVerticalLeftBottom(constraints);
       }
-      break;
     case 6:
       if (length == 7) {
         return positionVerticalLeftTop(constraints);
       } else {
         return positionVerticalLeftCenter(constraints);
       }
-      break;
     case 7:
       return positionVerticalLeftTop(constraints);
     default:
@@ -109,7 +103,6 @@ PlayerAvatarCoordinates _getHorizontalPositionCoordinates(
       } else {
         return positionHorizontalTopLeft(constraints);
       }
-      break;
     case 2:
       if (length == 3 || length == 4) {
         return positionHorizontalRightCenter(constraints);
@@ -118,14 +111,12 @@ PlayerAvatarCoordinates _getHorizontalPositionCoordinates(
       } else {
         return positionHorizontalTopCenter(constraints);
       }
-      break;
     case 3:
       if (length >= 4 && length <= 6) {
         return positionHorizontalBottomCenter(constraints);
       } else {
         return positionHorizontalTopRight(constraints);
       }
-      break;
     case 4:
       if (length == 5) {
         return positionHorizontalBottomCenter(constraints);
@@ -134,21 +125,18 @@ PlayerAvatarCoordinates _getHorizontalPositionCoordinates(
       } else {
         return positionHorizontalRightCenter(constraints);
       }
-      break;
     case 5:
       if (length == 6) {
         return positionHorizontalBottomLeft(constraints);
       } else {
         return positionHorizontalBottomRight(constraints);
       }
-      break;
     case 6:
       if (length == 7) {
         return positionHorizontalBottomLeft(constraints);
       } else {
         return positionHorizontalBottomCenter(constraints);
       }
-      break;
     case 7:
       return positionHorizontalBottomLeft(constraints);
     default:

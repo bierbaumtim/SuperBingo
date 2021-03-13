@@ -13,10 +13,10 @@ class CardHandStack extends StatefulWidget {
   final double maxWidth;
 
   const CardHandStack({
-    Key key,
-    @required this.cards,
-    @required this.totalCardsNumber,
-    @required this.maxWidth,
+    Key? key,
+    required this.cards,
+    required this.totalCardsNumber,
+    required this.maxWidth,
   }) : super(key: key);
 
   @override
@@ -27,10 +27,10 @@ class _CardHandStackState extends State<CardHandStack>
     with SingleTickerProviderStateMixin {
   static const double cardOffset = 16;
 
-  bool get isExpanded => (expansionController?.value ?? 0) > 5 / 1E5;
+  bool get isExpanded => expansionController.value > 5 / 1E5;
 
-  AnimationController expansionController;
-  CurvedAnimation expansionAnimation;
+  late AnimationController expansionController;
+  late CurvedAnimation expansionAnimation;
 
   @override
   void initState() {
@@ -59,7 +59,7 @@ class _CardHandStackState extends State<CardHandStack>
       builder: (context, child) => ConstrainedBox(
         constraints: BoxConstraints(
           maxWidth: isExpanded
-              ? getOffsetByIndexAndExpansionStatus(widget.cards.lastIndex) +
+              ? getOffsetByIndexAndExpansionStatus(widget.cards.lastIndex!) +
                   (100 - cardOffset) +
                   kMinInteractiveDimension
               : 100 + kMinInteractiveDimension,
@@ -69,7 +69,7 @@ class _CardHandStackState extends State<CardHandStack>
           builder: (context) => Stack(
             children: [
               ...widget.cards
-                  .mapIndexed<Widget>(
+                  .mapIndexedSC<Widget>(
                     (card, i) => Positioned(
                       left: getOffsetByIndexAndExpansionStatus(i),
                       child: PlayCard(
@@ -78,7 +78,7 @@ class _CardHandStackState extends State<CardHandStack>
                         elevation: i * 1.0,
                         isFlipped: false,
                         shouldPaint:
-                            isExpanded || i >= widget.cards.lastIndex - 1,
+                            isExpanded || i >= widget.cards.lastIndex! - 1,
                       ),
                     ),
                   )
@@ -105,7 +105,7 @@ class _CardHandStackState extends State<CardHandStack>
                 ),
                 Positioned(
                   left: getOffsetByIndexAndExpansionStatus(
-                    widget.cards.lastIndex + 1,
+                    widget.cards.lastIndex! + 1,
                   ),
                   top: 87.5,
                   child: _BlurredCardHandStackButton(
@@ -138,10 +138,10 @@ class _CardHandStackState extends State<CardHandStack>
 
 class _BlurredCardHandStackButton extends StatelessWidget {
   const _BlurredCardHandStackButton({
-    Key key,
-    @required this.onPressed,
-    @required this.icon,
-    @required this.translation,
+    Key? key,
+    required this.onPressed,
+    required this.icon,
+    required this.translation,
   }) : super(key: key);
 
   final VoidCallback onPressed;

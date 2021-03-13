@@ -15,11 +15,11 @@ import 'network_service_interface.dart';
 /// Every incoming and outgoing data will be processed by it.
 class NetworkServiceMobile implements INetworkService {
   final FirebaseFirestore _db;
-  Game _previousGame, _currentGame;
-  BehaviorSubject<Game> _gameChangedController;
-  BehaviorSubject<List<Game>> _publicGamesController;
-  StreamSubscription<Game> _gameSub;
-  StreamSubscription<QuerySnapshot> _publicGamesSub;
+  Game? _previousGame, _currentGame;
+  late BehaviorSubject<Game> _gameChangedController;
+  late BehaviorSubject<List<Game>> _publicGamesController;
+  late StreamSubscription<Game?> _gameSub;
+  late StreamSubscription<QuerySnapshot> _publicGamesSub;
 
   NetworkServiceMobile(this._db) {
     _gameChangedController = BehaviorSubject<Game>();
@@ -27,10 +27,10 @@ class NetworkServiceMobile implements INetworkService {
   }
 
   @override
-  Game get previousGame => _previousGame;
+  Game? get previousGame => _previousGame;
 
   @override
-  Game get currentGame => _currentGame;
+  Game? get currentGame => _currentGame;
 
   @override
   Stream<Game> get gameChangedStream => _gameChangedController.stream;
@@ -40,10 +40,10 @@ class NetworkServiceMobile implements INetworkService {
 
   @override
   Future<bool> setupSubscription(String gameId) async {
-    if (gameId != null) {
+    if (gameId.isNotEmpty) {
       try {
         final snapshot = await _db.collection('games').doc(gameId).get();
-        _currentGame = Game.fromJson(snapshot.data());
+        _currentGame = Game.fromJson(snapshot.data()!);
         _gameSub = _db
             .collection('games')
             .doc(gameId)
@@ -51,7 +51,7 @@ class NetworkServiceMobile implements INetworkService {
             .asyncMap(_convertDBDataStreamEvent)
             .listen(_handleNewGameStreamEvent);
         return true;
-      } on dynamic catch (e, s) {
+      } on Object catch (e, s) {
         await LogService.instance.recordError(e, s);
       }
     }
@@ -75,7 +75,7 @@ class NetworkServiceMobile implements INetworkService {
   Future<Game> getGameById(String id) async {
     final snapshot = await _db.collection('games').doc(id).get();
 
-    return Game.fromJson(snapshot.data());
+    return Game.fromJson(snapshot.data()!);
   }
 
   @override
@@ -87,7 +87,7 @@ class NetworkServiceMobile implements INetworkService {
   }
 
   @override
-  Future<void> updateGameData(dynamic data, [String gameId]) async {
+  Future<void> updateGameData(dynamic data, [String? gameId]) async {
     if (data is Game) {
       final dbGame =
           await compute<Game, Map<String, dynamic>>(Game.toDBData, data);
@@ -96,25 +96,26 @@ class NetworkServiceMobile implements INetworkService {
       assert(gameId != null || _currentGame?.gameID != null);
       await _db
           .collection('games')
-          .doc(gameId ?? _currentGame.gameID)
+          .doc(gameId ?? _currentGame!.gameID)
           .update(data);
     }
   }
 
   @override
   Future<void> restoreHandCards(String playerId) async {
+    if (previousGame == null || currentGame == null) return;
     try {
-      final player = Player.getPlayerFromList(previousGame.players, playerId);
+      final player = Player.getPlayerFromList(previousGame!.players, playerId);
       final cards = player?.cards;
       var currentPlayer =
-          Player.getPlayerFromList(currentGame.players, playerId);
-      currentPlayer = currentPlayer.copyWith(
+          Player.getPlayerFromList(currentGame!.players, playerId);
+      currentPlayer = currentPlayer!.copyWith(
         cards: cards,
       );
       final game = currentGame;
-      game.updatePlayer(currentPlayer);
+      game!.updatePlayer(currentPlayer);
       return updateGameData(game);
-    } on dynamic catch (e, s) {
+    } on Object catch (e, s) {
       await LogService.instance.recordError(e, s);
     }
   }
@@ -132,15 +133,19 @@ class NetworkServiceMobile implements INetworkService {
     await cancelSubscription();
   }
 
-  Future<Game> _convertDBDataStreamEvent(DocumentSnapshot snapshot) async {
-    return Game.fromJson(snapshot.data());
+  Future<Game?> _convertDBDataStreamEvent(DocumentSnapshot snapshot) async {
+    if (snapshot.exists && snapshot.data() != null) {
+      return Game.fromJson(snapshot.data()!);
+    } else {
+      return null;
+    }
   }
 
-  void _handleNewGameStreamEvent(Game newGame) {
+  void _handleNewGameStreamEvent(Game? newGame) {
     if (newGame != null) {
       _previousGame = _currentGame;
       _currentGame = newGame;
-      _gameChangedController.sink.add(_currentGame);
+      _gameChangedController.sink.add(_currentGame!);
     } else {
       LogService.instance
           .recordError('newGame is null: $newGame', StackTrace.current);
@@ -152,7 +157,7 @@ class NetworkServiceMobile implements INetworkService {
     try {
       final snapshot = await _db.collection('games').get();
       return _getPublicGamesFromQuerySnapshot(snapshot);
-    } on dynamic catch (e, s) {
+    } on Object catch (e, s) {
       LogService.instance.recordError(e, s);
       return <Game>[];
     }
@@ -177,12 +182,12 @@ class NetworkServiceMobile implements INetworkService {
   List<Game> _getPublicGamesFromQuerySnapshot(QuerySnapshot snapshot) {
     try {
       final games =
-          snapshot.docs.map<Game>((g) => Game.fromJson(g.data())).toList();
+          snapshot.docs.map<Game>((g) => Game.fromJson(g.data()!)).toList();
       return games
           .where((game) =>
               game.isPublic && game.state == GameState.waitingForPlayer)
           .toList();
-    } on dynamic catch (e, s) {
+    } on Object catch (e, s) {
       LogService.instance.recordError(e, s);
       return <Game>[];
     }
@@ -193,16 +198,16 @@ class NetworkServiceMobile implements INetworkService {
       _publicGamesController.sink
           .add(_getPublicGamesFromQuerySnapshot(snapshot));
     } on PlatformException catch (e) {
-      if (e.message.contains('PERMISSION_DENIED')) {
+      if (e.message!.contains('PERMISSION_DENIED')) {
         _publicGamesController.sink.addError(
           PermissionError(
-            e.message.replaceAll('PERMISSION_DENIED:', '').trim(),
+            e.message!.replaceAll('PERMISSION_DENIED:', '').trim(),
           ),
         );
       } else {
         _publicGamesController.sink.addError(Error());
       }
-    } on dynamic catch (e, s) {
+    } on Object catch (e, s) {
       LogService.instance.recordError(e, s);
       _publicGamesController.sink.addError(Error());
     }

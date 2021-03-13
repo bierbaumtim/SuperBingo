@@ -10,9 +10,9 @@ import '../../models/ui_models/player_avatar_coordinates.dart';
 class PlayerAvatar extends StatelessWidget {
   /// {@macro playeravatar}
   const PlayerAvatar({
-    Key key,
-    @required this.positionCoordinates,
-    @required this.player,
+    Key? key,
+    required this.positionCoordinates,
+    required this.player,
     this.isCurrentPlayer = false,
   }) : super(key: key);
 
@@ -44,17 +44,17 @@ class PlayerAvatar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(25),
                     boxShadow: <BoxShadow>[
                       BoxShadow(
-                        color: Colors.greenAccent[700],
+                        color: Colors.greenAccent[700]!,
                         blurRadius: 2,
                         spreadRadius: 1,
                       ),
                       BoxShadow(
-                        color: Colors.greenAccent[400],
+                        color: Colors.greenAccent[400]!,
                         blurRadius: 4,
                         spreadRadius: 2,
                       ),
                       BoxShadow(
-                        color: Colors.greenAccent[100],
+                        color: Colors.greenAccent[100]!,
                         blurRadius: 8,
                         spreadRadius: 3,
                       ),
@@ -84,14 +84,14 @@ class PlayerAvatar extends StatelessWidget {
                     maxRadius: 20,
                     child: Text(
                       _getPlayerFirstLetter(player.name),
-                      style: theme.textTheme.bodyText2.copyWith(fontSize: 17),
+                      style: theme.textTheme.bodyText2!.copyWith(fontSize: 17),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                player?.name ?? '',
+                player.name,
                 maxLines: 1,
                 overflow: TextOverflow.visible,
                 style: theme.textTheme.bodyText2,

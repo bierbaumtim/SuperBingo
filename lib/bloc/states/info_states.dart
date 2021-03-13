@@ -15,10 +15,17 @@ class InfosLoaded extends InfoState {
   final String playerName;
   final String playerId;
 
-  const InfosLoaded({this.playerName, this.playerId});
+  const InfosLoaded({
+    required this.playerName,
+    required this.playerId,
+  });
 
   @override
-  List<Object> get props => super.props..addAll([playerName, playerId]);
+  List<Object> get props => super.props
+    ..addAll([
+      playerName,
+      playerId,
+    ]);
 }
 
 class FirstStart extends InfoState {}

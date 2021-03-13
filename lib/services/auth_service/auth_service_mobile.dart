@@ -7,7 +7,7 @@ class AuthServiceMobile implements IAuthService {
   bool get isUserLoggedIn => FirebaseAuth.instance.currentUser != null;
 
   @override
-  String get userId => FirebaseAuth.instance.currentUser?.uid;
+  String? get userId => FirebaseAuth.instance.currentUser?.uid;
 
   @override
   Future<void> signInAnonymously() => FirebaseAuth.instance.signInAnonymously();

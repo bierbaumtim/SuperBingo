@@ -29,9 +29,9 @@ class GameCreated extends GameConfigurationState {
 
   /// {@macro gamecreated}
   const GameCreated({
-    this.gameId,
-    this.gameLink,
-    this.self,
+    required this.gameId,
+    required this.gameLink,
+    required this.self,
   });
 
   @override

@@ -31,38 +31,36 @@ class CardStack extends StatefulWidget {
 
   /// {@macro cardstack}
   const CardStack({
-    Key key,
-    @required this.type,
-    @required this.cards,
-  })  : assert(cards != null),
-        assert(type != null),
-        super(key: key);
+    Key? key,
+    required this.type,
+    required this.cards,
+  }) : super(key: key);
 
   @override
   _CardStackState createState() => _CardStackState();
 }
 
 class _CardStackState extends State<CardStack> {
-  List<_CardStackVisualCard> cards;
+  late List<_CardStackVisualCard> cards;
 
   @override
   void initState() {
     super.initState();
-    buildVisualEffects();
+    cards = buildVisualEffects();
   }
 
   @override
   void didUpdateWidget(CardStack oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.cards != widget.cards) {
-      buildVisualEffects();
+      cards = buildVisualEffects();
     }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    buildVisualEffects();
+    cards = buildVisualEffects();
   }
 
   @override
@@ -70,7 +68,7 @@ class _CardStackState extends State<CardStack> {
     if (cards.isEmpty) {
       return const SizedBox();
     }
-    
+
     return Stack(
       children: cards.map<Widget>(
         (c) {
@@ -86,9 +84,7 @@ class _CardStackState extends State<CardStack> {
             shouldPaint: c.index >= cards.length - 5,
           );
 
-          if (c.translationX == null &&
-              c.translationY == null &&
-              c.angle == 0.0) {
+          if (c.translationX <= 0 && c.translationY <= 0 && c.angle == 0.0) {
             return playCard;
           } else {
             return Transform(
@@ -108,12 +104,12 @@ class _CardStackState extends State<CardStack> {
     );
   }
 
-  void buildVisualEffects() {
+  List<_CardStackVisualCard> buildVisualEffects() {
     final rn = Random();
-    cards = widget.cards.map<_CardStackVisualCard>(
+    return widget.cards.map<_CardStackVisualCard>(
       (c) {
         final index = widget.cards.indexOf(c);
-        double translationY, translationX, elevation = 0.0, angle = 0.0;
+        double translationY = 0, translationX = 0, elevation = 0, angle = 0;
         if (index > widget.cards.length - 6) {
           if (c == widget.cards.last) {
             angle = radians(0);
@@ -156,11 +152,11 @@ class _CardStackVisualCard {
   final double translationY;
 
   _CardStackVisualCard({
-    @required this.card,
-    @required this.index,
-    @required this.elevation,
-    @required this.angle,
-    @required this.translationX,
-    @required this.translationY,
+    required this.card,
+    required this.index,
+    required this.elevation,
+    required this.angle,
+    required this.translationX,
+    required this.translationY,
   });
 }

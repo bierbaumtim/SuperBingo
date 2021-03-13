@@ -6,12 +6,12 @@ class Dialogs {
   ///
   /// `title` - Titel für den Dialog(Standard - Hinweis)
   /// `content` - Information für den Dialog
-  static Future<T> showInformationDialog<T>(
+  static Future<T?> showInformationDialog<T>(
     BuildContext context, {
     String title = 'Hinweis',
     String content = '',
   }) {
-    return showDialog<T>(
+    return showDialog<T?>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
@@ -26,7 +26,7 @@ class Dialogs {
             onPressed: () => Navigator.pop(context),
             child: Text(
               'Ok',
-              style: Theme.of(context).textTheme.button.copyWith(
+              style: Theme.of(context).textTheme.button!.copyWith(
                     color: Colors.white,
                   ),
             ),
@@ -42,14 +42,14 @@ class Dialogs {
   /// `content` - Information für den Dialog
   /// `noText` - Text für den Nein-Button
   /// `yesText` - Text für den Ja-Button
-  static Future<bool> showDecisionDialog<bool>(
+  static Future<bool> showDecisionDialog(
     BuildContext context, {
     String title = 'Hinweis',
     String content = '',
     String noText = 'Nein',
     String yesText = 'Ja',
-  }) {
-    return showDialog<bool>(
+  }) async {
+    final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
@@ -58,8 +58,8 @@ class Dialogs {
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             child: Text(
-              yesText ?? 'Ja',
-              style: Theme.of(context).textTheme.button.copyWith(
+              yesText,
+              style: Theme.of(context).textTheme.button!.copyWith(
                     color: Colors.white,
                   ),
             ),
@@ -72,8 +72,8 @@ class Dialogs {
             ),
             onPressed: () => Navigator.pop(context, false),
             child: Text(
-              noText ?? 'Nein',
-              style: Theme.of(context).textTheme.button.copyWith(
+              noText,
+              style: Theme.of(context).textTheme.button!.copyWith(
                     color: Colors.white,
                   ),
             ),
@@ -81,5 +81,7 @@ class Dialogs {
         ],
       ),
     );
+
+    return result ?? false;
   }
 }

@@ -1,12 +1,10 @@
-import 'package:flutter/foundation.dart';
-
 import '../../models/app_models/game.dart';
 
 abstract class INetworkService {
   const INetworkService();
 
-  Game get previousGame;
-  Game get currentGame;
+  Game? get previousGame;
+  Game? get currentGame;
   Stream<Game> get gameChangedStream;
 
   Future<bool> setupSubscription(String gameId);
@@ -40,8 +38,8 @@ class GameMetaInformation {
   final String path;
 
   const GameMetaInformation({
-    @required this.id,
-    @required this.path,
+    required this.id,
+    required this.path,
   });
 }
 

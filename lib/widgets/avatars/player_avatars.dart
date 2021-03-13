@@ -13,9 +13,9 @@ import 'player_avatar.dart';
 class PlayerAvatars extends StatelessWidget {
   /// {@macro playeravatars}
   const PlayerAvatars({
-    Key key,
-    @required this.player,
-    @required this.currentPlayerUid,
+    Key? key,
+    required this.player,
+    required this.currentPlayerUid,
   }) : super(key: key);
 
   final List<Player> player;
@@ -26,7 +26,7 @@ class PlayerAvatars extends StatelessWidget {
     if (player.isNotEmpty) {
       return LayoutBuilder(
         builder: (context, constraints) => Stack(
-          children: player.mapIndexed((p, index) {
+          children: player.mapIndexedSC((p, index) {
             final postitionCoordinates = getPositionCoordinates(
               index,
               player.length,

@@ -22,5 +22,5 @@ class JoinWithLink extends JoinGameEvent {
   const JoinWithLink(this.gameLink);
 
   @override
-  List get props => super.props..add(gameLink);
+  List<Object> get props => super.props..add(gameLink);
 }

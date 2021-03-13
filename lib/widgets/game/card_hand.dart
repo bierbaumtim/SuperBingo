@@ -12,7 +12,7 @@ import '../play_card/play_card.dart';
 /// {@endtemplate}
 class CardHand extends StatelessWidget {
   /// {@macro cardhand}
-  const CardHand({Key key}) : super(key: key);
+  const CardHand({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +48,7 @@ class CardHand extends StatelessWidget {
                     card: c,
                     angle: angle,
                     rotationAngle: rotationAngle,
+                    onCardTap: (_) {},
                   );
                 }).toList(),
               );
@@ -56,7 +57,7 @@ class CardHand extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 36),
                 child: Text(
                   'Your done',
-                  style: theme.textTheme.bodyText2.copyWith(fontSize: 24),
+                  style: theme.textTheme.bodyText2!.copyWith(fontSize: 24),
                 ),
               );
             }

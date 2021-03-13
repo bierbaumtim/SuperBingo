@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 import 'package:equatable/equatable.dart';
 
 import '../../constants/enums.dart';
@@ -30,11 +28,10 @@ class CurrentGameLoaded extends CurrentGameState {
   /// Client-abhängiges Player Object
   final Player self;
 
-
   /// {@macro currentgameloaded}
   const CurrentGameLoaded({
-    @required this.game,
-    @required this.self,
+    required this.game,
+    required this.self,
   });
 
   @override
@@ -51,7 +48,10 @@ class CurrentGameWaitingForPlayer extends CurrentGameState {
 
   final Player self;
 
-  const CurrentGameWaitingForPlayer({this.game, this.self});
+  const CurrentGameWaitingForPlayer({
+    required this.game,
+    required this.self,
+  });
 
   @override
   List<Object> get props => super.props..addAll([game, self]);
@@ -75,18 +75,23 @@ class CurrentGameFinished extends CurrentGameState {}
 class WaitForBingoCall extends CurrentGameState {
   final bool isSuperBingo;
 
-  const WaitForBingoCall({this.isSuperBingo});
+  const WaitForBingoCall({
+    required this.isSuperBingo,
+  });
 
   @override
-  List get props => super.props..add(isSuperBingo);
+  List<Object> get props => super.props..add(isSuperBingo);
 }
 
 /// State, um Overlay anzuzeigen, welche Farbe gewünscht wurde.
 class UserChangedAllowedCardColor extends CurrentGameState {
-  final CardColor cardColor;
+  final CardColor? cardColor;
 
   const UserChangedAllowedCardColor(this.cardColor);
 
   @override
-  List<Object> get props => super.props..add(cardColor);
+  List<Object> get props => super.props
+    ..addAll([
+      if (cardColor != null) cardColor!,
+    ]);
 }

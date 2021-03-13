@@ -5,21 +5,6 @@ import 'package:superbingo/models/app_models/card.dart';
 void main() {
   group('GameCard tests ->', () {
     group('constructor tests ->', () {
-      test('give null for all parameters', () {
-        // ignore: missing_required_param
-        final card = GameCard();
-
-        expect(card, isA<GameCard>());
-        expect(card.id, isNull);
-        expect(card.color, isNull);
-        expect(card.number, isNull);
-        expect(card.rule, isNull);
-        expect(
-          card.props,
-          [null, null, null, null],
-        );
-      });
-
       test('no special rule', () {
         final card = GameCard(
           id: 'd4s9-6g',
@@ -97,12 +82,13 @@ void main() {
 
       test('setId', () {
         var card = GameCard(
+          id: '',
           color: CardColor.clover,
           number: CardNumber.queen,
         );
 
         expect(card, isA<GameCard>());
-        expect(card.id, isNull);
+        expect(card.id, equals(''));
         expect(card.color, equals(CardColor.clover));
         expect(card.number, equals(CardNumber.queen));
         expect(card.rule, isNull);

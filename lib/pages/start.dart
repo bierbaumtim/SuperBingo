@@ -39,7 +39,7 @@ class StartPage extends StatefulWidget {
 }
 
 class _StartPageState extends State<StartPage> {
-  OverlayEntry _joiningOverlay;
+  OverlayEntry? _joiningOverlay;
 
   @override
   void dispose() {
@@ -158,7 +158,7 @@ class _StartPageState extends State<StartPage> {
                                               'Spiel beitreten',
                                               style: Theme.of(context)
                                                   .textTheme
-                                                  .headline3
+                                                  .headline3!
                                                   .copyWith(
                                                     color: Colors.white,
                                                     fontFamily: 'Roboto',
@@ -173,14 +173,14 @@ class _StartPageState extends State<StartPage> {
                                               builder: (context, snapshot) {
                                                 final gameCount =
                                                     snapshot.hasData
-                                                        ? snapshot.data.length
+                                                        ? snapshot.data!.length
                                                         : 0;
 
                                                 return Text(
                                                   '$gameCount offene Spiele verfügbar',
                                                   style: Theme.of(context)
                                                       .textTheme
-                                                      .subtitle1
+                                                      .subtitle1!
                                                       .copyWith(
                                                         color: Colors.white
                                                             .withOpacity(.7),
@@ -229,10 +229,10 @@ class _StartPageState extends State<StartPage> {
                                                           id: '',
                                                         ),
                                                         angle: rotationValues[
-                                                            'angle'],
+                                                            'angle']!,
                                                         rotationAngle:
                                                             rotationValues[
-                                                                'rotation'],
+                                                                'rotation']!,
                                                         rotationYOffset: 100,
                                                         height: cardHeight,
                                                         width: cardWidth,
@@ -257,10 +257,10 @@ class _StartPageState extends State<StartPage> {
                                                           id: '',
                                                         ),
                                                         angle: rotationValues[
-                                                            'angle'],
+                                                            'angle']!,
                                                         rotationAngle:
                                                             rotationValues[
-                                                                'rotation'],
+                                                                'rotation']!,
                                                         rotationYOffset: 100,
                                                         height: cardHeight,
                                                         width: cardWidth,
@@ -321,7 +321,7 @@ class _StartPageState extends State<StartPage> {
                                         'Neues Spiel',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .headline3
+                                            .headline3!
                                             .copyWith(
                                               color: Colors.white,
                                               fontFamily: 'Roboto',
@@ -333,7 +333,7 @@ class _StartPageState extends State<StartPage> {
                                         'Starte dein eigenes Spiel',
                                         style: Theme.of(context)
                                             .textTheme
-                                            .subtitle1
+                                            .subtitle1!
                                             .copyWith(
                                               color:
                                                   Colors.white.withOpacity(.7),
@@ -361,7 +361,7 @@ class _StartPageState extends State<StartPage> {
                       future: checkIfAppWasUpdated,
                       builder: (context, snapshot) {
                         var version = kAppVersion;
-                        if (snapshot.hasData && snapshot.data) {
+                        if (snapshot.hasData && snapshot.data!) {
                           version = "$version - Updated";
                         }
 
@@ -381,7 +381,7 @@ class _StartPageState extends State<StartPage> {
   Future<bool> _checkPlayer(BuildContext context) async {
     if (context.read<InfoBloc>().state is! InfosLoaded) {
       final result =
-          await Navigator.of(context).pushNamed('/user_page') as String;
+          await Navigator.of(context).pushNamed('/user_page') as String?;
       return result != null && result.isNotEmpty;
     }
     return true;
@@ -414,7 +414,7 @@ class _StartPageState extends State<StartPage> {
       ),
     );
 
-    Overlay.of(context).insert(_joiningOverlay);
+    Overlay.of(context)?.insert(_joiningOverlay!);
   }
 
   void hideJoiningOverlay() {

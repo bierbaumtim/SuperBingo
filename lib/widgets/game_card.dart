@@ -10,8 +10,8 @@ import '../models/app_models/game.dart';
 
 class GameCard extends StatelessWidget {
   const GameCard({
-    Key key,
-    @required this.game,
+    Key? key,
+    required this.game,
   }) : super(key: key);
 
   final Game game;
@@ -21,9 +21,9 @@ class GameCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.all(8),
       child: ListTile(
-        title: Text(game?.name ?? ''),
+        title: Text(game.name),
         subtitle: Text(
-          '${game?.players?.length ?? 0}/${game?.maxPlayer} Player',
+          '${game.players.length}/${game.maxPlayer} Player',
         ),
         trailing: ElevatedButton(
           style: ButtonStyle(
@@ -47,7 +47,7 @@ class GameCard extends StatelessWidget {
           },
           child: Text(
             'join',
-            style: Theme.of(context).textTheme.bodyText2.copyWith(
+            style: Theme.of(context).textTheme.bodyText2!.copyWith(
                   color: Colors.white,
                 ),
           ),
@@ -59,7 +59,7 @@ class GameCard extends StatelessWidget {
   Future<bool> _checkPlayer(BuildContext context) async {
     if (context.read<InfoBloc>().state is! InfosLoaded) {
       final result =
-          await Navigator.of(context).pushNamed('/user_page') as String;
+          await Navigator.of(context).pushNamed('/user_page') as String?;
       return result != null && result.isNotEmpty;
     }
     return true;

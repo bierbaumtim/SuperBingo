@@ -13,7 +13,7 @@ class LogService {
     _disabled = false;
   }
 
-  bool _disabled;
+  late bool _disabled;
 
   // ignore: use_setters_to_change_properties,avoid_positional_boolean_parameters
   @visibleForTesting
@@ -26,8 +26,8 @@ class LogService {
     dynamic exception,
     StackTrace stackTrace, {
     dynamic reason,
-    Iterable<DiagnosticsNode> information,
-    bool printDetails,
+    Iterable<DiagnosticsNode> information = const [],
+    bool? printDetails,
   }) {
     if (_disabled) return Future.value();
     if (isDesktop || kIsWeb) {

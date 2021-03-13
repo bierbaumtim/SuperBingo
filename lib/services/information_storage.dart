@@ -8,7 +8,7 @@ class InformationStorage {
 
   InformationStorage._internal();
 
-  String _gameID, _gameLink, _playerId;
+  String? _gameID, _gameLink, _playerId;
 
   /// Firestore Document ID die auf ein bestimmtes Spiel in der DB verweist
   String get gameId => _gameID ?? '';
@@ -20,15 +20,15 @@ class InformationStorage {
   String get playerId => _playerId ?? '';
 
   set gameId(String value) {
-    _gameID = value ?? '';
+    _gameID = value;
   }
 
   set gameLink(String value) {
-    _gameLink = value ?? '';
+    _gameLink = value;
   }
 
   set playerId(String value) {
-    _playerId = value ?? '';
+    _playerId = value;
   }
 
   /// Setzt die gespeicherten Werte zurück

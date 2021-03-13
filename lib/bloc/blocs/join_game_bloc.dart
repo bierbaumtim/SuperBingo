@@ -10,10 +10,10 @@ import '../states/join_game_states.dart';
 
 class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   final INetworkService networkService;
-  String gameId;
-  String gameLink;
-  String gamePath;
-  Player _self;
+  String? gameId;
+  String? gameLink;
+  String? gamePath;
+  late Player _self;
 
   JoinGameBloc(this.networkService) : super(JoiningGame());
 
@@ -31,7 +31,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
   Stream<JoinGameState> _mapJoinGameToState(JoinGame event) async* {
     yield JoiningGame();
     gameId = event.gameId;
-    if (gameId == null || gameId.isEmpty) {
+    if (gameId!.isEmpty) {
       yield const JoinGameFailed(
         'Dieses Spiel existiert nicht mehr oder konnte nicht gefunden werden. '
         'Bitte versuche es mit einem anderen Spiel erneut.',
@@ -41,7 +41,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
       try {
         final username = await getUsername();
         _self = Player.create(username);
-        final game = await networkService.getGameById(gameId);
+        final game = await networkService.getGameById(gameId!);
         if (game.players.length + 1 > game.maxPlayer) {
           yield const JoinGameFailed(
             'Die maximale Spieleranzahl für dieses Spiel ist erreicht. '
@@ -72,7 +72,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
             self: _self,
           );
         }
-      } on dynamic catch (e, s) {
+      } on Object catch (e, s) {
         await LogService.instance.recordError(e, s);
         yield const JoinGameFailed(
           'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.',
@@ -90,7 +90,7 @@ class JoinGameBloc extends Bloc<JoinGameEvent, JoinGameState> {
       await LogService.instance.recordError(e, s);
       yield const JoinGameFailed('Der Link wird nicht unterstützt.');
       yield WaitingForAction();
-    } on dynamic catch (e, s) {
+    } on Object catch (e, s) {
       await LogService.instance.recordError(e, s);
       yield const JoinGameFailed(
         'Beim Beitreten ist ein Fehler aufgetreten. Versuche es später erneut.',

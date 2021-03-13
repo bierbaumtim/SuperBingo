@@ -29,42 +29,54 @@ class InteractionBloc extends Bloc<InteractionEvent, InteractionState> {
 
   Stream<InteractionState> _mapCallBingoToState(CallBingo event) async* {
     var game = networkService.currentGame;
+    if (game == null) return;
+
     final self = Player.getPlayerFromList(
       game.players,
       InformationStorage.instance.playerId,
     );
-    game = game.copyWith(
-      message: '${self.name} hat nur noch eine Karte!',
-    );
-    await networkService.updateGameData(game);
+    if (self != null) {
+      game = game.copyWith(
+        message: '${self.name} hat nur noch eine Karte!',
+      );
+      await networkService.updateGameData(game);
+    } else {
+      /// TODO: Log: eigenes Spieler-Objekt konnte nicht in der Liste gefunden werden
+    }
   }
 
   Stream<InteractionState> _mapCallSuperBingoToState(
     CallSuperBingo event,
   ) async* {
     var game = networkService.currentGame;
+    if (game == null) return;
+
     final self = Player.getPlayerFromList(
       game.players,
       InformationStorage.instance.playerId,
     );
-    final maxPosition = game.players
-        .maxBy(
-          (prev, curr) => prev.finishPosition.compareTo(curr.finishPosition),
-        )
-        .finishPosition;
-    final playerFinishPosition = math.max(1, maxPosition + 1);
+    if (self != null) {
+      final maxPosition = game.players
+          .maxBy(
+            (prev, curr) => prev.finishPosition.compareTo(curr.finishPosition),
+          )!
+          .finishPosition;
+      final playerFinishPosition = math.max(1, maxPosition + 1);
 
-    if (playerFinishPosition + 1 >= game.players.length) {
-      game.state = GameState.gameCompleted;
-      game.currentPlayerId = '';
+      if (playerFinishPosition + 1 >= game.players.length) {
+        game.state = GameState.gameCompleted;
+        game.currentPlayerId = '';
+      }
+
+      game.updatePlayer(
+        self.copyWith(finishPosition: playerFinishPosition),
+      );
+      game = game.copyWith(
+        message: '${self.name} ist fertig !',
+      );
+      await networkService.updateGameData(game);
+    } else {
+      /// TODO: Log: eigenes Spieler-Objekt konnte nicht in der Liste gefunden werden
     }
-
-    game.updatePlayer(
-      self.copyWith(finishPosition: playerFinishPosition),
-    );
-    game = game.copyWith(
-      message: '${self.name} ist fertig !',
-    );
-    await networkService.updateGameData(game);
   }
 }

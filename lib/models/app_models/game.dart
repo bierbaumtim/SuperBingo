@@ -32,12 +32,12 @@ class Game with EquatableMixin {
         cardAmount,
         currentPlayerId,
         cardDrawAmount,
-        allowedCardColor,
         isJokerOrJackAllowed,
         state,
         message,
-        allowedCardNumber,
         playerOrder,
+        if (allowedCardColor != null) allowedCardColor!,
+        if (allowedCardNumber != null) allowedCardNumber!,
       ];
 
   /// Stapel der gespielten Karten
@@ -110,13 +110,13 @@ class Game with EquatableMixin {
   /// Erlaubte Kartenfarbe.
   /// Wird gesetzt wenn man einen Buben oder Joker genutzt hat.
   @JsonKey(name: 'allowedCardColor')
-  CardColor allowedCardColor;
+  CardColor? allowedCardColor;
 
   /// Erlaubtes Kartensymbol.
   /// Wird gesetzt wenn man eine 8(Aussetzen) gelegt hat
   /// und der nächste Spieler auch eine 8(Aussetzen) auf der Hand hat.
   @JsonKey(name: 'allowedCardNumber')
-  CardNumber allowedCardNumber;
+  CardNumber? allowedCardNumber;
 
   /// Parameter ob ein Bube oder Joker gelegt werden darf.
   /// Wird gesetzt wenn ein Bube oder Joker genutzt wurde.
@@ -134,26 +134,26 @@ class Game with EquatableMixin {
 
   /// {@macro game}
   Game({
-    this.gameID = "",
-    Queue<GameCard> playedCardStack,
-    this.unplayedCardStack,
-    this.players,
-    this.name,
+    required this.gameID,
+    required this.name,
+    required this.playedCardStack,
+    required this.unplayedCardStack,
+    required this.players,
     this.maxPlayer = 6,
     this.isPublic = true,
     this.cardAmount = 32,
-    this.currentPlayerId,
-    this.cardDrawAmount,
+    this.currentPlayerId = '',
+    this.cardDrawAmount = 1,
     this.allowedCardColor,
-    this.isJokerOrJackAllowed,
+    this.isJokerOrJackAllowed = true,
     this.state = GameState.waitingForPlayer,
-    this.message,
+    this.message = '',
     this.allowedCardNumber,
-    this.playerOrder,
-  }) : playedCardStack = playedCardStack ?? Queue<GameCard>.from(<GameCard>[]);
+    List<String>? playerOrder,
+  }) : playerOrder = playerOrder ?? players.map((p) => p.id).toList();
 
   /// Oberste Karte des Stapels der gespielten Karten
-  GameCard get topCard => playedCardStack.lastOrNull();
+  GameCard? get topCard => playedCardStack.lastOrNullSC();
 
   List<GameCard> get playedCards => playedCardStack.toList();
 
@@ -182,7 +182,7 @@ class Game with EquatableMixin {
   /// ist das Spiel beendet und Spieler B muss nicht als nächster
   /// Spieler ermittelt werden.
   bool predictEnd({
-    Player self,
+    Player? self,
   }) {
     final effectivePlayer = players.where(
       (p) => self == null || p.id == self.id,
@@ -197,20 +197,20 @@ class Game with EquatableMixin {
 
   /// Überschreibt aktuelles Object mit bestimmten neuen Werten
   Game copyWith({
-    String name,
-    String gameId,
-    bool isPublic,
-    bool isJokerOrJackAllowed,
-    int cardAmount,
-    int cardDrawAmount,
-    int maxPlayer,
-    String currentPlayerId,
-    GameState state,
-    List<Player> players,
-    Queue<GameCard> playedCardStack,
-    Queue<GameCard> unplayedCardStack,
-    String message,
-    List<String> playerOrder,
+    String? name,
+    String? gameId,
+    bool? isPublic,
+    bool? isJokerOrJackAllowed,
+    int? cardAmount,
+    int? cardDrawAmount,
+    int? maxPlayer,
+    String? currentPlayerId,
+    GameState? state,
+    List<Player>? players,
+    Queue<GameCard>? playedCardStack,
+    Queue<GameCard>? unplayedCardStack,
+    String? message,
+    List<String>? playerOrder,
   }) =>
       Game(
         name: name ?? this.name,
@@ -251,7 +251,6 @@ class Game with EquatableMixin {
 
   /// Mischt die Karten. Wie häufig gemischt wird, wird mit `times` übergeben
   void shuffleCards({int times = 1}) {
-    assert(times != null);
     final cards = unplayedCardStack.toList();
     for (var i = 0; i < times; i++) {
       cards.shuffle();
@@ -319,14 +318,14 @@ class Game with EquatableMixin {
   /// Ist der Index größer als der höchste Index der Liste,
   /// wird vom Anfang der Liste mit der Differenz weitergemacht.
   String getNextPlayerId({
-    SpecialRule rule,
+    SpecialRule? rule,
   }) {
     String _nextId(
       List<String> playerOrder,
       int index,
     ) {
       var nextIndex = index;
-      if (index > playerOrder.lastIndex) {
+      if (index > playerOrder.lastIndex!) {
         nextIndex -= playerOrder.length;
       }
       return playerOrder.elementAt(nextIndex);
@@ -341,8 +340,6 @@ class Game with EquatableMixin {
         (p) => p.id == _nextId(playerOrder, index),
       );
     }
-
-    assert(playerOrder != null);
 
     final activePlayer =
         players.where((player) => player.finishPosition == 0).toList();
@@ -400,20 +397,21 @@ class Game with EquatableMixin {
   }
 
   /// Wandelt cardStacks in Datenbank-kompatible Listen von [GameCard] Map Repräsentationen um
-  static List<Map<String, dynamic>> stackToJson(Queue<GameCard> stack) {
-    return stack?.toList()?.map((gc) => gc.toJson())?.toList() ??
-        <Map<String, dynamic>>[];
-  }
+  static List<Map<String, dynamic>> stackToJson(Queue<GameCard> stack) =>
+      stack.toList().map((gc) => gc.toJson()).toList();
 
   /// Wandelt ein List eines Datensatzes in eine Queue von [GameCard]-Ojects um
-  static Queue<GameCard> stackFromJson(List list) {
-    final cards = list?.map<GameCard>(
-            (gc) => GameCard.fromJson(Map<String, dynamic>.from(gc))) ??
-        <GameCard>[];
-    return Queue.from(cards);
+  static Queue<GameCard> stackFromJson(List? list) {
+    if (list == null) {
+      return Queue<GameCard>.from([]);
+    } else {
+      final cards = list.map<GameCard>(
+          (gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
+      return Queue.from(cards);
+    }
   }
 
-  String _fillGameId(String nGameId) {
+  String _fillGameId(String? nGameId) {
     if (nGameId != null && nGameId.isNotEmpty) {
       return nGameId;
     }

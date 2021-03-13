@@ -19,7 +19,7 @@ class HorizontalCardList extends StatelessWidget {
 
   /// Konfiguration der PlayCard, die hier hochgereicht wird.
   final double cardHeight;
-  
+
   /// Konfiguration der PlayCard, die hier hochgereicht wird.
   final double cardWidth;
 
@@ -28,8 +28,8 @@ class HorizontalCardList extends StatelessWidget {
 
   /// {@macro horizontalcardlist}
   const HorizontalCardList({
-    Key key,
-    this.cards,
+    Key? key,
+    required this.cards,
     this.cardHeight = 175,
     this.cardWidth = 100,
     this.canDrawCards = true,
@@ -37,24 +37,24 @@ class HorizontalCardList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (cards == null || cards.isEmpty) {
+    if (cards.isEmpty) {
       return Container();
     } else {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: SizedBox(
-          height: cardHeight ?? 175,
+          height: cardHeight,
           child: ListView.builder(
             itemBuilder: (context, index) => PlayCard(
               card: cards.elementAt(index),
               onCardTap: (card) async {
-                CardColor allowedCardColor;
+                CardColor? allowedCardColor;
                 if (card.rule == SpecialRule.joker) {
                   final route = BlurOverlayRoute<CardColor>(
                     builder: (context) => const CardColorDecisionCard(),
                   );
                   allowedCardColor =
-                      await Navigator.of(context).push<CardColor>(route);
+                      await Navigator.of(context).push<CardColor?>(route);
                   if (allowedCardColor == null) return;
                 }
                 context

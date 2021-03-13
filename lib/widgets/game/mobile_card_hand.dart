@@ -8,8 +8,8 @@ class MobileCardHand extends StatelessWidget {
   final List<GameCard> cards;
 
   const MobileCardHand({
-    Key key,
-    this.cards,
+    Key? key,
+    required this.cards,
   }) : super(key: key);
 
   @override

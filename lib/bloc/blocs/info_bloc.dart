@@ -33,16 +33,17 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       final playerName = prefs.getString('playername') ?? '';
       await _loginUserAnonymous(forceLogin: true);
       final playerId = await userUid;
-      InformationStorage.instance.playerId = playerId;
       if (playerId != null && playerName.isNotEmpty) {
+        InformationStorage.instance.playerId = playerId;
         yield InfosLoaded(
           playerName: playerName,
           playerId: playerId,
         );
       } else {
+        InformationStorage.instance.playerId = '';
         yield InfosEmpty();
       }
-    } on dynamic catch (e, s) {
+    } on Object catch (e, s) {
       await LogService.instance.recordError(e, s);
 
       yield InfosEmpty();
@@ -53,15 +54,21 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('playername', event.playerName);
 
-    if (InformationStorage.instance.playerId == null) {
+    if (InformationStorage.instance.playerId.isEmpty) {
       await _loginUserAnonymous(forceLogin: true);
     }
     final playerId = await userUid;
 
-    yield InfosLoaded(
-      playerName: event.playerName,
-      playerId: playerId,
-    );
+    if (playerId != null && event.playerName.isNotEmpty) {
+      InformationStorage.instance.playerId = playerId;
+      yield InfosLoaded(
+        playerName: event.playerName,
+        playerId: playerId,
+      );
+    } else {
+      InformationStorage.instance.playerId = '';
+      yield InfosEmpty();
+    }
   }
 
   Future<void> _loginUserAnonymous({bool forceLogin = false}) async {
@@ -70,5 +77,5 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
     }
   }
 
-  Future<String> get userUid async => auth.userId;
+  Future<String?> get userUid async => auth.userId;
 }
