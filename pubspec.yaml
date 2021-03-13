@@ -67,9 +67,9 @@ flutter_native_splash:
 flutter_icons:
   android: true
   ios: true
-  image_path: assets/app_icon_with_shadow_no_background.png
+  image_path: assets/app_icon.png
   # adaptive_icon_background: "#FF2E3037"
-  adaptive_icon_foreground: assets/app_icon_with_shadow_no_background.png
+  adaptive_icon_foreground: assets/app_icon.png
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
