@@ -118,7 +118,7 @@ class _JoinGamePageState extends State<JoinGamePage> {
                     return Center(
                       child: Text(
                         snapshot.error is PermissionError
-                            ? (snapshot.error as PermissionError).message
+                            ? (snapshot.error! as PermissionError).message
                             : 'Beim Laden der Spiele ist ein Fehler aufgetreten.\nBitte versuche es später erneut.',
                       ),
                     );

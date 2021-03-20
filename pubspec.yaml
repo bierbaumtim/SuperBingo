@@ -15,12 +15,12 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
-  connectivity: ^3.0.2
+  connectivity: ^3.0.3
   connectivity_for_web: ^0.4.0
   rxdart: ^0.26.0 
-  overlay_support: ^1.2.0-nullsafety.0
+  overlay_support: ^1.2.0
   share: ^2.0.1
-  shared_preferences: ^2.0.4
+  shared_preferences: ^2.0.5
 
   firebase_core: ^1.0.1
   firebase_auth: ^1.0.1
@@ -29,7 +29,7 @@ dependencies:
   # firedart: ^0.8.3 # no null-safety - only needed for desktop UI debugging
 
   provider: ^5.0.0
-  flutter_bloc: ^7.0.0-nullsafety.5
+  flutter_bloc: ^7.0.0
   equatable: ^2.0.0
   responsive_builder: ^0.4.0-nullsafety.1
 
@@ -37,20 +37,21 @@ dependencies:
   vector_math: ^2.1.0
   uuid: ^3.0.1
   supercharged: ^2.0.0
+  collection: ^1.15.0
 
   #Json Serialization
-  json_annotation: ^4.0.0
+  json_annotation: ^4.0.1
 
-  win32: ^2.0.3
+  win32: ^2.0.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^1.11.5
-  json_serializable: ^4.0.2
-  flutter_native_splash: ^1.0.3
+  build_runner: ^1.12.2
+  json_serializable: ^4.1.0
+  flutter_native_splash: ^1.1.4+1
   flutter_launcher_icons: ^0.9.0
-  bloc_test: ^8.0.0-nullsafety.5
+  bloc_test: ^8.0.0
   # cloud_firestore_mocks: ^0.7.0
   # firebase_auth_mocks: ^0.6.0
 

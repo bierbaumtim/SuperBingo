@@ -70,7 +70,7 @@ class _StartPageState extends State<StartPage> {
               showSimpleNotification(
                 Text(state.error),
                 foreground: Colors.white,
-                slideDismiss: true,
+                slideDismissDirection: DismissDirection.startToEnd,
               );
             }
           },
@@ -88,7 +88,7 @@ class _StartPageState extends State<StartPage> {
               showSimpleNotification(
                 Text(state.error),
                 foreground: Colors.white,
-                slideDismiss: true,
+                slideDismissDirection: DismissDirection.startToEnd,
               );
             }
           },

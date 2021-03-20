@@ -69,7 +69,7 @@ class DialogInformationService {
     showOverlayNotification(
       (context) => SlideDismissible(
         key: ValueKey(content),
-        enable: true,
+        direction: DismissDirection.startToEnd,
         child: SafeArea(
           bottom: false,
           child: Padding(

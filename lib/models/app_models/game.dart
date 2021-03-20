@@ -5,6 +5,7 @@ import 'dart:core';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:supercharged/supercharged.dart';
+import 'package:collection/collection.dart';
 
 import '../../constants/enums.dart';
 import 'card.dart';
@@ -153,7 +154,7 @@ class Game with EquatableMixin {
   }) : playerOrder = playerOrder ?? players.map((p) => p.id).toList();
 
   /// Oberste Karte des Stapels der gespielten Karten
-  GameCard? get topCard => playedCardStack.lastOrNullSC();
+  GameCard? get topCard => playedCardStack.lastOrNull;
 
   List<GameCard> get playedCards => playedCardStack.toList();
 

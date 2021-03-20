@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:superbingo/models/app_models/card.dart';
 
 import 'package:supercharged/supercharged.dart';
+import 'package:collection/collection.dart';
 
 import '../play_card/play_card.dart';
 
@@ -69,8 +70,8 @@ class _CardHandStackState extends State<CardHandStack>
           builder: (context) => Stack(
             children: [
               ...widget.cards
-                  .mapIndexedSC<Widget>(
-                    (card, i) => Positioned(
+                  .mapIndexed<Widget>(
+                    (i, card) => Positioned(
                       left: getOffsetByIndexAndExpansionStatus(i),
                       child: PlayCard(
                         card: card,

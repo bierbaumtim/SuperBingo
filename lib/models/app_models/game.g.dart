@@ -10,8 +10,8 @@ Game _$GameFromJson(Map<String, dynamic> json) {
   return Game(
     gameID: json['id'] as String? ?? '',
     name: json['name'] as String? ?? 'SuperBingo',
-    playedCardStack: Game.stackFromJson(json['playedCards'] as List),
-    unplayedCardStack: Game.stackFromJson(json['unplayedCards'] as List),
+    playedCardStack: Game.stackFromJson(json['playedCards'] as List?),
+    unplayedCardStack: Game.stackFromJson(json['unplayedCards'] as List?),
     players: (json['players'] as List<dynamic>?)
             ?.map((e) => Player.fromJson(e as Map<String, dynamic>))
             .toList() ??

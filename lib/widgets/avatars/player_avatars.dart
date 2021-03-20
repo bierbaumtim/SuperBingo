@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:supercharged/supercharged.dart';
+import 'package:collection/collection.dart';
 
 import '../../models/app_models/player.dart';
 import '../../utils/ui_utils.dart';
@@ -26,7 +26,7 @@ class PlayerAvatars extends StatelessWidget {
     if (player.isNotEmpty) {
       return LayoutBuilder(
         builder: (context, constraints) => Stack(
-          children: player.mapIndexedSC((p, index) {
+          children: player.mapIndexed((index, p) {
             final postitionCoordinates = getPositionCoordinates(
               index,
               player.length,
