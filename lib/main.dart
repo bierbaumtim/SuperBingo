@@ -13,7 +13,7 @@ import 'bloc/blocs/info_bloc.dart';
 import 'bloc/blocs/interaction_bloc.dart';
 import 'bloc/blocs/join_game_bloc.dart';
 import 'bloc/blocs/open_games_bloc.dart';
-// import 'services/auth_service/auth_service_desktop.dart';
+import 'services/auth_service/auth_service_desktop.dart';
 import 'services/auth_service/auth_service_mobile.dart';
 import 'services/firebase_service.dart';
 import 'services/log_service.dart';
@@ -72,7 +72,7 @@ void main() async {
             ),
             BlocProvider<InfoBloc>(
               create: (_) => InfoBloc(
-                AuthServiceMobile(),
+                isDesktop ? AuthServiceDesktop() : AuthServiceMobile(),
               ),
             ),
           ],

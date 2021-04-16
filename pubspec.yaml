@@ -22,34 +22,34 @@ dependencies:
   share: ^2.0.1
   shared_preferences: ^2.0.5
 
-  firebase_core: ^1.0.1
-  firebase_auth: ^1.0.1
-  firebase_crashlytics: ^1.0.0
-  cloud_firestore: ^1.0.1
-  # firedart: ^0.8.3 # no null-safety - only needed for desktop UI debugging
+  firebase_core: ^1.0.3
+  firebase_auth: ^1.1.0
+  firebase_crashlytics: ^2.0.0
+  cloud_firestore: ^1.0.5
+  firedart: ^0.9.0+1
 
   provider: ^5.0.0
   flutter_bloc: ^7.0.0
   equatable: ^2.0.0
-  responsive_builder: ^0.4.0-nullsafety.1
+  responsive_builder: ^0.4.1
 
   # helper
   vector_math: ^2.1.0
-  uuid: ^3.0.1
+  uuid: ^3.0.4
   supercharged: ^2.0.0
   collection: ^1.15.0
 
   #Json Serialization
   json_annotation: ^4.0.1
 
-  win32: ^2.0.4
+  win32: ^2.0.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^1.12.2
   json_serializable: ^4.1.0
-  flutter_native_splash: ^1.1.4+1
+  flutter_native_splash: ^1.1.7+1
   flutter_launcher_icons: ^0.9.0
   bloc_test: ^8.0.0
   # cloud_firestore_mocks: ^0.7.0
