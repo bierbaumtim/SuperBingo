@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:supercharged/supercharged.dart';
 
 import '../../constants/enums.dart';
 import '../../models/app_models/game.dart';
@@ -14,6 +13,7 @@ import '../../services/network_service/network_service_interface.dart';
 import '../events/current_game_events.dart';
 import '../states/current_game_states.dart';
 
+// ignore_for_file: avoid_print
 /// {@template currentgamebloc}
 ///
 /// {@endtemplate}
@@ -374,13 +374,13 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   /// Gab es beim Ausführen der Methode keine Fehler wird die Funktion mit `true` beendet,
   /// tritt ein Fehler auf mit `false`.
   Future<bool> _setupBlocAndSubscription(String gameId) async {
-    if (gameId != null) {
+    if (gameId.isNotEmpty) {
       try {
         await networkService.setupSubscription(gameId);
         gameSub = networkService.gameChangedStream
             .listen((game) => add(UpdateCurrentGame(game)));
         return true;
-      } on dynamic catch (e, s) {
+      } on Object catch (e, s) {
         await LogService.instance.recordError(e, s);
         return false;
       }
@@ -403,9 +403,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           return;
         }
       }
-      final nextPlayerId = game.getNextPlayerId();
-      game.currentPlayerId =
-          nextPlayerId ?? game.players.firstOrNullSC()?.id ?? '';
+      game.currentPlayerId = game.getNextPlayerId();
       await networkService.updateGameData(game);
     } on Object catch (e, s) {
       await LogService.instance.recordError(e, s);

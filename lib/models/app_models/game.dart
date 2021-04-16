@@ -321,27 +321,6 @@ class Game with EquatableMixin {
   String getNextPlayerId({
     SpecialRule? rule,
   }) {
-    String _nextId(
-      List<String> playerOrder,
-      int index,
-    ) {
-      var nextIndex = index;
-      if (index > playerOrder.lastIndex!) {
-        nextIndex -= playerOrder.length;
-      }
-      return playerOrder.elementAt(nextIndex);
-    }
-
-    Player _nextPlayer(
-      List<Player> player,
-      List<String> playerOrder,
-      int index,
-    ) {
-      return player.firstWhere(
-        (p) => p.id == _nextId(playerOrder, index),
-      );
-    }
-
     final activePlayer =
         players.where((player) => player.finishPosition == 0).toList();
 
@@ -395,6 +374,27 @@ class Game with EquatableMixin {
     currentPlayerId = nextId;
 
     return nextId;
+  }
+
+  String _nextId(
+    List<String> playerOrder,
+    int index,
+  ) {
+    var nextIndex = index;
+    if (index > playerOrder.lastIndex!) {
+      nextIndex -= playerOrder.length;
+    }
+    return playerOrder.elementAt(nextIndex);
+  }
+
+  Player _nextPlayer(
+    List<Player> player,
+    List<String> playerOrder,
+    int index,
+  ) {
+    return player.firstWhere(
+      (p) => p.id == _nextId(playerOrder, index),
+    );
   }
 
   /// Wandelt cardStacks in Datenbank-kompatible Listen von [GameCard] Map Repräsentationen um
