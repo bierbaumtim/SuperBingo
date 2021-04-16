@@ -182,7 +182,7 @@ class NetworkServiceMobile implements INetworkService {
   List<Game> _getPublicGamesFromQuerySnapshot(QuerySnapshot snapshot) {
     try {
       final games =
-          snapshot.docs.map<Game>((g) => Game.fromJson(g.data()!)).toList();
+          snapshot.docs.map<Game>((g) => Game.fromJson(g.data())).toList();
       return games
           .where((game) =>
               game.isPublic && game.state == GameState.waitingForPlayer)

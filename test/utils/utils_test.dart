@@ -282,18 +282,8 @@ void main() {
     });
 
     group('configuration utils tests ->', () {
-      test('empty string if Preference is null', () async {
-        SharedPreferences.setMockInitialValues(<String, dynamic>{
-          'playername': null,
-        });
-
-        final name = await getUsername();
-
-        expect(name, '');
-      });
-
       test('return "Tim"', () async {
-        SharedPreferences.setMockInitialValues(<String, dynamic>{
+        SharedPreferences.setMockInitialValues(<String, Object>{
           'playername': 'Tim',
         });
 
@@ -303,7 +293,7 @@ void main() {
       });
 
       test('return "Timo"', () async {
-        SharedPreferences.setMockInitialValues(<String, dynamic>{
+        SharedPreferences.setMockInitialValues(<String, Object>{
           'playername': 'Timo',
         });
 
@@ -313,7 +303,7 @@ void main() {
       });
 
       test('return "Jarred"', () async {
-        SharedPreferences.setMockInitialValues(<String, dynamic>{
+        SharedPreferences.setMockInitialValues(<String, Object>{
           'playername': 'Jarred',
         });
 
