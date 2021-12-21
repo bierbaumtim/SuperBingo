@@ -18,7 +18,7 @@ class NetworkServiceMobile implements INetworkService {
   Game? _previousGame, _currentGame;
   late BehaviorSubject<Game> _gameChangedController;
   late BehaviorSubject<List<Game>> _publicGamesController;
-  late StreamSubscription<Game?> _gameSub;
+  late StreamSubscription<DocumentSnapshot<Game>> _gameSub;
   late StreamSubscription<QuerySnapshot> _publicGamesSub;
 
   NetworkServiceMobile(this._db) {
@@ -38,18 +38,24 @@ class NetworkServiceMobile implements INetworkService {
   @override
   Stream<List<Game>> get publicGamesStream => _publicGamesController.stream;
 
+  CollectionReference<Game> get _gameColRef =>
+      _db.collection('games').withConverter<Game>(
+            fromFirestore: (snapshot, options) =>
+                Game.fromJson(snapshot.data()!),
+            toFirestore: (value, options) => value.toJson(),
+          );
+
+  DocumentReference<Game> _gameDocRef(String gameId) => _gameColRef.doc(gameId);
+
   @override
   Future<bool> setupSubscription(String gameId) async {
     if (gameId.isNotEmpty) {
       try {
-        final snapshot = await _db.collection('games').doc(gameId).get();
-        _currentGame = Game.fromJson(snapshot.data()!);
-        _gameSub = _db
-            .collection('games')
-            .doc(gameId)
-            .snapshots()
-            .asyncMap(_convertDBDataStreamEvent)
-            .listen(_handleNewGameStreamEvent);
+        final snapshot = await _gameDocRef(gameId).get();
+
+        _currentGame = snapshot.data();
+        _gameSub =
+            _gameDocRef(gameId).snapshots().listen(_handleNewGameStreamEvent);
         return true;
       } on Object catch (e, s) {
         await LogService.instance.recordError(e, s);
@@ -60,10 +66,7 @@ class NetworkServiceMobile implements INetworkService {
 
   @override
   Future<GameMetaInformation> addGame(Game game) async {
-    final gameDBData =
-        await compute<Game, Map<String, dynamic>>(Game.toDBData, game);
-
-    final doc = await _db.collection('games').add(gameDBData);
+    final doc = await _gameColRef.add(game);
 
     return GameMetaInformation(
       id: doc.id,
@@ -73,15 +76,16 @@ class NetworkServiceMobile implements INetworkService {
 
   @override
   Future<Game> getGameById(String id) async {
-    final snapshot = await _db.collection('games').doc(id).get();
+    final snapshot = await _gameDocRef(id).get();
 
-    return Game.fromJson(snapshot.data()!);
+    return snapshot.data()!;
   }
 
   @override
   Future<void> deleteGame(String gameId) async {
-    await _db.collection('games').doc(gameId).delete();
+    await _gameDocRef(gameId).delete();
     await cancelSubscription();
+
     _previousGame = null;
     _currentGame = null;
   }
@@ -91,7 +95,8 @@ class NetworkServiceMobile implements INetworkService {
     if (data is Game) {
       final dbGame =
           await compute<Game, Map<String, dynamic>>(Game.toDBData, data);
-      await _db.collection('games').doc(data.gameID).update(dbGame);
+
+      await _gameDocRef(data.gameID).update(dbGame);
     } else if (data is Map<String, dynamic>) {
       assert(gameId != null || _currentGame?.gameID != null);
       await _db
@@ -133,22 +138,16 @@ class NetworkServiceMobile implements INetworkService {
     await cancelSubscription();
   }
 
-  Future<Game?> _convertDBDataStreamEvent(DocumentSnapshot snapshot) async {
-    if (snapshot.exists && snapshot.data() != null) {
-      return Game.fromJson(snapshot.data()!);
-    } else {
-      return null;
-    }
-  }
-
-  void _handleNewGameStreamEvent(Game? newGame) {
-    if (newGame != null) {
+  void _handleNewGameStreamEvent(DocumentSnapshot<Game> newGame) {
+    if (newGame.data() != null) {
       _previousGame = _currentGame;
-      _currentGame = newGame;
+      _currentGame = newGame.data()!;
       _gameChangedController.sink.add(_currentGame!);
     } else {
-      LogService.instance
-          .recordError('newGame is null: $newGame', StackTrace.current);
+      LogService.instance.recordError(
+        'newGame is null: ${newGame.data()}',
+        StackTrace.current,
+      );
     }
   }
 
@@ -179,7 +178,9 @@ class NetworkServiceMobile implements INetworkService {
     _publicGamesSub.resume();
   }
 
-  List<Game> _getPublicGamesFromQuerySnapshot(QuerySnapshot snapshot) {
+  List<Game> _getPublicGamesFromQuerySnapshot(
+    QuerySnapshot<Map<String, dynamic>> snapshot,
+  ) {
     try {
       final games =
           snapshot.docs.map<Game>((g) => Game.fromJson(g.data())).toList();
@@ -193,7 +194,7 @@ class NetworkServiceMobile implements INetworkService {
     }
   }
 
-  void _handleSnapshot(QuerySnapshot snapshot) {
+  void _handleSnapshot(QuerySnapshot<Map<String, dynamic>> snapshot) {
     try {
       _publicGamesController.sink
           .add(_getPublicGamesFromQuerySnapshot(snapshot));
