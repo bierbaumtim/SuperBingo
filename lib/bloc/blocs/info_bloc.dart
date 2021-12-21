@@ -13,20 +13,17 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
   final IAuthService auth;
 
   InfoBloc(this.auth) : super(InfosEmpty()) {
+    on<LoadInfos>(_handleLoadInfos);
+    on<SetPlayerName>(_handleSetPlayerName);
+
     add(LoadInfos());
   }
 
-  @override
-  Stream<InfoState> mapEventToState(InfoEvent event) async* {
-    if (event is LoadInfos) {
-      yield* _mapLoadInfosToState(event);
-    } else if (event is SetPlayerName) {
-      yield* _mapSetPlayerNameToState(event);
-    }
-  }
-
-  Stream<InfoState> _mapLoadInfosToState(LoadInfos event) async* {
-    yield InfosLoading();
+  Future<void> _handleLoadInfos(
+    LoadInfos event,
+    Emitter<InfoState> emit,
+  ) async {
+    emit(InfosLoading());
     try {
       final prefs = await SharedPreferences.getInstance();
 
@@ -35,22 +32,24 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
       final playerId = await userUid;
       if (playerId != null && playerName.isNotEmpty) {
         InformationStorage.instance.playerId = playerId;
-        yield InfosLoaded(
-          playerName: playerName,
-          playerId: playerId,
+        emit(
+          InfosLoaded(playerName: playerName, playerId: playerId),
         );
       } else {
         InformationStorage.instance.playerId = '';
-        yield InfosEmpty();
+        emit(InfosEmpty());
       }
     } on Object catch (e, s) {
       await LogService.instance.recordError(e, s);
 
-      yield InfosEmpty();
+      emit(InfosEmpty());
     }
   }
 
-  Stream<InfoState> _mapSetPlayerNameToState(SetPlayerName event) async* {
+  Future<void> _handleSetPlayerName(
+    SetPlayerName event,
+    Emitter<InfoState> emit,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('playername', event.playerName);
 
@@ -61,13 +60,12 @@ class InfoBloc extends Bloc<InfoEvent, InfoState> {
 
     if (playerId != null && event.playerName.isNotEmpty) {
       InformationStorage.instance.playerId = playerId;
-      yield InfosLoaded(
-        playerName: event.playerName,
-        playerId: playerId,
+      emit(
+        InfosLoaded(playerName: event.playerName, playerId: playerId),
       );
     } else {
       InformationStorage.instance.playerId = '';
-      yield InfosEmpty();
+      emit(InfosEmpty());
     }
   }
 

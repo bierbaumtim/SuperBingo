@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:responsive_builder/responsive_builder.dart';
 
 import '../bloc/blocs/current_game_bloc.dart';
@@ -28,6 +29,8 @@ import '../widgets/loading_widget.dart';
 import '../widgets/virtual_table_painter.dart';
 
 class GamePage extends StatefulWidget {
+  const GamePage({Key? key}) : super(key: key);
+
   @override
   _GamePageState createState() => _GamePageState();
 }
@@ -572,9 +575,10 @@ class _LobbyOverlay extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             ElevatedButton(
-                              onPressed: () async => IShareService().share(
-                                game.link,
-                              ),
+                              onPressed: () async =>
+                                  GetIt.I.get<IShareService>().share(
+                                        game.link,
+                                      ),
                               child: const Text(
                                 'Link teilen',
                               ),

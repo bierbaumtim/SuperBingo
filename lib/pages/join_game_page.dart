@@ -18,6 +18,8 @@ import '../widgets/loading_widget.dart';
 ///
 /// Von hier aus kann der Spieler einem Spiel beitreten.
 class JoinGamePage extends StatefulWidget {
+  const JoinGamePage({Key? key}) : super(key: key);
+
   @override
   _JoinGamePageState createState() => _JoinGamePageState();
 }

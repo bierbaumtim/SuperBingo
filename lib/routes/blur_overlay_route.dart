@@ -81,11 +81,12 @@ class BlurTransition extends AnimatedWidget {
   final Color? backgroundColor;
 
   const BlurTransition({
+    Key? key,
     required this.blurAnimation,
     required this.child,
     this.backgroundColorAnimation,
     this.backgroundColor,
-  }) : super(listenable: blurAnimation);
+  }) : super(key: key, listenable: blurAnimation);
 
   @override
   Widget build(BuildContext context) {

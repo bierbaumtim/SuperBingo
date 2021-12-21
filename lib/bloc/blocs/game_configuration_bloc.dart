@@ -29,6 +29,10 @@ class GameConfigurationBloc
     _gameLinkController = BehaviorSubject<String>();
     _gameId = '';
     _gameLink = '';
+
+    on<CreateGame>(_handleCreateGame);
+    on<ResetGameConfiguration>(_handleResetGameConfiguration);
+    on<DeleteConfiguredGame>(_handleDeleteConfiguredGame);
   }
 
   @override
@@ -37,32 +41,23 @@ class GameConfigurationBloc
     super.close();
   }
 
-  @override
-  Stream<GameConfigurationState> mapEventToState(
-      GameConfigurationEvent event) async* {
-    if (event is CreateGame) {
-      yield* _mapCreateGameToState(event);
-    } else if (event is ResetGameConfiguration) {
-      yield* _mapResetGameConfigurationToState(event);
-    } else if (event is DeleteConfiguredGame) {
-      yield* _mapDeleteConfiguredGameToState(event);
-    }
-  }
-
   late BehaviorSubject<String> _gameLinkController;
   Sink<String> get _gameLinkSink => _gameLinkController.sink;
   Stream<String> get gameLinkStream => _gameLinkController.stream;
 
-  Stream<GameConfigurationState> _mapCreateGameToState(
+  Future<void> _handleCreateGame(
     CreateGame event,
-  ) async* {
-    yield GameCreating();
+    Emitter<GameConfigurationState> emit,
+  ) async {
+    emit(GameCreating());
     try {
       if (!Connection.instance.hasConnection) {
-        yield const GameCreationFailed(
-          'Es besteht keine Internetverbindung. Bitte versuche es erneut, wenn du wieder mit dem Internet verbunden bist.',
+        emit(
+          const GameCreationFailed(
+            'Es besteht keine Internetverbindung. Bitte versuche es erneut, wenn du wieder mit dem Internet verbunden bist.',
+          ),
         );
-        yield WaitingGameConfigInput();
+        emit(WaitingGameConfigInput());
         return;
       }
       var game = await _createGame(
@@ -89,32 +84,34 @@ class GameConfigurationBloc
       InformationStorage.instance.gameId = _gameId;
       InformationStorage.instance.gameLink = _gameLink;
 
-      yield GameCreated(
-        gameId: _gameId,
-        gameLink: _gameLink,
-        self: _self!,
+      emit(
+        GameCreated(gameId: _gameId, gameLink: _gameLink, self: _self!),
       );
     } on Object catch (e, s) {
       await LogService.instance.recordError(e, s);
-      yield const GameCreationFailed(
-        'Beim erstellen des Spiels ist ein Fehler aufgetreten.',
+      emit(
+        const GameCreationFailed(
+          'Beim erstellen des Spiels ist ein Fehler aufgetreten.',
+        ),
       );
-      yield WaitingGameConfigInput();
+      emit(WaitingGameConfigInput());
     }
   }
 
-  Stream<GameConfigurationState> _mapResetGameConfigurationToState(
+  void _handleResetGameConfiguration(
     ResetGameConfiguration event,
-  ) async* {
+    Emitter<GameConfigurationState> emit,
+  ) {
     _self = null;
-    yield WaitingGameConfigInput();
+    emit(WaitingGameConfigInput());
   }
 
-  Stream<GameConfigurationState> _mapDeleteConfiguredGameToState(
+  Future<void> _handleDeleteConfiguredGame(
     DeleteConfiguredGame event,
-  ) async* {
+    Emitter<GameConfigurationState> emit,
+  ) async {
     await endGame();
-    yield WaitingGameConfigInput();
+    emit(WaitingGameConfigInput());
   }
 
   Future<Game> _createGame({

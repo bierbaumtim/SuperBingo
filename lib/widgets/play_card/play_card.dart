@@ -183,7 +183,7 @@ class _ActivePaint extends StatelessWidget {
             ),
           ),
         if (!isNumberCard(card.number))
-          Positioned(
+          const Positioned(
             top: 20,
             bottom: 20,
             left: 28,

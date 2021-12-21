@@ -75,16 +75,16 @@ class DialogInformationService {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Material(
-              color: background ?? Theme.of(context).accentColor,
+              color: background ?? Theme.of(context).colorScheme.secondary,
               elevation: 16,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),
               ),
               child: ListTileTheme(
-                textColor: foreground ??
-                    Theme.of(context).accentTextTheme.headline6?.color,
-                iconColor: foreground ??
-                    Theme.of(context).accentTextTheme.headline6?.color,
+                textColor:
+                    foreground ?? Theme.of(context).colorScheme.onSecondary,
+                iconColor:
+                    foreground ?? Theme.of(context).colorScheme.onSecondary,
                 child: ListTile(
                   dense: true,
                   leading: leading,

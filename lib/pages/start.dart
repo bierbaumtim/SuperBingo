@@ -34,6 +34,8 @@ import '../widgets/play_card/play_card.dart';
 /// Vor hier aus kann zur Spielerstellung, Spielsuche
 /// und Spielerkonfiguration navigiert werden.
 class StartPage extends StatefulWidget {
+  const StartPage({Key? key}) : super(key: key);
+
   @override
   _StartPageState createState() => _StartPageState();
 }

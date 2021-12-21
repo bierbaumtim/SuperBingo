@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import 'package:provider/single_child_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,6 +18,8 @@ import 'services/auth_service/auth_service_mobile.dart';
 import 'services/firebase_service.dart';
 import 'services/log_service.dart';
 import 'services/network_service/network_service_interface.dart';
+import 'services/share_service/share_service_impl.dart';
+import 'services/share_service/share_service_interface.dart';
 import 'superbingo.dart';
 import 'utils/configuration_utils.dart';
 import 'utils/connection.dart';
@@ -25,6 +27,10 @@ import 'utils/connection.dart';
 /// ignore: avoid_void_async
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  GetIt.I.registerLazySingleton<IShareService>(
+    () => ShareService(),
+  );
 
   await FirebaseService.instance.initFirebase();
 
@@ -76,7 +82,7 @@ void main() async {
               ),
             ),
           ],
-          child: SuperBingo(),
+          child: const SuperBingo(),
         ),
       ),
     ),

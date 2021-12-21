@@ -2,10 +2,10 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:core';
 
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:supercharged/supercharged.dart';
-import 'package:collection/collection.dart';
 
 import '../../constants/enums.dart';
 import 'card.dart';
@@ -407,7 +407,8 @@ class Game with EquatableMixin {
       return Queue<GameCard>.from([]);
     } else {
       final cards = list.map<GameCard>(
-          (gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)));
+        (gc) => GameCard.fromJson(Map<String, dynamic>.from(gc)),
+      );
       return Queue.from(cards);
     }
   }

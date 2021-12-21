@@ -8,6 +8,8 @@ import '../../constants/enums.dart';
 import 'horizontal_card_listview.dart';
 
 class CardScrollView extends StatelessWidget {
+  const CardScrollView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CurrentGameBloc, CurrentGameState>(

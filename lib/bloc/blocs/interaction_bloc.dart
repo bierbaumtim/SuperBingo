@@ -14,20 +14,15 @@ import '../states/interaction_states.dart';
 class InteractionBloc extends Bloc<InteractionEvent, InteractionState> {
   final INetworkService networkService;
 
-  InteractionBloc(this.networkService) : super(InitialInteractionState());
-
-  @override
-  Stream<InteractionState> mapEventToState(
-    InteractionEvent event,
-  ) async* {
-    if (event is CallBingo) {
-      yield* _mapCallBingoToState(event);
-    } else if (event is CallSuperBingo) {
-      yield* _mapCallSuperBingoToState(event);
-    }
+  InteractionBloc(this.networkService) : super(InitialInteractionState()) {
+    on<CallBingo>(_handleCallBingo);
+    on<CallSuperBingo>(_handleCallSuperBingo);
   }
 
-  Stream<InteractionState> _mapCallBingoToState(CallBingo event) async* {
+  Future<void> _handleCallBingo(
+    CallBingo event,
+    Emitter<InteractionState> emit,
+  ) async {
     var game = networkService.currentGame;
     if (game == null) return;
 
@@ -45,9 +40,10 @@ class InteractionBloc extends Bloc<InteractionEvent, InteractionState> {
     }
   }
 
-  Stream<InteractionState> _mapCallSuperBingoToState(
+  Future<void> _handleCallSuperBingo(
     CallSuperBingo event,
-  ) async* {
+    Emitter<InteractionState> emit,
+  ) async {
     var game = networkService.currentGame;
     if (game == null) return;
 

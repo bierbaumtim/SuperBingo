@@ -8,6 +8,8 @@ import '../bloc/states/info_states.dart';
 import '../utils/dialogs.dart';
 
 class PlayerPage extends StatefulWidget {
+  const PlayerPage({Key? key}) : super(key: key);
+
   @override
   _PlayerPageState createState() => _PlayerPageState();
 }

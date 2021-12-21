@@ -29,27 +29,15 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
   Game? get _previousGame => networkService.previousGame;
 
   /// {@macro currentgamebloc}
-  CurrentGameBloc(this.networkService) : super(CurrentGameEmpty());
-
-  @override
-  Stream<CurrentGameState> mapEventToState(CurrentGameEvent event) async* {
-    if (event is StartGame) {
-      yield* _mapStartGameToState(event);
-    } else if (event is OpenGameWaitingLobby) {
-      yield* _mapOpenGameWaitingLobbyToState(event);
-    } else if (event is LeaveGame) {
-      yield* _mapLeaveGameToState(event);
-    } else if (event is EndGame) {
-      yield* _mapEndGameToState(event);
-    } else if (event is UpdateCurrentGame) {
-      yield* _mapUpdateCurrentGameToState(event);
-    } else if (event is PlayCard) {
-      yield* _mapPlayCardToState(event);
-    } else if (event is DrawCard) {
-      yield* _mapDrawCardToState(event);
-    } else if (event is DrawPenaltyCard) {
-      yield* _mapDrawPenaltyCardToState(event);
-    }
+  CurrentGameBloc(this.networkService) : super(CurrentGameEmpty()) {
+    on<StartGame>(_handleStartGame);
+    on<OpenGameWaitingLobby>(_handleOpenGameWaitingLobby);
+    on<LeaveGame>(_mapLeaveGameToState);
+    on<EndGame>(_handleEndGame);
+    on<UpdateCurrentGame>(_handleUpdateCurrentGame);
+    on<PlayCard>(_handlePlayCard);
+    on<DrawCard>(_handleDrawCard);
+    on<DrawPenaltyCard>(_handleDrawPenaltyCard);
   }
 
   @override
@@ -58,8 +46,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     super.close();
   }
 
-  Stream<CurrentGameState> _mapStartGameToState(StartGame event) async* {
-    yield CurrentGameStarting();
+  Future<void> _handleStartGame(
+    StartGame event,
+    Emitter<CurrentGameState> emit,
+  ) async {
+    emit(CurrentGameStarting());
 
     try {
       _self = event.self;
@@ -72,19 +63,20 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           await networkService.updateGameData(game);
           print('Game started: $game');
         } else {
-          yield CurrentGameStartingFailed();
+          emit(CurrentGameStartingFailed());
         }
       }
     } on Object catch (e, s) {
-      yield CurrentGameStartingFailed();
+      emit(CurrentGameStartingFailed());
       await LogService.instance.recordError(e, s);
     }
   }
 
-  Stream<CurrentGameState> _mapOpenGameWaitingLobbyToState(
+  Future<void> _handleOpenGameWaitingLobby(
     OpenGameWaitingLobby event,
-  ) async* {
-    yield CurrentGameStarting();
+    Emitter<CurrentGameState> emit,
+  ) async {
+    emit(CurrentGameStarting());
     try {
       _self = event.self;
       final success = await _setupBlocAndSubscription(event.gameId);
@@ -97,19 +89,20 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
           },
         );
         print('Game-Lobby ist offen.');
-        yield CurrentGameWaitingForPlayer(game: game, self: _self!);
+        emit(CurrentGameWaitingForPlayer(game: game, self: _self!));
       } else {
-        yield CurrentGameStartingFailed();
+        emit(CurrentGameStartingFailed());
       }
     } on Object catch (e, s) {
       await LogService.instance.recordError(e, s);
-      yield CurrentGameStartingFailed();
+      emit(CurrentGameStartingFailed());
     }
   }
 
-  Stream<CurrentGameState> _mapUpdateCurrentGameToState(
+  Future<void> _handleUpdateCurrentGame(
     UpdateCurrentGame event,
-  ) async* {
+    Emitter<CurrentGameState> emit,
+  ) async {
     print('=========== UpdateCurrentGame started ===========');
     try {
       _self = Player.getPlayerFromList(event.game.players, _playerId);
@@ -147,7 +140,7 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
       }
 
       print('AllowedCardColor changed: ${event.game.allowedCardColor}');
-      yield UserChangedAllowedCardColor(event.game.allowedCardColor);
+      emit(UserChangedAllowedCardColor(event.game.allowedCardColor));
 
       if (_previousGame != null &&
           _previousGame!.message != event.game.message &&
@@ -165,18 +158,22 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
       switch (event.game.state) {
         case GameState.finished:
-          yield* _mapEndGameToState(EndGame());
+          await _handleEndGame(EndGame(), emit);
           return;
         case GameState.waitingForPlayer:
-          yield CurrentGameWaitingForPlayer(
-            game: event.game,
-            self: _self!,
+          emit(
+            CurrentGameWaitingForPlayer(
+              game: event.game,
+              self: _self!,
+            ),
           );
           break;
         default:
-          yield CurrentGameLoaded(
-            game: event.game,
-            self: _self!,
+          emit(
+            CurrentGameLoaded(
+              game: event.game,
+              self: _self!,
+            ),
           );
       }
 
@@ -192,12 +189,15 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     print('=========== UpdateCurrentGame ended ===========');
   }
 
-  Stream<CurrentGameState> _mapLeaveGameToState(LeaveGame event) async* {
+  Future<void> _mapLeaveGameToState(
+    LeaveGame event,
+    Emitter<CurrentGameState> emit,
+  ) async {
     try {
       await _leaveGame();
       _self = null;
       InformationStorage.instance.clearInformations();
-      yield CurrentGameEmpty();
+      emit(CurrentGameEmpty());
     } on GameLeaveException catch (e) {
       if (e.subscriptionCanceled) {
         gameSub = networkService.gameChangedStream
@@ -206,7 +206,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
   }
 
-  Stream<CurrentGameState> _mapEndGameToState(EndGame event) async* {
+  Future<void> _handleEndGame(
+    EndGame event,
+    Emitter<CurrentGameState> emit,
+  ) async {
     await gameSub!.cancel();
     await networkService.cancelSubscription();
     if (_self!.isHost) {
@@ -224,10 +227,13 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
     _self = null;
     InformationStorage.instance.clearInformations();
-    yield CurrentGameFinished();
+    emit(CurrentGameFinished());
   }
 
-  Stream<CurrentGameState> _mapPlayCardToState(PlayCard event) async* {
+  Future<void> _handlePlayCard(
+    PlayCard event,
+    Emitter<CurrentGameState> emit,
+  ) async {
     print('=========== PlayCard started ===========');
     try {
       final message = Rules.checkRules(_currentGame!, event.card, _playerId);
@@ -286,9 +292,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
         final currentState = state;
 
-        yield CurrentGameLoaded(
-          game: game,
-          self: _self!,
+        emit(
+          CurrentGameLoaded(
+            game: game,
+            self: _self!,
+          ),
         );
 
         print(
@@ -297,10 +305,12 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
         print('State Equality check: ${currentState != state}');
 
         if (shouldYieldWaitForBingo) {
-          yield WaitForBingoCall(isSuperBingo: isSuperBingo);
-          yield CurrentGameLoaded(
-            game: game,
-            self: _self!,
+          emit(WaitForBingoCall(isSuperBingo: isSuperBingo));
+          emit(
+            CurrentGameLoaded(
+              game: game,
+              self: _self!,
+            ),
           );
         }
         await networkService.updateGameData(game);
@@ -319,7 +329,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     print('=========== PlayCard ended ===========');
   }
 
-  Stream<CurrentGameState> _mapDrawCardToState(DrawCard event) async* {
+  Future<void> _handleDrawCard(
+    DrawCard event,
+    Emitter<CurrentGameState> emit,
+  ) async {
     Game game = _currentGame!;
     if (game.isRunning) {
       if (game.currentPlayerId == _self!.id) {
@@ -348,9 +361,10 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
     }
   }
 
-  Stream<CurrentGameState> _mapDrawPenaltyCardToState(
+  Future<void> _handleDrawPenaltyCard(
     DrawPenaltyCard event,
-  ) async* {
+    Emitter<CurrentGameState> emit,
+  ) async {
     final game = _currentGame!;
     if (game.isRunning) {
       final card = game.unplayedCardStack.removeFirst();
@@ -361,9 +375,11 @@ class CurrentGameBloc extends Bloc<CurrentGameEvent, CurrentGameState> {
 
       print('Strafkarte gezogen: $game');
 
-      yield CurrentGameLoaded(
-        game: game,
-        self: _self!,
+      emit(
+        CurrentGameLoaded(
+          game: game,
+          self: _self!,
+        ),
       );
     }
   }

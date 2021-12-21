@@ -9,6 +9,8 @@ import 'pages/player_page.dart';
 import 'pages/start.dart';
 
 class SuperBingo extends StatelessWidget {
+  const SuperBingo({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return OverlaySupport(
@@ -16,12 +18,12 @@ class SuperBingo extends StatelessWidget {
         themeMode: ThemeMode.dark,
         theme: darkTheme,
         // showPerformanceOverlay: true,
-        home: StartPage(),
+        home: const StartPage(),
         routes: {
-          '/new_game': (context) => NewGamePage(),
-          '/join_game': (context) => JoinGamePage(),
-          '/game': (context) => GamePage(),
-          '/user_page': (context) => PlayerPage(),
+          '/new_game': (context) => const NewGamePage(),
+          '/join_game': (context) => const JoinGamePage(),
+          '/game': (context) => const GamePage(),
+          '/user_page': (context) => const PlayerPage(),
         },
       ),
     );
@@ -32,14 +34,12 @@ class SuperBingo extends StatelessWidget {
 ThemeData get darkTheme => ThemeData.dark().copyWith(
       // scaffoldBackgroundColor: Colors.deepOrangeAccent,
       // primaryColor: Colors.deepOrangeAccent,
-      accentColor: Colors.deepOrange,
       primaryTextTheme: basicTextTheme,
       textTheme: basicTextTheme,
       appBarTheme: const AppBarTheme(elevation: 0),
       buttonTheme: const ButtonThemeData(
         buttonColor: Colors.deepOrange,
       ),
-      buttonColor: Colors.deepOrange,
       cardTheme: CardTheme(
         color: Colors.grey[700],
       ),
@@ -47,6 +47,8 @@ ThemeData get darkTheme => ThemeData.dark().copyWith(
         backgroundColor: Colors.deepOrange,
         foregroundColor: Colors.white,
       ),
+      colorScheme:
+          const ColorScheme.dark().copyWith(secondary: Colors.deepOrange),
     );
 
 /// TextTheme mit Georgia als FontFamily

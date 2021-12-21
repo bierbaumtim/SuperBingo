@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 import '../bloc/blocs/game_configuration_bloc.dart';
 import '../bloc/events/game_events.dart';
@@ -12,6 +13,8 @@ import '../utils/dialogs.dart';
 import '../widgets/loading_widget.dart';
 
 class NewGamePage extends StatefulWidget {
+  const NewGamePage({Key? key}) : super(key: key);
+
   @override
   _NewGamePageState createState() => _NewGamePageState();
 }
@@ -243,7 +246,9 @@ class _NewGamePageState extends State<NewGamePage> {
                                   ),
                                 ),
                                 onPressed: canShare
-                                    ? () async => IShareService().share(
+                                    ? () async => GetIt.I
+                                        .get<IShareService>()
+                                        .share(
                                           snapshot.data!,
                                           subject: 'SuperBingo Spieleinladung',
                                         )
